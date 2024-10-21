@@ -137,6 +137,8 @@ PODS:
     - Toast
   - geolocator_apple (1.2.0):
     - Flutter
+  - Google-Maps-iOS-Utils (5.0.0):
+    - GoogleMaps (~> 8.0)
   - google_maps_flutter_ios (0.0.1):
     - Flutter
     - GoogleMaps (< 9.0, >= 8.4)
@@ -275,8 +277,10 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - Google-Maps-iOS-Utils
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
+  - GoogleMaps (>= 3.10.0)
   - image_compression_flutter (from `.symlinks/plugins/image_compression_flutter/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
@@ -311,6 +315,7 @@ SPEC REPOS:
     - FirebaseMessaging
     - FirebaseRemoteConfigInterop
     - FirebaseSessions
+    - Google-Maps-iOS-Utils
     - GoogleDataTransport
     - GoogleMaps
     - GoogleSignIn
@@ -424,6 +429,7 @@ SPEC CHECKSUMS:
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   fluttertoast: 9f2f8e81bb5ce18facb9748d7855bf5a756fe3db
   geolocator_apple: 6cbaf322953988e009e5ecb481f07efece75c450
+  Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
   google_maps_flutter_ios: c454f18e0e22df6ac0e9f2a4df340858f5a3680c
   google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
@@ -459,6 +465,6 @@ SPEC CHECKSUMS:
   wakelock_plus: 78ec7c5b202cab7761af8e2b2b3d0671be6c4ae1
   webview_flutter_wkwebview: be0f0d33777f1bfd0c9fdcb594786704dbf65f36
 
-PODFILE CHECKSUM: be0a36acebc23fec4a459c26d070ce6f6ac0472a
+PODFILE CHECKSUM: ed795d9635e06486239468812cd40d1797d864b7
 
 COCOAPODS: 1.15.2

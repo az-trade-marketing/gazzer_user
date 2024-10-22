@@ -3,6 +3,7 @@ import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/cart_widget.dart';
 import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
+import 'package:gazzer_userapp/common/widgets/paginated_list_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/product_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/veg_filter_widget.dart';
 import 'package:gazzer_userapp/common/widgets/web_menu_bar.dart';
@@ -31,8 +32,8 @@ class CategoryProductScreen extends StatefulWidget {
 class CategoryProductScreenState extends State<CategoryProductScreen>
     with TickerProviderStateMixin {
   final ScrollController _restaurantScrollController = ScrollController();
-  int _selectedCuisineIndex =
-      0; // Initialize to select the first item by default
+  int _selectedCuisineIndex = 0;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -65,15 +66,27 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
           final pageSize = (categoryController.restaurantPageSize! / 10).ceil();
           if (categoryController.offset < pageSize) {
             categoryController.showBottomLoader();
-            // categoryController.getCategoryRestaurantList(
-            //   categoryController.subCategoryIndex == 0
-            //       ? widget.categoryID
-            //       : categoryController.subCategoryList?.elementAt(
-            //       categoryController.subCategoryIndex)?.id.toString(),
-            //   categoryController.offset + 1,
-            //   categoryController.type,
-            //   false,
-            // );
+            if (widget.categoryID == "1") {
+              cuisineController.getCuisineRestaurantList(
+                cuisineController
+                    .cuisineModel!.cuisines![_selectedCuisineIndex].id!,
+                int.parse(cuisineController.cuisineRestaurantsModel!.offset!) +
+                    1,
+                false,
+              );
+            } else {
+              categoryController.getCategoryRestaurantList(
+                categoryController.subCategoryIndex == 0
+                    ? widget.categoryID
+                    : categoryController.subCategoryList
+                        ?.elementAt(categoryController.subCategoryIndex)
+                        .id
+                        .toString(),
+                categoryController.offset + 1,
+                categoryController.type,
+                false,
+              );
+            }
           }
         }
       }
@@ -226,6 +239,7 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
                                 return InkWell(
                                   onTap: () {
                                     setState(() {
+                                      _isLoading = true;
                                       _selectedCuisineIndex = index;
                                     });
                                     cuisineController.setCurrentIndex(
@@ -236,7 +250,12 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
                                           .cuisineModel!.cuisines![index].id!,
                                       1,
                                       false,
-                                    );
+                                    )
+                                        .then((value) {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                    });
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
@@ -303,49 +322,91 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
                                         .toString(),
                                 catController.type,
                               );
-                            } else {
-                              Get.find<CuisineController>()
-                                  .getCuisineRestaurantList(
-                                cuisineController.cuisineModel!
-                                    .cuisines![_selectedCuisineIndex].id!,
-                                1,
-                                false,
-                              );
                             }
                           }
                         }
                         return false;
                       },
                       child: SingleChildScrollView(
+                        controller: _restaurantScrollController,
                         child: FooterViewWidget(
                           child: Center(
                             child: SizedBox(
                               width: Dimensions.webMaxWidth,
                               child: Column(
                                 children: [
-                                  ProductViewWidget(
-                                    isRestaurant: true,
-                                    products: null,
-                                    restaurants: widget.categoryID == "1"
-                                        ? cuisineController
-                                            .cuisineRestaurantsModel
-                                            ?.restaurants
-                                        : restaurants,
-                                    noDataText:
-                                        'no_category_restaurant_found'.tr,
+                                  PaginatedListViewWidget(
+                                    scrollController:
+                                        _restaurantScrollController,
+                                    totalSize: cuisineController
+                                        .cuisineRestaurantsModel?.totalSize,
+                                    offset: cuisineController
+                                                .cuisineRestaurantsModel !=
+                                            null
+                                        ? int.parse(cuisineController
+                                            .cuisineRestaurantsModel!.offset!)
+                                        : null,
+                                    onPaginate: (int? offset) async {
+                                      await cuisineController
+                                          .getCuisineRestaurantList(
+                                              cuisineController
+                                                  .cuisineModel!
+                                                  .cuisines![
+                                                      _selectedCuisineIndex]
+                                                  .id!,
+                                              offset!,
+                                              false);
+                                    },
+                                    productView: ProductViewWidget(
+                                      isRestaurant: true,
+                                      products: null,
+                                      restaurants: widget.categoryID == "1"
+                                          ? cuisineController
+                                              .cuisineRestaurantsModel
+                                              ?.restaurants
+                                          : restaurants,
+                                      noDataText:
+                                          'no_category_restaurant_found'.tr,
+                                      padding: EdgeInsets.only(
+                                        left:
+                                            ResponsiveHelper.isDesktop(context)
+                                                ? Dimensions
+                                                    .paddingSizeExtraSmall
+                                                : Dimensions.paddingSizeSmall,
+                                        right:
+                                            ResponsiveHelper.isDesktop(context)
+                                                ? Dimensions
+                                                    .paddingSizeExtraSmall
+                                                : Dimensions.paddingSizeSmall,
+                                        top: ResponsiveHelper.isDesktop(context)
+                                            ? Dimensions.paddingSizeExtraSmall
+                                            : Dimensions.paddingSizeDefault,
+                                        bottom:
+                                            ResponsiveHelper.isDesktop(context)
+                                                ? Dimensions
+                                                    .paddingSizeExtraSmall
+                                                : 0,
+                                      ),
+                                    ),
                                   ),
-                                  // if (cuisineController.cuisineRestaurantsModel!
-                                  //     .restaurants!.isEmpty)
-                                  //   Padding(
-                                  //     padding: const EdgeInsets.symmetric(
-                                  //         vertical: 200),
-                                  //     child: Text(
-                                  //       "Empty section",
-                                  //       style: robotoMedium.copyWith(
-                                  //           fontWeight: FontWeight.bold),
-                                  //     ),
-                                  //   ),
-                                  catController.isLoading
+                                  if (cuisineController
+                                              .cuisineRestaurantsModel !=
+                                          null &&
+                                      cuisineController.cuisineRestaurantsModel!
+                                              .restaurants !=
+                                          null &&
+                                      cuisineController.cuisineRestaurantsModel!
+                                          .restaurants!.isEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 200),
+                                      child: Text(
+                                        "Empty section",
+                                        style: robotoMedium.copyWith(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  catController.isLoading || _isLoading == true
                                       ? Center(
                                           child: Padding(
                                             padding: const EdgeInsets.all(

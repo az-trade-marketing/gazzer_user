@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/api/api_client.dart';
 import 'package:gazzer_userapp/features/cuisine/domain/models/cuisine_model.dart';
 import 'package:gazzer_userapp/features/cuisine/domain/models/cuisine_restaurants_model.dart';
@@ -38,13 +39,21 @@ class CuisineRepository implements CuisineRepositoryInterface {
   @override
   Future<CuisineRestaurantModel?> getRestaurantList(
       int offset, int cuisineId) async {
-    CuisineRestaurantModel? cuisineRestaurantsModel;
-    Response response = await apiClient.getData(
-        '${AppConstants.cuisineRestaurantUri}?cuisine_id=$cuisineId&offset=$offset&limit=10');
-    if (response.statusCode == 200) {
-      cuisineRestaurantsModel = CuisineRestaurantModel.fromJson(response.body);
+    try {
+      Response response = await apiClient.getData(
+        '${AppConstants.cuisineRestaurantUri}?cuisine_id=$cuisineId&offset=$offset&limit=10',
+      );
+
+      if (response.statusCode == 200) {
+        return CuisineRestaurantModel.fromJson(response.body);
+      } else {
+        debugPrint('Error: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch restaurant list: $e');
+      return null;
     }
-    return cuisineRestaurantsModel;
   }
 
   @override

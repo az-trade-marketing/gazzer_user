@@ -121,7 +121,6 @@ class _CartScreenState extends State<CartScreen> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  
                                                   Row(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment

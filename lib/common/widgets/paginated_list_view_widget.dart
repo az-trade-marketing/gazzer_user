@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PaginatedListViewWidget extends StatefulWidget {
@@ -41,37 +41,53 @@ class _PaginatedListViewWidgetState extends State<PaginatedListViewWidget> {
     _offset = 1;
     _offsetList = [1];
 
-    widget.scrollController.addListener(() {
-      if (widget.scrollController.position.pixels ==
-              widget.scrollController.position.maxScrollExtent &&
-          widget.totalSize != null &&
-          !_isLoading &&
-          widget.enabledPagination) {
-        if (mounted && !ResponsiveHelper.isDesktop(context)) {
-          _paginate();
-        }
-      }
-    });
+    widget.scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.scrollController.removeListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    var currentIndex = widget.scrollController.position.pixels;
+    var maxIndex = widget.scrollController.position.maxScrollExtent;
+    if ((currentIndex >= 0.7 * maxIndex) &&
+        widget.totalSize != null &&
+        !_isLoading &&
+        widget.enabledPagination) {
+      _paginate();
+    }
   }
 
   void _paginate() async {
+    if (widget.totalSize == null) {
+      debugPrint('Total size is null. Cannot paginate.');
+      return;
+    }
+
     int pageSize = (widget.totalSize! / 10).ceil();
+
     if (_offset! < pageSize && !_offsetList.contains(_offset! + 1)) {
       setState(() {
         _offset = _offset! + 1;
         _offsetList.add(_offset);
         _isLoading = true;
       });
-      await widget.onPaginate(_offset);
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
-      if (_isLoading) {
+
+      debugPrint('Paginating: Offset: $_offset, Page Size: $pageSize');
+      try {
+        await widget.onPaginate(_offset);
+      } catch (e) {
+        debugPrint('Error during pagination: $e');
+      } finally {
         setState(() {
           _isLoading = false;
         });
       }
+    } else {
+      debugPrint('No more pages to paginate or already loaded this offset.');
     }
   }
 
@@ -79,10 +95,7 @@ class _PaginatedListViewWidgetState extends State<PaginatedListViewWidget> {
   Widget build(BuildContext context) {
     if (widget.offset != null) {
       _offset = widget.offset;
-      _offsetList = [];
-      for (int index = 1; index <= widget.offset!; index++) {
-        _offsetList.add(index);
-      }
+      _offsetList = List.generate(_offset!, (index) => index + 1);
     }
 
     return SingleChildScrollView(

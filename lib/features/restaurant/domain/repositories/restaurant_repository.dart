@@ -1,6 +1,6 @@
+import 'package:gazzer_userapp/api/api_client.dart';
 import 'package:gazzer_userapp/common/models/product_model.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
-import 'package:gazzer_userapp/api/api_client.dart';
 import 'package:gazzer_userapp/features/restaurant/domain/models/recommended_product_model.dart';
 import 'package:gazzer_userapp/features/restaurant/domain/repositories/restaurant_repository_interface.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
@@ -46,7 +46,7 @@ class RestaurantRepository implements RestaurantRepositoryInterface {
       int? restaurantID, int offset, int? categoryID, String type) async {
     ProductModel? productModel;
     Response response = await apiClient.getData(
-      '${AppConstants.restaurantProductUri}?restaurant_id=$restaurantID&category_id=$categoryID&offset=$offset&limit=12&type=$type',
+      '${AppConstants.restaurantProductUri}?restaurant_id=$restaurantID&category_id=$categoryID&offset=$offset&limit=50&type=$type',
     );
     if (response.statusCode == 200) {
       productModel = ProductModel.fromJson(response.body);

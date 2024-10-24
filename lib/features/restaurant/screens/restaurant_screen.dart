@@ -79,6 +79,18 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         false);
   }
 
+  List<String> extractUniqueCategories(List<Product> products) {
+    Set<String> categoryNames = {};
+
+    for (var product in products) {
+      if (product.category != null) {
+        categoryNames.add(product.category!.name!);
+      }
+    }
+
+    return categoryNames.toList();
+  }
+
   List<Category> getUniqueCategories(List<Product> products) {
     Set<int> seenCategoryIds = {};
     List<Category> uniqueCategories = [];
@@ -90,7 +102,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         uniqueCategories.add(product.category!);
       }
     }
-
     return uniqueCategories;
   }
 
@@ -611,7 +622,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                         ),
                                         const Divider(
                                             thickness: 0.2, height: 10),
-                                        // Category ListView
                                         SizedBox(
                                           height: 30,
                                           child: restController
@@ -718,7 +728,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                           uniqueCategoryIndex >=
                                                               uniqueCategories
                                                                   .length) {
-                                                        return SizedBox(); // Return an empty widget or handle as needed
+                                                        return const SizedBox();
                                                       }
 
                                                       Category category = uniqueCategories[uniqueCategoryIndex];
@@ -739,9 +749,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                               .id!,
                                                       1,
                                                       'all',
-                                                      // Fetch all products
-                                                      false, // Pass false to indicate category-specific items
-                                                    );
+                                                            false,
+                                                          );
                                                   },
                                                   child: Container(
                                                     padding: const EdgeInsets

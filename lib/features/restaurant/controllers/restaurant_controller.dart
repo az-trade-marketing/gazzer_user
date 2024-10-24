@@ -1,6 +1,3 @@
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gazzer_userapp/common/models/product_model.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
@@ -15,6 +12,9 @@ import 'package:gazzer_userapp/features/restaurant/domain/models/cart_suggested_
 import 'package:gazzer_userapp/features/restaurant/domain/models/recommended_product_model.dart';
 import 'package:gazzer_userapp/features/restaurant/domain/services/restaurant_service_interface.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RestaurantController extends GetxController implements GetxService {
   final RestaurantServiceInterface restaurantServiceInterface;
@@ -379,12 +379,6 @@ class RestaurantController extends GetxController implements GetxService {
   Future<void> getRestaurantProductList(
       int? restaurantID, int offset, String type, bool notify) async {
     _foodOffset = offset;
-
-    // Print debug information
-    print('restaurantProducts length: ${restaurantProducts?.length}');
-    print('Requested category ID: $_categoryIndex');
-
-    // Reset the list if it's the first page or if the product list is null
     if (offset == 1 || _restaurantProducts == null) {
       _type = type;
       _foodOffsetList = [];

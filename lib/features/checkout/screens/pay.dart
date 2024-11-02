@@ -31,7 +31,7 @@ class PayScreen extends StatefulWidget {
   final int subscriptionQty;
   final List<SubscriptionDays> days;
 
-  PayScreen({
+  const PayScreen({
     super.key,
     required this.url,
     required this.paymentId,

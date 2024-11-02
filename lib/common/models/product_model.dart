@@ -418,18 +418,18 @@ class Category {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['parent_id'] = this.parentId;
-    data['position'] = this.position;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['priority'] = this.priority;
-    data['slug'] = this.slug;
-    if (this.translations != null) {
-      data['translations'] = this.translations!.map((v) => v.toJson()).toList();
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['parent_id'] = parentId;
+    data['position'] = position;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['priority'] = priority;
+    data['slug'] = slug;
+    if (translations != null) {
+      data['translations'] = translations!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -468,14 +468,14 @@ class Translations {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['translationable_type'] = this.translationableType;
-    data['translationable_id'] = this.translationableId;
-    data['locale'] = this.locale;
-    data['key'] = this.key;
-    data['value'] = this.value;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    data['id'] = id;
+    data['translationable_type'] = translationableType;
+    data['translationable_id'] = translationableId;
+    data['locale'] = locale;
+    data['key'] = key;
+    data['value'] = value;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

@@ -625,14 +625,14 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                         SizedBox(
                                           height: 30,
                                           child: restController
-                                                      .restaurantProducts !=
+                                                      .restaurant!.categories !=
                                                   null
                                               ? ListView.builder(
                                                   scrollDirection:
                                                       Axis.horizontal,
-                                                  itemCount: getUniqueCategories(
-                                                              restController
-                                                                  .restaurantProducts!)
+                                                  itemCount: restController
+                                                          .restaurant!
+                                                          .categories!
                                                           .length +
                                                       1,
                                                   padding: const EdgeInsets
@@ -644,7 +644,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                   itemBuilder:
                                                       (context, index) {
                                                     if (index == 0) {
-                                                      // Handle the "All" label
                                                       return InkWell(
                                                         onTap: () {
                                                           restController
@@ -661,8 +660,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                                     .id!,
                                                             1,
                                                             'all',
-                                                            // Fetch all products when "All" is selected
-                                                            true, // Pass true to indicate all items
+                                                            true,
                                                           );
                                                         },
                                                         child: Container(
@@ -715,13 +713,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                     } else {
                                                       // Handle category labels
                                                       int uniqueCategoryIndex =
-                                                          index -
-                                                              1; // Adjust index for categories
-                                                      List<Category>
+                                                          index - 1;
+                                                      List<CategoryData>
                                                           uniqueCategories =
-                                                          getUniqueCategories(
-                                                              restController
-                                                                  .restaurantProducts!);
+                                                          restController
+                                                              .restaurant!
+                                                              .categories!;
 
                                                       if (uniqueCategoryIndex <
                                                               0 ||
@@ -731,73 +728,80 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                         return const SizedBox();
                                                       }
 
-                                                      Category category = uniqueCategories[uniqueCategoryIndex];
+                                                      CategoryData category =
+                                                          uniqueCategories[
+                                                              uniqueCategoryIndex];
 
-                                                return InkWell(
-                                                  onTap: () {
-                                                    restController
-                                                        .setCategoryIndex(
-                                                        category.id!);
-                                                    Get.find<
-                                                        RestaurantController>()
-                                                        .getRestaurantProductList(
-                                                      widget.restaurant?.id ??
-                                                          Get
-                                                              .find<
-                                                              RestaurantController>()
-                                                              .restaurant!
-                                                              .id!,
-                                                      1,
-                                                      'all',
+                                                      return InkWell(
+                                                        onTap: () {
+                                                          restController
+                                                              .setCategoryIndex(
+                                                                  category.id!);
+                                                          Get.find<
+                                                                  RestaurantController>()
+                                                              .getRestaurantProductList(
+                                                            widget.restaurant
+                                                                    ?.id ??
+                                                                Get.find<
+                                                                        RestaurantController>()
+                                                                    .restaurant!
+                                                                    .id!,
+                                                            1,
+                                                            'all',
                                                             false,
                                                           );
+                                                        },
+                                                        child: Container(
+                                                          padding: const EdgeInsets
+                                                              .symmetric(
+                                                              horizontal: Dimensions
+                                                                  .paddingSizeSmall,
+                                                              vertical: Dimensions
+                                                                  .paddingSizeExtraSmall),
+                                                          margin: const EdgeInsets
+                                                              .only(
+                                                              right: Dimensions
+                                                                  .paddingSizeSmall),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    Dimensions
+                                                                        .radiusDefault),
+                                                            color: restController
+                                                                        .categoryIndex ==
+                                                                    category.id
+                                                                ? Theme.of(
+                                                                        context)
+                                                                    .dialogBackgroundColor
+                                                                : Colors
+                                                                    .transparent,
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                              category.name!,
+                                                              style: restController
+                                                                          .categoryIndex ==
+                                                                      category
+                                                                          .id
+                                                                  ? robotoMedium.copyWith(
+                                                                      fontSize:
+                                                                          Dimensions
+                                                                              .fontSizeSmall,
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .primaryColor)
+                                                                  : robotoRegular
+                                                                      .copyWith(
+                                                                          fontSize:
+                                                                              Dimensions.fontSizeSmall),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
                                                   },
-                                                  child: Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: Dimensions
-                                                            .paddingSizeSmall,
-                                                        vertical: Dimensions
-                                                            .paddingSizeExtraSmall),
-                                                    margin: const EdgeInsets
-                                                        .only(right: Dimensions
-                                                        .paddingSizeSmall),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius
-                                                          .circular(Dimensions
-                                                          .radiusDefault),
-                                                      color: restController
-                                                          .categoryIndex ==
-                                                          category.id
-                                                          ? Theme
-                                                          .of(context)
-                                                          .dialogBackgroundColor
-                                                          : Colors.transparent,
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        category.name!,
-                                                        style: restController
-                                                            .categoryIndex ==
-                                                            category.id
-                                                            ? robotoMedium
-                                                            .copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeSmall,
-                                                            color: Theme
-                                                                .of(context)
-                                                                .primaryColor)
-                                                            : robotoRegular
-                                                            .copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeSmall),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                          )
+                                                )
                                               : const SizedBox(),
                                         ),
                                       ]),

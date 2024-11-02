@@ -95,6 +95,7 @@ class Restaurant {
   int? reviewsCommentsCount;
   List<String>? characteristics;
   bool? isExtraPackagingActive;
+  List<CategoryData>? categories;
 
   Restaurant({
     this.id,
@@ -154,6 +155,7 @@ class Restaurant {
     this.reviewsCommentsCount,
     this.characteristics,
     this.isExtraPackagingActive,
+    this.categories,
   });
 
   Restaurant.fromJson(Map<String, dynamic> json) {
@@ -256,6 +258,12 @@ class Restaurant {
       });
     }
     isExtraPackagingActive = json['is_extra_packaging_active'];
+    if (json['categories'] != null) {
+      categories = [];
+      json['categories'].forEach((v) {
+        categories!.add(CategoryData.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -321,6 +329,7 @@ class Restaurant {
       data['characteristics'] = characteristics!.map((v) => v).toList();
     }
     data['is_extra_packaging_active'] = isExtraPackagingActive;
+    data['categories'] = categories!.toList();
     return data;
   }
 }
@@ -529,6 +538,70 @@ class Refund {
     data['customer_reason'] = customerReason;
     data['customer_note'] = customerNote;
     data['admin_note'] = adminNote;
+    return data;
+  }
+}
+
+class CategoryData {
+  int? id;
+  String? name;
+  String? image;
+  int? parentId;
+  int? position;
+  int? status;
+  String? createdAt;
+  String? updatedAt;
+  int? priority;
+  String? slug;
+  List<Translations>? translations;
+
+  CategoryData(
+      {this.id,
+      this.name,
+      this.image,
+      this.parentId,
+      this.position,
+      this.status,
+      this.createdAt,
+      this.updatedAt,
+      this.priority,
+      this.slug,
+      this.translations});
+
+  CategoryData.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    image = json['image'];
+    parentId = json['parent_id'];
+    position = json['position'];
+    status = json['status'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    priority = json['priority'];
+    slug = json['slug'];
+    if (json['translations'] != null) {
+      translations = <Translations>[];
+      json['translations'].forEach((v) {
+        translations!.add(Translations.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['parent_id'] = parentId;
+    data['position'] = position;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['priority'] = priority;
+    data['slug'] = slug;
+    if (translations != null) {
+      data['translations'] = translations!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

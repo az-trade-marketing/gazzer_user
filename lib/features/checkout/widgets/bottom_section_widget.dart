@@ -6,6 +6,7 @@ import 'package:gazzer_userapp/features/checkout/widgets/partial_pay_view.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_section.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
+import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
@@ -120,7 +121,8 @@ class BottomSectionWidget extends StatelessWidget {
         deliveryCharge = 0;
         return orderAmount + deliveryCharge;
       } else if (isTapped == true && AppConstants.isUseButtonTapped == true) {
-        return orderAmount + deliveryCharge - AppConstants.walletBalance;
+        return ((orderAmount + deliveryCharge) -
+            (Get.find<ProfileController>().userInfoModel!.walletBalance!));
       } else {
         return orderAmount + deliveryCharge;
       }

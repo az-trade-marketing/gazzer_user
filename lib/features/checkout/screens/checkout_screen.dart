@@ -310,9 +310,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       deliveryCharge = 0;
                       return orderAmount + deliveryCharge;
                     } else if (AppConstants.isUseButtonTapped == true) {
-                      return orderAmount +
-                          groupedDeliveryCharge -
-                          AppConstants.walletBalance;
+                      return ((orderAmount + groupedDeliveryCharge) -
+                          (Get.find<ProfileController>()
+                              .userInfoModel!
+                              .walletBalance!));
                     } else {
                       return orderAmount + groupedDeliveryCharge;
                     }

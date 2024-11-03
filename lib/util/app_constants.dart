@@ -1,5 +1,4 @@
 import 'package:gazzer_userapp/features/language/domain/models/language_model.dart';
-import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:get/get.dart';
 
@@ -267,8 +266,6 @@ class AppConstants {
     {'title': 'earned_by_referral', 'value': 'referrer'},
     {'title': 'cash_back_transactions', 'value': 'CashBack'},
   ];
-  static final walletBalance =
-      Get.find<ProfileController>().userInfoModel!.walletBalance!;
 
   static bool isUseButtonTapped = false;
 }

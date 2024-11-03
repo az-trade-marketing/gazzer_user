@@ -310,7 +310,10 @@ class TopSectionWidget extends StatelessWidget {
           // SizedBox(height: isGuestLoggedIn && !isDesktop ? 0 : Dimensions.paddingSizeDefault),
 
           !isDesktop && !isGuestLoggedIn
-              ? PartialPayView(totalPrice: total)
+              ? PartialPayView(
+                  totalPrice: total,
+                  isButtonTapped: false,
+                )
               : const SizedBox(),
         ]),
       ]);

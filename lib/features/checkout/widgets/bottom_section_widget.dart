@@ -9,6 +9,7 @@ import 'package:gazzer_userapp/features/location/controllers/location_controller
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
@@ -49,6 +50,7 @@ class BottomSectionWidget extends StatelessWidget {
   final JustTheController serviceFeeTooltipController;
   final double referralDiscount;
   final double extraPackagingAmount;
+  final bool isTapped;
 
   BottomSectionWidget({
     super.key,
@@ -86,6 +88,7 @@ class BottomSectionWidget extends StatelessWidget {
     required this.serviceFeeTooltipController,
     required this.referralDiscount,
     required this.extraPackagingAmount,
+    required this.isTapped,
   });
 
   @override
@@ -116,6 +119,8 @@ class BottomSectionWidget extends StatelessWidget {
       if (couponController.coupon?.couponType == "free_delivery") {
         deliveryCharge = 0;
         return orderAmount + deliveryCharge;
+      } else if (isTapped == true && AppConstants.isUseButtonTapped == true) {
+        return orderAmount + deliveryCharge - AppConstants.walletBalance;
       } else {
         return orderAmount + deliveryCharge;
       }
@@ -126,7 +131,10 @@ class BottomSectionWidget extends StatelessWidget {
           const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         isDesktop && !isGuestLoggedIn
-            ? PartialPayView(totalPrice: total)
+            ? PartialPayView(
+                totalPrice: total,
+                isButtonTapped: isTapped,
+              )
             : const SizedBox(),
         !isDesktop
             ? Padding(

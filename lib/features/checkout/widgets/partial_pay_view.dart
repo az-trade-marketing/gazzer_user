@@ -1,20 +1,28 @@
+import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/features/checkout/controllers/checkout_controller.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/theme_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class PartialPayView extends StatelessWidget {
+class PartialPayView extends StatefulWidget {
   final double totalPrice;
+  bool isButtonTapped;
 
-  const PartialPayView({super.key, required this.totalPrice});
+  PartialPayView(
+      {super.key, required this.totalPrice, required this.isButtonTapped});
 
+  @override
+  State<PartialPayView> createState() => _PartialPayViewState();
+}
+
+class _PartialPayViewState extends State<PartialPayView> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CheckoutController>(builder: (checkoutController) {
@@ -110,10 +118,16 @@ class PartialPayView extends StatelessWidget {
                                 ),
                           InkWell(
                             onTap: () {
+                              setState(() {
+                                AppConstants.isUseButtonTapped =
+                                    !AppConstants.isUseButtonTapped;
+                                debugPrint(
+                                    'tapped ${AppConstants.isUseButtonTapped}');
+                              });
                               if (Get.find<ProfileController>()
                                       .userInfoModel!
                                       .walletBalance! <
-                                  totalPrice) {
+                                  widget.totalPrice) {
                                 checkoutController.changePartialPayment();
                               } else {
                                 if (checkoutController.paymentMethodIndex !=
@@ -165,7 +179,7 @@ class PartialPayView extends StatelessWidget {
                         ]),
                     checkoutController.paymentMethodIndex == 1
                         ? Text(
-                            '${'remaining_wallet_balance'.tr}: ${PriceConverter.convertPrice(Get.find<ProfileController>().userInfoModel!.walletBalance! - totalPrice)}',
+                            '${'remaining_wallet_balance'.tr}: ${PriceConverter.convertPrice(Get.find<ProfileController>().userInfoModel!.walletBalance! - widget.totalPrice)}',
                             style: robotoMedium.copyWith(
                                 fontSize: Dimensions.fontSizeSmall),
                           )

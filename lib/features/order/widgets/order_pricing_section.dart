@@ -288,7 +288,7 @@ class OrderPricingSection extends StatelessWidget {
                               ),
                               Text(
                                 PriceConverter.convertPrice(
-                                    order.payments?[1].amount ?? 0),
+                                    total - (order.payments?[0].amount ?? 0)),
                                 style: robotoMedium.copyWith(
                                     fontSize: Dimensions.fontSizeSmall),
                               ),

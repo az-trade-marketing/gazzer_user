@@ -19,7 +19,7 @@ class RestaurantRepository implements RestaurantRepositoryInterface {
       int? restaurantId) async {
     RecommendedProductModel? recommendedProductModel;
     Response response = await apiClient.getData(
-        '${AppConstants.restaurantRecommendedItemUri}?restaurant_id=$restaurantId&offset=1&limit=50');
+        '${AppConstants.restaurantRecommendedItemUri}?restaurant_id=$restaurantId&offset=1&limit=12');
     if (response.statusCode == 200) {
       recommendedProductModel = RecommendedProductModel.fromJson(response.body);
     }

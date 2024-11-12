@@ -53,7 +53,7 @@ class _PaginatedListViewWidgetState extends State<PaginatedListViewWidget> {
   void _scrollListener() {
     var currentIndex = widget.scrollController.position.pixels;
     var maxIndex = widget.scrollController.position.maxScrollExtent;
-    if ((currentIndex >= 0.4 * maxIndex) &&
+    if ((currentIndex >= 0.7 * maxIndex) &&
         widget.totalSize != null &&
         !_isLoading &&
         widget.enabledPagination) {

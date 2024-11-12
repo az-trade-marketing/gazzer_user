@@ -438,7 +438,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                   Expanded(
                                                     flex: 4,
                                                     child: BottomSectionWidget(
-                                                      isTapped: false,
+                                                      isTapped: AppConstants
+                                                              .isUseButtonTapped
+                                                          ? true
+                                                          : false,
                                                       isCashOnDeliveryActive:
                                                           _isCashOnDeliveryActive!,
                                                       isDigitalPaymentActive:

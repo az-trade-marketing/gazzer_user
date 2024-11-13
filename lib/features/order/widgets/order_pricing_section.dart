@@ -253,7 +253,8 @@ class OrderPricingSection extends StatelessWidget {
                                     color: Theme.of(context).primaryColor,
                                   )),
                               Text(
-                                PriceConverter.convertPrice(total),
+                                PriceConverter.convertPrice(
+                                    total + (order.payments?[0].amount ?? 0)),
                                 textDirection: TextDirection.ltr,
                                 style: robotoMedium.copyWith(
                                     fontSize:
@@ -287,8 +288,7 @@ class OrderPricingSection extends StatelessWidget {
                                     fontSize: Dimensions.fontSizeSmall),
                               ),
                               Text(
-                                PriceConverter.convertPrice(
-                                    total - (order.payments?[0].amount ?? 0)),
+                                PriceConverter.convertPrice(total),
                                 style: robotoMedium.copyWith(
                                     fontSize: Dimensions.fontSizeSmall),
                               ),

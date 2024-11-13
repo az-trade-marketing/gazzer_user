@@ -28,36 +28,39 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
-  late StreamSubscription<ConnectivityResult> _onConnectivityChanged;
+  late StreamSubscription<List<ConnectivityResult>> _onConnectivityChanged;
 
   @override
   void initState() {
     super.initState();
 
     bool firstTime = true;
-    _onConnectivityChanged = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      if (!firstTime) {
-        bool isNotConnected = result != ConnectivityResult.wifi &&
-            result != ConnectivityResult.mobile;
-        isNotConnected
-            ? const SizedBox()
-            : ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: isNotConnected ? Colors.red : Colors.green,
-          duration: Duration(seconds: isNotConnected ? 6000 : 3),
-          content: Text(
-            isNotConnected ? 'no_connection'.tr : 'connected'.tr,
-            textAlign: TextAlign.center,
-          ),
-        ));
-        if (!isNotConnected) {
-          _route();
+    _onConnectivityChanged = Connectivity().onConnectivityChanged.listen(
+          (List<ConnectivityResult> resultList) {
+        if (!firstTime) {
+          // Check if any of the connectivity results is not WiFi or Mobile
+          bool isNotConnected = !resultList.contains(ConnectivityResult.wifi) &&
+              !resultList.contains(ConnectivityResult.mobile);
+
+          if (!isNotConnected) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: isNotConnected ? Colors.red : Colors.green,
+            duration: Duration(seconds: isNotConnected ? 6000 : 3),
+            content: Text(
+              isNotConnected ? 'no_connection'.tr : 'connected'.tr,
+              textAlign: TextAlign.center,
+            ),
+          ));
+          if (!isNotConnected) {
+            _route();
+          }
         }
-      }
-      firstTime = false;
-    });
+        firstTime = false;
+      },
+    );
 
     Get.find<SplashController>().initSharedData();
     if (AddressHelper.getAddressFromSharedPref() != null &&

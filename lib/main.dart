@@ -11,6 +11,7 @@ import 'package:gazzer_userapp/features/splash/domain/models/deep_link_body.dart
 import 'package:gazzer_userapp/helper/notification_helper.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
+import 'package:gazzer_userapp/helper/shared_pref_helper.dart';
 import 'package:gazzer_userapp/theme/dark_theme.dart';
 import 'package:gazzer_userapp/theme/light_theme.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
@@ -36,7 +37,7 @@ Future<void> main() async {
   }
   setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
-
+  await SharedPrefHelper.init();
   // // Pass all uncaught "fatal" errors from the framework to Crashlytics
   // FlutterError.onError = (errorDetails) {
   //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -53,7 +54,7 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
       apiKey: 'AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw',
-      appId: '1:671839887516:web:e833f8876cf34767798d59',
+      appId: '1:671839887516:android:2cd563c7493816c8798d59',
       messagingSenderId: '671839887516',
       projectId: 'gazzer-app',
     ));
@@ -62,7 +63,7 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
         apiKey: 'AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw',
-        appId: '1:671839887516:android:1f9fd48dbf2401c4798d59',
+        appId: '1:671839887516:android:2cd563c7493816c8798d59',
         messagingSenderId: '671839887516',
         projectId: 'gazzer-app',
       ),

@@ -42,6 +42,7 @@ class PlaceOrderBodyModel {
   String? _guestEmail;
   double? _extraPackagingAmount;
   String? _paymentId;
+  bool? _isEftarRamadan;
 
   PlaceOrderBodyModel({
     required List<OnlineCart> cart,
@@ -83,6 +84,7 @@ class PlaceOrderBodyModel {
     required String? guestEmail,
     required double extraPackagingAmount,
     String? paymentId,
+    bool? isEftarRamadan,
   }) {
     _cart = cart;
     _couponDiscountAmount = couponDiscountAmount;
@@ -123,6 +125,7 @@ class PlaceOrderBodyModel {
     _guestEmail = guestEmail;
     _extraPackagingAmount = extraPackagingAmount;
     _paymentId = paymentId;
+    _isEftarRamadan = isEftarRamadan;
   }
 
   List<OnlineCart>? get cart => _cart;
@@ -259,6 +262,7 @@ class PlaceOrderBodyModel {
         ? double.parse(json['extra_packaging_amount'].toString())
         : null;
     _paymentId = json['payment_id'];
+    _isEftarRamadan = json['is_eftar_ramadan'];
   }
 
   Map<String, dynamic> toJson() {
@@ -314,6 +318,7 @@ class PlaceOrderBodyModel {
     }
     data['extra_packaging_amount'] = _extraPackagingAmount.toString();
     data['payment_id'] = _paymentId;
+    data['is_eftar_ramadan'] = _isEftarRamadan;
     return data;
   }
 }
@@ -329,8 +334,7 @@ class Cart {
   List<AddOns>? _addOns;
   List<int?>? _addOnQtys;
 
-  Cart(
-      int? foodId,
+  Cart(int? foodId,
       int? itemCampaignId,
       String price,
       String variant,
@@ -499,20 +503,19 @@ class OnlineCart {
   String? _itemType;
   List<int?>? _variationOptionIds;
 
-  OnlineCart(
-    int? cartId,
-    int? itemId,
-    int? itemCampaignId,
-    String price,
-    List<OrderVariation>? variations,
-    int? quantity,
-    List<int?> addOnIds,
-    List<AddOns>? addOns,
-    List<int?> addOnQtys,
-    String model, {
-    String? itemType,
-    List<int?>? variationOptionIds,
-  }) {
+  OnlineCart(int? cartId,
+      int? itemId,
+      int? itemCampaignId,
+      String price,
+      List<OrderVariation>? variations,
+      int? quantity,
+      List<int?> addOnIds,
+      List<AddOns>? addOns,
+      List<int?> addOnQtys,
+      String model, {
+        String? itemType,
+        List<int?>? variationOptionIds,
+      }) {
     _cartId = cartId;
     _itemId = itemId;
     _itemCampaignId = itemCampaignId;

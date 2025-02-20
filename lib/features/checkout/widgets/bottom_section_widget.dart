@@ -6,17 +6,17 @@ import 'package:gazzer_userapp/features/checkout/widgets/partial_pay_view.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_section.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
-import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
+import 'package:gazzer_userapp/helper/shared_pref_helper.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
-class BottomSectionWidget extends StatelessWidget {
+class BottomSectionWidget extends StatefulWidget {
   final CartModel? cart;
   final bool isCashOnDeliveryActive;
   final bool isDigitalPaymentActive;
@@ -51,7 +51,7 @@ class BottomSectionWidget extends StatelessWidget {
   final JustTheController serviceFeeTooltipController;
   final double referralDiscount;
   final double extraPackagingAmount;
-  final bool isTapped;
+  final bool isEftarRamadan;
 
   BottomSectionWidget({
     super.key,
@@ -89,17 +89,23 @@ class BottomSectionWidget extends StatelessWidget {
     required this.serviceFeeTooltipController,
     required this.referralDiscount,
     required this.extraPackagingAmount,
-    required this.isTapped,
+    required this.isEftarRamadan,
   });
+
+  @override
+  State<BottomSectionWidget> createState() => _BottomSectionWidgetState();
+}
+
+class _BottomSectionWidgetState extends State<BottomSectionWidget> {
+  bool _isEftar = false;
 
   @override
   Widget build(BuildContext context) {
     bool isDesktop = ResponsiveHelper.isDesktop(context);
     bool isGuestLoggedIn = Get.find<AuthController>().isGuestLoggedIn();
-
     // Group the cartList by restaurant
     Map<String, List<CartModel>> restaurantGroupedCartList = {};
-    for (var cartItem in cartList) {
+    for (var cartItem in widget.cartList) {
       String restaurantName = cartItem.product!.restaurantName!;
       if (!restaurantGroupedCartList.containsKey(restaurantName)) {
         restaurantGroupedCartList[restaurantName] = [];
@@ -109,22 +115,19 @@ class BottomSectionWidget extends StatelessWidget {
 
     // Calculate delivery charge for grouped orders
     double groupedDeliveryCharge = restaurantGroupedCartList.length > 1
-        ? deliveryCharge +
+        ? widget.deliveryCharge +
             (restaurantGroupedCartList.length - 1) *
                 Get.find<SplashController>()
                     .configModel!
                     .deliveryFeeMultiVendor!
-        : deliveryCharge;
+        : widget.deliveryCharge;
 
     calcTotal() {
-      if (couponController.coupon?.couponType == "free_delivery") {
-        deliveryCharge = 0;
-        return orderAmount + deliveryCharge;
-      } else if (isTapped == true && AppConstants.isUseButtonTapped == true) {
-        return ((orderAmount + deliveryCharge) -
-            (Get.find<ProfileController>().userInfoModel!.walletBalance!));
+      if (widget.couponController.coupon?.couponType == "free_delivery") {
+        widget.deliveryCharge = 0;
+        return widget.orderAmount + widget.deliveryCharge;
       } else {
-        return orderAmount + deliveryCharge;
+        return widget.orderAmount + widget.deliveryCharge;
       }
     }
 
@@ -133,10 +136,7 @@ class BottomSectionWidget extends StatelessWidget {
           const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         isDesktop && !isGuestLoggedIn
-            ? PartialPayView(
-                totalPrice: total,
-                isButtonTapped: isTapped,
-              )
+            ? PartialPayView(totalPrice: widget.total)
             : const SizedBox(),
         !isDesktop
             ? Padding(
@@ -148,6 +148,19 @@ class BottomSectionWidget extends StatelessWidget {
                     children: [
                       orderDetailsView(
                           context, isDesktop, restaurantGroupedCartList),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      if (widget.isEftarRamadan)
+                        eftarRamadanView(
+                          context: context,
+                          onChanged: (value) async {
+                            setState(() => _isEftar = value!);
+                            await SharedPrefHelper.saveData(
+                                key: AppConstants.eftarRamadan,
+                                value: _isEftar);
+                          },
+                        ),
                     ]),
               )
             : const SizedBox(),
@@ -193,20 +206,20 @@ class BottomSectionWidget extends StatelessWidget {
         ),
         !isDesktop
             ? PaymentSection(
-                isCashOnDeliveryActive: isCashOnDeliveryActive,
-                isDigitalPaymentActive: isDigitalPaymentActive,
-                isWalletActive: isWalletActive,
+                isCashOnDeliveryActive: widget.isCashOnDeliveryActive,
+                isDigitalPaymentActive: widget.isDigitalPaymentActive,
+                isWalletActive: widget.isWalletActive,
                 total: calcTotal(),
-                checkoutController: checkoutController,
-                isOfflinePaymentActive: isOfflinePaymentActive,
-                deliveryCharge: deliveryCharge,
-                fromCart: fromCart,
-                discount: discount,
-                extraPackagingAmount: extraPackagingAmount,
+                checkoutController: widget.checkoutController,
+                isOfflinePaymentActive: widget.isOfflinePaymentActive,
+                deliveryCharge: widget.deliveryCharge,
+                fromCart: widget.fromCart,
+                discount: widget.discount,
+                extraPackagingAmount: widget.extraPackagingAmount,
                 isGuestLogIn: isGuestLoggedIn,
-                subscriptionQty: subscriptionQty,
-                tax: tax,
-                cartList: cartList,
+                subscriptionQty: widget.subscriptionQty,
+                tax: widget.tax,
+                cartList: widget.cartList,
               )
             : const SizedBox(),
       ]),
@@ -235,13 +248,13 @@ class BottomSectionWidget extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          controller: expansionTileController,
+          controller: widget.expansionTileController,
           title: Text('pay'.tr, style: !isDesktop ? robotoBold : robotoBold),
           trailing: Icon(Icons.arrow_forward_ios_outlined,
               size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
           tilePadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           onExpansionChanged: (value) =>
-              checkoutController.expandedUpdate(value),
+              widget.checkoutController.expandedUpdate(value),
           initiallyExpanded: !isDesktop ? false : true,
           children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -251,12 +264,12 @@ class BottomSectionWidget extends StatelessWidget {
               SizedBox(height: !isDesktop ? Dimensions.paddingSizeSmall : 0),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(
-                    !checkoutController.subscriptionOrder
+                    !widget.checkoutController.subscriptionOrder
                         ? 'subtotal'.tr
                         : 'item_price'.tr,
                     style: robotoRegular),
                 Text(
-                    PriceConverter.convertPrice(cartList.fold(
+                    PriceConverter.convertPrice(widget.cartList.fold(
                         0,
                         (total, item) =>
                             total! + (item.price! * item.quantity!))),
@@ -267,7 +280,7 @@ class BottomSectionWidget extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('variations'.tr, style: robotoRegular),
                 Text(
-                    '(+) ${PriceConverter.convertPrice(orderAmount - (cartList.fold(0, (total, item) => total + (item.price! * item.quantity!))))}',
+                    '(+) ${PriceConverter.convertPrice(widget.orderAmount - (widget.cartList.fold(0, (total, item) => total + (item.price! * item.quantity!))))}',
                     style: robotoRegular,
                     textDirection: TextDirection.ltr),
               ]),
@@ -276,12 +289,13 @@ class BottomSectionWidget extends StatelessWidget {
                 Text('discount'.tr, style: robotoRegular),
                 Row(children: [
                   Text('(-) ', style: robotoRegular),
-                  PriceConverter.convertAnimationPrice(discount,
+                  PriceConverter.convertAnimationPrice(widget.discount,
                       textStyle: robotoRegular)
                 ]),
               ]),
               const SizedBox(height: Dimensions.paddingSizeSmall),
-              (couponController.discount! > 0 || couponController.freeDelivery)
+              (widget.couponController.discount! > 0 ||
+                      widget.couponController.freeDelivery)
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -293,7 +307,7 @@ class BottomSectionWidget extends StatelessWidget {
                                 Row(children: [
                                   Text('(-) ', style: robotoRegular),
                                   PriceConverter.convertAnimationPrice(
-                                      couponController.discount,
+                                      widget.couponController.discount,
                                       textStyle: robotoRegular)
                                 ]),
                               ]),
@@ -302,7 +316,7 @@ class BottomSectionWidget extends StatelessWidget {
                   : const SizedBox(),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('vat_tax'.tr, style: robotoRegular),
-                Text(PriceConverter.convertPrice(tax),
+                Text(PriceConverter.convertPrice(widget.tax),
                     style: robotoRegular, textDirection: TextDirection.ltr),
               ]),
               const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -310,9 +324,10 @@ class BottomSectionWidget extends StatelessWidget {
                 Text('delivery_charge'.tr, style: robotoRegular),
                 Text(
                     PriceConverter.convertPrice(
-                        couponController.coupon?.couponType == "free_delivery"
+                        widget.couponController.coupon?.couponType ==
+                                "free_delivery"
                             ? 0
-                            : deliveryCharge),
+                            : widget.deliveryCharge),
                     style: robotoRegular,
                     textDirection: TextDirection.ltr),
               ]),
@@ -406,4 +421,45 @@ class BottomSectionWidget extends StatelessWidget {
       ),
     );
   }
+
+  Widget eftarRamadanView({
+    required BuildContext context,
+    required void Function(bool?) onChanged,
+  }) =>
+      Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.paddingSizeSmall),
+          child: CheckboxListTile(
+            title: Text(
+              'eftar_ramadan'.tr,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
+            ),
+            value: _isEftar,
+            onChanged: onChanged,
+            activeColor: Theme.of(context).primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            controlAffinity: ListTileControlAffinity.trailing,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+      );
 }

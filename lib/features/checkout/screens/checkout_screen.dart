@@ -85,7 +85,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> initCall() async {
     bool isLoggedIn = AuthHelper.isLoggedIn();
-    AppConstants.isUseButtonTapped = false;
+
     // Get.find<CheckoutController>().streetNumberController.text =
     //     AddressHelper.getAddressFromSharedPref()!.road ?? '';
     // Get.find<CheckoutController>().houseController.text =
@@ -294,6 +294,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                     }
                     restaurantGroupedCartList[restaurantName]!.add(cartItem);
                   }
+
                   // Calculate delivery charge for grouped orders
                   double groupedDeliveryCharge =
                       restaurantGroupedCartList.length > 1
@@ -309,11 +310,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                         "free_delivery") {
                       deliveryCharge = 0;
                       return orderAmount + deliveryCharge;
-                    } else if (AppConstants.isUseButtonTapped == true) {
-                      return ((orderAmount + groupedDeliveryCharge) -
-                          (Get.find<ProfileController>()
-                              .userInfoModel!
-                              .walletBalance!));
                     } else {
                       return orderAmount + groupedDeliveryCharge;
                     }
@@ -438,10 +434,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                   Expanded(
                                                     flex: 4,
                                                     child: BottomSectionWidget(
-                                                      isTapped: AppConstants
-                                                              .isUseButtonTapped
-                                                          ? true
-                                                          : false,
                                                       isCashOnDeliveryActive:
                                                           _isCashOnDeliveryActive!,
                                                       isDigitalPaymentActive:
@@ -495,6 +487,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                           referralDiscount,
                                                       extraPackagingAmount:
                                                           extraPackagingCharge,
+                                                      isEftarRamadan: Get.find<SplashController>().configModel!.isEftarRamadan!,
                                                     ),
                                                   )
                                                 ]),
@@ -548,10 +541,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                   callBack: () => initCall(),
                                                 ),
                                                 BottomSectionWidget(
-                                                  isTapped: AppConstants
-                                                          .isUseButtonTapped
-                                                      ? true
-                                                      : false,
                                                   isCashOnDeliveryActive:
                                                       _isCashOnDeliveryActive!,
                                                   isDigitalPaymentActive:
@@ -605,6 +594,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                       referralDiscount,
                                                   extraPackagingAmount:
                                                       extraPackagingCharge,
+                                                  isEftarRamadan: Get.find<SplashController>().configModel!.isEftarRamadan!,
                                                 ),
                                               ]),
                                   ),

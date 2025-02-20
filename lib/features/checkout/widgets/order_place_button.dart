@@ -24,6 +24,7 @@ import 'package:gazzer_userapp/helper/date_converter.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
+import 'package:gazzer_userapp/helper/shared_pref_helper.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:get/get.dart';
@@ -106,6 +107,11 @@ class OrderPlaceButton extends StatelessWidget {
               bool isAvailable =
                   _checkAvailability(scheduleStartDate, scheduleEndDate);
               bool isGuestLogIn = Get.find<AuthController>().isGuestLoggedIn();
+              bool eftarCheck =
+                  Get.find<SplashController>().configModel!.isEftarRamadan!;
+              bool isEftarRamadan = eftarCheck == false
+                  ? eftarCheck
+                  : SharedPrefHelper.getData(key: AppConstants.eftarRamadan);
               bool datePicked = _isDatePicked();
 
               if (checkoutController.isDmTipSave &&
@@ -128,7 +134,12 @@ class OrderPlaceButton extends StatelessWidget {
                 List<place_order_model.SubscriptionDays> days =
                     _generateSubscriptionDays();
                 PlaceOrderBodyModel placeOrderBody = _preparePlaceOrderModel(
-                    carts, scheduleStartDate, finalAddress, isGuestLogIn, days);
+                    carts,
+                    scheduleStartDate,
+                    finalAddress,
+                    isGuestLogIn,
+                    days,
+                    isEftarRamadan);
 
                 if (checkoutController.paymentMethodIndex == 3) {
                   Get.toNamed(RouteHelper.getOfflinePaymentScreen(
@@ -491,11 +502,13 @@ class OrderPlaceButton extends StatelessWidget {
   }
 
   PlaceOrderBodyModel _preparePlaceOrderModel(
-      List<place_order_model.OnlineCart> carts,
-      DateTime scheduleStartDate,
-      AddressModel? finalAddress,
-      bool isGuestLogIn,
-      List<place_order_model.SubscriptionDays> days) {
+    List<place_order_model.OnlineCart> carts,
+    DateTime scheduleStartDate,
+    AddressModel? finalAddress,
+    bool isGuestLogIn,
+    List<place_order_model.SubscriptionDays> days,
+    bool isEftarRamadan,
+  ) {
     return PlaceOrderBodyModel(
       cart: carts,
       couponDiscountAmount: Get.find<CouponController>().discount,
@@ -572,6 +585,7 @@ class OrderPlaceButton extends StatelessWidget {
       guestEmail: isGuestLogIn ? finalAddress.email : null,
       extraPackagingAmount: extraPackagingAmount,
       deliveryCharge: deliveryCharge,
+      isEftarRamadan: isEftarRamadan,
     );
   }
 }

@@ -8,8 +8,8 @@ class AppConstants {
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
-  static const String webHostedUrl = 'https://dashboard.gazzerapp.com';
-  static const String baseUrl = webHostedUrl;
+  static const String webHostedUrl = 'https://carrot.refilex.com';
+  static const String baseUrl = 'https://carrot.refilex.com';
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String restaurantProductUri = '/api/v1/products/latest';
@@ -189,6 +189,7 @@ class AppConstants {
   static const String isRestaurantRegister =
       'stackfood_restaurant_registration';
   static const String referBottomSheet = 'stackfood_reffer_bottomsheet_show';
+  static const String eftarRamadan = 'eftar_ramadan';
 
   ///Refer & Earn work flow list..
   static final dataList = [
@@ -266,6 +267,4 @@ class AppConstants {
     {'title': 'earned_by_referral', 'value': 'referrer'},
     {'title': 'cash_back_transactions', 'value': 'CashBack'},
   ];
-
-  static bool isUseButtonTapped = false;
 }

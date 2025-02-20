@@ -10,8 +10,10 @@ import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_
 import 'package:gazzer_userapp/features/checkout/domain/services/paymob.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
+import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
 import 'package:gazzer_userapp/helper/date_converter.dart';
+import 'package:gazzer_userapp/helper/shared_pref_helper.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -125,6 +127,8 @@ class _PayScreenState extends State<PayScreen> {
   ''');
   }
 
+  bool eftarCheck = Get.find<SplashController>().configModel!.isEftarRamadan!;
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -224,6 +228,9 @@ class _PayScreenState extends State<PayScreen> {
         extraPackagingAmount: widget.extraPackagingAmount,
         deliveryCharge: widget.deliveryCharge,
         paymentId: paymentId,
+        isEftarRamadan: eftarCheck == false
+            ? eftarCheck
+            : SharedPrefHelper.getData(key: AppConstants.eftarRamadan),
       ),
       widget.checkoutController.restaurant!.zoneId!,
       widget.totalPrice,

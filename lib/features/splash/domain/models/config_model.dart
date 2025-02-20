@@ -89,6 +89,7 @@ class ConfigModel {
   String? favIcon;
   bool? extraPackagingChargeStatus;
   int? deliveryFeeMultiVendor;
+  bool? isEftarRamadan;
 
   ConfigModel({
     this.businessName,
@@ -181,12 +182,14 @@ class ConfigModel {
     this.favIcon,
     this.extraPackagingChargeStatus,
     this.deliveryFeeMultiVendor,
+    this.isEftarRamadan,
   });
 
   ConfigModel.fromJson(Map<String, dynamic> json) {
     businessName = json['business_name'];
     logo = json['logo'];
     address = json['address'];
+    isEftarRamadan = json['eftar_ramadan'];
     phone = json['phone'];
     email = json['email'];
     baseUrls =
@@ -436,6 +439,7 @@ class ConfigModel {
     data['guest_checkout_status'] = guestCheckoutStatus;
     data['fav_icon'] = favIcon;
     data['extra_packaging_charge'] = extraPackagingChargeStatus;
+    data['eftar_ramadan'] = isEftarRamadan;
     return data;
   }
 }

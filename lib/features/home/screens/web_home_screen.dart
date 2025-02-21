@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
+import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/home/controllers/home_controller.dart';
 import 'package:gazzer_userapp/features/home/widgets/all_restaurant_filter_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/all_restaurants_widget.dart';
@@ -5,7 +8,6 @@ import 'package:gazzer_userapp/features/home/widgets/bad_weather_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/best_review_item_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/enjoy_off_banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/order_again_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/popular_foods_nearby_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/popular_restaurants_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/today_trends_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/web/web_banner_view_widget.dart';
@@ -15,10 +17,7 @@ import 'package:gazzer_userapp/features/home/widgets/web/web_new_on_stackfood_vi
 import 'package:gazzer_userapp/features/home/widgets/what_on_your_mind_view_widget.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
-import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
-import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class WebHomeScreen extends StatefulWidget {
@@ -76,7 +75,7 @@ class _WebHomeScreenState extends State<WebHomeScreen> {
                 : const SizedBox(),
             const WebCuisineViewWidget(),
             const PopularRestaurantsViewWidget(),
-            const PopularFoodNearbyViewWidget(),
+            // const PopularFoodNearbyViewWidget(),
             isLogin
                 ? const PopularRestaurantsViewWidget(isRecentlyViewed: true)
                 : const SizedBox(),

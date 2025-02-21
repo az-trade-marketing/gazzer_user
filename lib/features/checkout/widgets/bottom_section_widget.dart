@@ -6,6 +6,7 @@ import 'package:gazzer_userapp/features/checkout/widgets/partial_pay_view.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_section.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
+import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
@@ -51,6 +52,7 @@ class BottomSectionWidget extends StatefulWidget {
   final JustTheController serviceFeeTooltipController;
   final double referralDiscount;
   final double extraPackagingAmount;
+  final bool isTapped;
   final bool isEftarRamadan;
 
   BottomSectionWidget({
@@ -89,6 +91,7 @@ class BottomSectionWidget extends StatefulWidget {
     required this.serviceFeeTooltipController,
     required this.referralDiscount,
     required this.extraPackagingAmount,
+    required this.isTapped,
     required this.isEftarRamadan,
   });
 
@@ -126,6 +129,10 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
       if (widget.couponController.coupon?.couponType == "free_delivery") {
         widget.deliveryCharge = 0;
         return widget.orderAmount + widget.deliveryCharge;
+      } else if (widget.isTapped == true &&
+          AppConstants.isFreeCouponButtonTapped == true) {
+        return ((widget.orderAmount + widget.deliveryCharge) -
+            (Get.find<ProfileController>().userInfoModel!.walletBalance!));
       } else {
         return widget.orderAmount + widget.deliveryCharge;
       }
@@ -136,7 +143,10 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
           const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         isDesktop && !isGuestLoggedIn
-            ? PartialPayView(totalPrice: widget.total)
+            ? PartialPayView(
+                totalPrice: widget.total,
+                isButtonTapped: widget.isTapped,
+              )
             : const SizedBox(),
         !isDesktop
             ? Padding(

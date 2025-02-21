@@ -49,7 +49,7 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   flutter_html: 3.0.0-alpha.5
   flutter_widget_from_html: ^0.14.11
-  intl: ^0.18.0
+  intl: ^0.18.1
   flutter_slidable: ^3.0.0
   just_the_tooltip: ^0.0.12
   animated_flip_counter: ^0.2.0

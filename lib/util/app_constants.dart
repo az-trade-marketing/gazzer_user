@@ -267,4 +267,6 @@ class AppConstants {
     {'title': 'earned_by_referral', 'value': 'referrer'},
     {'title': 'cash_back_transactions', 'value': 'CashBack'},
   ];
+
+  static bool isFreeCouponButtonTapped = false;
 }

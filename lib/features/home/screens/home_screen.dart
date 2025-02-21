@@ -1,42 +1,43 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:gazzer_userapp/common/widgets/customizable_space_bar_widget.dart';
+import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/cashback_dialog_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/cashback_logo_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/refer_bottom_sheet_widget.dart';
-import 'package:gazzer_userapp/features/product/controllers/campaign_controller.dart';
+import 'package:gazzer_userapp/common/widgets/web_menu_bar.dart';
+import 'package:gazzer_userapp/features/address/controllers/address_controller.dart';
+import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
+import 'package:gazzer_userapp/features/category/controllers/category_controller.dart';
+import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.dart';
 import 'package:gazzer_userapp/features/home/controllers/home_controller.dart';
+import 'package:gazzer_userapp/features/home/screens/theme1_home_screen.dart';
 import 'package:gazzer_userapp/features/home/screens/web_home_screen.dart';
 import 'package:gazzer_userapp/features/home/widgets/all_restaurant_filter_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/all_restaurants_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/bad_weather_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/best_review_item_view_widget.dart';
+import 'package:gazzer_userapp/features/home/widgets/cashback_dialog_widget.dart';
+import 'package:gazzer_userapp/features/home/widgets/cashback_logo_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/cuisine_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/enjoy_off_banner_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/location_banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/new_on_stackfood_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/order_again_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/popular_foods_nearby_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/popular_restaurants_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/refer_banner_view_widget.dart';
-import 'package:gazzer_userapp/features/home/screens/theme1_home_screen.dart';
+import 'package:gazzer_userapp/features/home/widgets/refer_bottom_sheet_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/today_trends_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/what_on_your_mind_view_widget.dart';
 import 'package:gazzer_userapp/features/language/controllers/localization_controller.dart';
-import 'package:gazzer_userapp/features/order/controllers/order_controller.dart';
-import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
+import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
 import 'package:gazzer_userapp/features/notification/controllers/notification_controller.dart';
+import 'package:gazzer_userapp/features/order/controllers/order_controller.dart';
+import 'package:gazzer_userapp/features/product/controllers/campaign_controller.dart';
+import 'package:gazzer_userapp/features/product/controllers/product_controller.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
-import 'package:gazzer_userapp/common/widgets/customizable_space_bar_widget.dart';
+import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
+import 'package:gazzer_userapp/features/review/controllers/review_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
-import 'package:gazzer_userapp/features/address/controllers/address_controller.dart';
-import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
-import 'package:gazzer_userapp/features/category/controllers/category_controller.dart';
-import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.dart';
-import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
-import 'package:gazzer_userapp/features/product/controllers/product_controller.dart';
-import 'package:gazzer_userapp/features/review/controllers/review_controller.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
 import 'package:gazzer_userapp/helper/auth_helper.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
@@ -44,9 +45,6 @@ import 'package:gazzer_userapp/helper/route_helper.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
-import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
-import 'package:gazzer_userapp/common/widgets/web_menu_bar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -457,84 +455,90 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
 
                             // Search Button
-                            SliverPersistentHeader(
-                              pinned: true,
-                              delegate: SliverDelegate(
-                                  height: 65,
-                                  child: Center(
-                                      child: Stack(
-                                    children: [
-                                      Container(
-                                        transform:
-                                            Matrix4.translationValues(0, -1, 0),
-                                        height: 65,
-                                        width: Dimensions.webMaxWidth,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .background,
-                                        child: Column(children: [
-                                          Expanded(
-                                              child: Container(
-                                                  color: Theme.of(context)
-                                                      .primaryColor)),
-                                          Expanded(
-                                              child: Container(
-                                                  color: Colors.transparent)),
-                                        ]),
-                                      ),
-                                      Positioned(
-                                        left: 10,
-                                        right: 10,
-                                        top: 8,
-                                        bottom: 5,
-                                        child: InkWell(
-                                          onTap: () => Get.toNamed(
-                                              RouteHelper.getSearchRoute()),
-                                          child: Container(
-                                            transform:
-                                                Matrix4.translationValues(
-                                                    0, -3, 0),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: Dimensions
-                                                    .paddingSizeSmall),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(25),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.1),
-                                                    spreadRadius: 1,
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 1))
-                                              ],
-                                            ),
-                                            child: Row(children: [
-                                              Image.asset(Images.searchIcon,
-                                                  width: 25, height: 25),
-                                              const SizedBox(
-                                                  width: Dimensions
-                                                      .paddingSizeExtraSmall),
-                                              Expanded(
-                                                  child: Text(
-                                                      'are_you_hungry'.tr,
-                                                      style: robotoRegular
-                                                          .copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeSmall,
-                                                        color: Theme.of(context)
-                                                            .primaryColor
-                                                            .withOpacity(0.6),
-                                                      ))),
-                                            ]),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: SliverDelegate(
+                            height: 65,
+                            child: Center(
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      transform:
+                                      Matrix4.translationValues(0, -1, 0),
+                                      height: 65,
+                                      width: Dimensions.webMaxWidth,
+                                      color: Theme
+                                          .of(context)
+                                          .colorScheme
+                                          .background,
+                                      child: Column(children: [
+                                        Expanded(
+                                            child: Container(
+                                                color: Theme
+                                                    .of(context)
+                                                    .primaryColor)),
+                                        Expanded(
+                                            child: Container(
+                                                color: Colors.transparent)),
+                                      ]),
+                                    ),
+                                    Positioned(
+                                      left: 10,
+                                      right: 10,
+                                      top: 8,
+                                      bottom: 5,
+                                      child: InkWell(
+                                        onTap: () =>
+                                            Get.toNamed(
+                                                RouteHelper.getSearchRoute()),
+                                        child: Container(
+                                          transform:
+                                          Matrix4.translationValues(
+                                              0, -3, 0),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: Dimensions
+                                                  .paddingSizeSmall),
+                                          decoration: BoxDecoration(
+                                            color:
+                                            Theme
+                                                .of(context)
+                                                .cardColor,
+                                            borderRadius:
+                                            BorderRadius.circular(25),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.1),
+                                                  spreadRadius: 1,
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 1))
+                                            ],
                                           ),
+                                          child: Row(children: [
+                                            Image.asset(Images.searchIcon,
+                                                width: 25, height: 25),
+                                            const SizedBox(
+                                                width: Dimensions
+                                                    .paddingSizeExtraSmall),
+                                            Expanded(
+                                                child: Text(
+                                                    'are_you_hungry'.tr,
+                                                    style: robotoRegular
+                                                        .copyWith(
+                                                      fontSize: Dimensions
+                                                          .fontSizeSmall,
+                                                      color: Theme
+                                                          .of(context)
+                                                          .primaryColor
+                                                          .withOpacity(0.6),
+                                                    ))),
+                                          ]),
                                         ),
-                                      )
-                                    ],
-                                  ))),
-                            ),
+                                      ),
+                                    )
+                                  ],
+                                ))),
+                      ),
 
                             SliverToBoxAdapter(
                               child: Center(
@@ -548,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const BadWeatherWidget(),
                                       const WhatOnYourMindViewWidget(),
                                       const TodayTrendsViewWidget(),
-                                      const LocationBannerViewWidget(),
+                                      // const LocationBannerViewWidget(),
                                       _isLogin
                                           ? const OrderAgainViewWidget()
                                           : const SizedBox(),
@@ -565,9 +569,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ? const PopularRestaurantsViewWidget(
                                               isRecentlyViewed: true)
                                           : const SizedBox(),
-                                      _configModel.popularFood == 1
-                                          ? const PopularFoodNearbyViewWidget()
-                                          : const SizedBox(),
+                                      // _configModel.popularFood == 1
+                                      //     ? const PopularFoodNearbyViewWidget()
+                                      //     : const SizedBox(),
                                       _configModel.newRestaurant == 1
                                           ? const NewOnStackFoodViewWidget(
                                               isLatest: true)
@@ -578,12 +582,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
 
                             SliverPersistentHeader(
-                              pinned: true,
-                              delegate: SliverDelegate(
-                                height: 85,
-                                child: const AllRestaurantFilterWidget(),
-                              ),
-                            ),
+                        pinned: true,
+                        delegate: SliverDelegate(
+                          height: 85,
+                          child: const AllRestaurantFilterWidget(),
+                        ),
+                      ),
 
                             SliverToBoxAdapter(
                                 child: Center(

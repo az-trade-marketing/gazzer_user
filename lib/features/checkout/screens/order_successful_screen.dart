@@ -14,6 +14,8 @@ import 'package:gazzer_userapp/features/splash/controllers/theme_controller.dart
 import 'package:gazzer_userapp/helper/address_helper.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
+import 'package:gazzer_userapp/helper/shared_pref_helper.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
@@ -43,7 +45,7 @@ class _OrderSuccessfulScreenState extends State<OrderSuccessfulScreen> {
   @override
   void initState() {
     super.initState();
-
+    SharedPrefHelper.saveData(key: AppConstants.eftarRamadan, value: false);
     orderId = widget.orderID!;
     if (widget.orderID != null) {
       if (widget.orderID!.contains('?')) {

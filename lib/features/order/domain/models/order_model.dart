@@ -89,61 +89,63 @@ class OrderModel {
   double? extraPackagingAmount;
   double? referrerBonusAmount;
   String? totalDeliveryTime;
+  int? isEftarRamadan;
 
-  OrderModel({
-    this.id,
-    this.userId,
-    this.orderAmount,
-    this.couponDiscountAmount,
-    this.couponDiscountTitle,
-    this.paymentStatus,
-    this.orderStatus,
-    this.totalTaxAmount,
-    this.paymentMethod,
-    this.couponCode,
-    this.orderNote,
-    this.orderType,
-    this.createdAt,
-    this.updatedAt,
-    this.deliveryCharge,
-    this.scheduleAt,
-    this.otp,
-    this.pending,
-    this.accepted,
-    this.confirmed,
-    this.processing,
-    this.handover,
-    this.pickedUp,
-    this.delivered,
-    this.canceled,
-    this.refundRequested,
-    this.refunded,
-    this.scheduled,
-    this.restaurantDiscountAmount,
-    this.failed,
-    this.dmTips,
-    this.processingTime,
-    this.detailsCount,
-    this.deliveryMan,
-    this.deliveryAddress,
-    this.restaurant,
-    this.refund,
-    this.taxStatus,
-    this.cancellationReason,
-    this.cancellationNote,
-    this.subscriptionId,
-    this.subscription,
-    this.cutlery,
-    this.unavailableItemNote,
-    this.deliveryInstruction,
-    this.additionalCharge,
-    this.partiallyPaidAmount,
-    this.payments,
-    this.orderProof,
-    this.offlinePayment,
-    this.extraPackagingAmount,
-    this.referrerBonusAmount,
-      this.totalDeliveryTime});
+  OrderModel(
+      {this.id,
+      this.userId,
+      this.orderAmount,
+      this.couponDiscountAmount,
+      this.couponDiscountTitle,
+      this.paymentStatus,
+      this.orderStatus,
+      this.totalTaxAmount,
+      this.paymentMethod,
+      this.couponCode,
+      this.orderNote,
+      this.orderType,
+      this.createdAt,
+      this.updatedAt,
+      this.deliveryCharge,
+      this.scheduleAt,
+      this.otp,
+      this.pending,
+      this.accepted,
+      this.confirmed,
+      this.processing,
+      this.handover,
+      this.pickedUp,
+      this.delivered,
+      this.canceled,
+      this.refundRequested,
+      this.refunded,
+      this.scheduled,
+      this.restaurantDiscountAmount,
+      this.failed,
+      this.dmTips,
+      this.processingTime,
+      this.detailsCount,
+      this.deliveryMan,
+      this.deliveryAddress,
+      this.restaurant,
+      this.refund,
+      this.taxStatus,
+      this.cancellationReason,
+      this.cancellationNote,
+      this.subscriptionId,
+      this.subscription,
+      this.cutlery,
+      this.unavailableItemNote,
+      this.deliveryInstruction,
+      this.additionalCharge,
+      this.partiallyPaidAmount,
+      this.payments,
+      this.orderProof,
+      this.offlinePayment,
+      this.extraPackagingAmount,
+      this.referrerBonusAmount,
+      this.totalDeliveryTime,
+      this.isEftarRamadan});
 
   OrderModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -233,6 +235,7 @@ class OrderModel {
     extraPackagingAmount = json['extra_packaging_amount']?.toDouble();
     referrerBonusAmount = json['ref_bonus_amount']?.toDouble();
     totalDeliveryTime = json['total_delivery_time'];
+    isEftarRamadan = json['is_eftar_ramadan'];
   }
 
   Map<String, dynamic> toJson() {
@@ -301,6 +304,7 @@ class OrderModel {
     data['extra_packaging_amount'] = extraPackagingAmount;
     data['ref_bonus_amount'] = referrerBonusAmount;
     data['total_delivery_time'] = totalDeliveryTime;
+    data['is_eftar_ramadan'] = isEftarRamadan;
     return data;
   }
 }

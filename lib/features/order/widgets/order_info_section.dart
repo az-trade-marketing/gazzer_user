@@ -62,7 +62,7 @@ class OrderInfoSection extends StatelessWidget {
     bool cod = order.paymentMethod == 'cash_on_delivery';
     bool isDesktop = ResponsiveHelper.isDesktop(context);
     bool isGuestLoggedIn = Get.find<AuthController>().isGuestLoggedIn();
-
+    int isEftar = order.isEftarRamadan!;
     bool ongoing = (order.orderStatus != 'delivered' &&
         order.orderStatus != 'failed' &&
         order.orderStatus != 'refund_requested' &&
@@ -666,6 +666,20 @@ class OrderInfoSection extends StatelessWidget {
                     style: robotoRegular,
                   ),
                 ]),
+                if (isEftar == 1)
+                  Column(
+                    children: [
+                      const Divider(height: Dimensions.paddingSizeLarge),
+                      Row(children: [
+                        Text('${'eftar_ramadan'.tr}: ', style: robotoRegular),
+                        const Expanded(child: SizedBox()),
+                        Text(
+                          'yes'.tr,
+                          style: robotoRegular,
+                        ),
+                      ]),
+                    ],
+                  ),
               ]),
               order.unavailableItemNote != null
                   ? Column(
@@ -1455,7 +1469,7 @@ class OrderInfoSection extends StatelessWidget {
                           ? Images.cash
                           : order.paymentMethod == 'wallet'
                               ? Images.wallet
-                                  : Images.digitalPayment,
+                              : Images.digitalPayment,
                       width: 24,
                       height: 24,
                       color: Theme.of(context).textTheme.bodyMedium!.color,

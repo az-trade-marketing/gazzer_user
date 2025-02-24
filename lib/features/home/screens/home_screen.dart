@@ -556,52 +556,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _isLogin
                                           ? const OrderAgainViewWidget()
                                           : const SizedBox(),
-                                      _configModel!.mostReviewedFoods == 1
-                                          ? const BestReviewItemViewWidget(
-                                              isPopular: false)
-                                          : const SizedBox(),
+                                      // _configModel!.mostReviewedFoods == 1
+                                      //     ? const BestReviewItemViewWidget(
+                                      //         isPopular: false)
+                                      //     : const SizedBox(),
                                       const CuisineViewWidget(),
-                                      _configModel.popularRestaurant == 1
-                                          ? const PopularRestaurantsViewWidget()
-                                          : const SizedBox(),
+                                      // _configModel.popularRestaurant == 1
+                                      //     ? const PopularRestaurantsViewWidget()
+                                      //     : const SizedBox(),
                                       const ReferBannerViewWidget(),
-                                      _isLogin
-                                          ? const PopularRestaurantsViewWidget(
-                                              isRecentlyViewed: true)
-                                          : const SizedBox(),
+                                      // _isLogin
+                                      //     ? const PopularRestaurantsViewWidget(
+                                      //         isRecentlyViewed: true)
+                                      //     : const SizedBox(),
                                       // _configModel.popularFood == 1
                                       //     ? const PopularFoodNearbyViewWidget()
                                       //     : const SizedBox(),
-                                      _configModel.newRestaurant == 1
-                                          ? const NewOnStackFoodViewWidget(
-                                              isLatest: true)
-                                          : const SizedBox(),
+                                      // _configModel.newRestaurant == 1
+                                      //     ? const NewOnStackFoodViewWidget(
+                                      //         isLatest: true)
+                                      //     : const SizedBox(),
                                       const PromotionalBannerViewWidget(),
                                     ]),
                               )),
                             ),
 
-                            SliverPersistentHeader(
-                        pinned: true,
-                        delegate: SliverDelegate(
-                          height: 85,
-                          child: const AllRestaurantFilterWidget(),
-                        ),
-                      ),
+                      //       SliverPersistentHeader(
+                      //   pinned: true,
+                      //   delegate: SliverDelegate(
+                      //     height: 85,
+                      //     child: const AllRestaurantFilterWidget(),
+                      //   ),
+                      // ),
 
-                            SliverToBoxAdapter(
-                                child: Center(
-                                    child: FooterViewWidget(
-                              child: Padding(
-                                padding: ResponsiveHelper.isDesktop(context)
-                                    ? EdgeInsets.zero
-                                    : const EdgeInsets.only(
-                                        bottom:
-                                            Dimensions.paddingSizeOverLarge),
-                                child: AllRestaurantsWidget(
-                                    scrollController: _scrollController),
-                              ),
-                            ))),
+                            // SliverToBoxAdapter(
+                            //     child: Center(
+                            //         child: FooterViewWidget(
+                            //   child: Padding(
+                            //     padding: ResponsiveHelper.isDesktop(context)
+                            //         ? EdgeInsets.zero
+                            //         : const EdgeInsets.only(
+                            //             bottom:
+                            //                 Dimensions.paddingSizeOverLarge),
+                            //     child: AllRestaurantsWidget(
+                            //         scrollController: _scrollController),
+                            //   ),
+                            // ))),
                           ],
                         ),
             ),

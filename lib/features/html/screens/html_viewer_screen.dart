@@ -8,7 +8,7 @@ import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+// import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher_string.dart';
@@ -124,15 +124,16 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
                                 (htmlController.htmlText!.contains('<ol>') ||
                                         htmlController.htmlText!
                                             .contains('<ul>'))
-                                    ? HtmlWidget(
-                                        htmlController.htmlText ?? '',
-                                        key: Key(widget.htmlType.toString()),
-                                        onTapUrl: (String url) {
-                                          return launchUrlString(url,
-                                              mode: LaunchMode
-                                                  .externalApplication);
-                                        },
-                                      )
+                                ? const SizedBox()
+                                    // ? HtmlWidget(
+                                    //     htmlController.htmlText ?? '',
+                                    //     key: Key(widget.htmlType.toString()),
+                                    //     onTapUrl: (String url) {
+                                    //       return launchUrlString(url,
+                                    //           mode: LaunchMode
+                                    //               .externalApplication);
+                                    //     },
+                                    //   )
                                     : SelectableHtml(
                                         data: htmlController.htmlText,
                                         shrinkWrap: true,

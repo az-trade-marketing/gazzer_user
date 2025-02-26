@@ -107,11 +107,12 @@ class OrderPlaceButton extends StatelessWidget {
               bool isAvailable =
                   _checkAvailability(scheduleStartDate, scheduleEndDate);
               bool isGuestLogIn = Get.find<AuthController>().isGuestLoggedIn();
-              bool eftarCheck =
-                  Get.find<SplashController>().configModel!.isEftarRamadan!;
-              bool isEftarRamadan = eftarCheck == false
-                  ? eftarCheck
-                  : SharedPrefHelper.getData(key: AppConstants.eftarRamadan);
+              bool isEftarRamadan = Get.find<SplashController>()
+                      .configModel!
+                      .isEftarRamadan!
+                  ? (SharedPrefHelper.getData(key: AppConstants.eftarRamadan) ??
+                      false)
+                  : false;
               bool datePicked = _isDatePicked();
 
               if (checkoutController.isDmTipSave &&

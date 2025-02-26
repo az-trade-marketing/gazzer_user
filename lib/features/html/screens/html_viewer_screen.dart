@@ -1,18 +1,17 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:gazzer_userapp/common/widgets/custom_app_bar_widget.dart';
+import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
+import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
 import 'package:gazzer_userapp/features/html/controllers/html_controller.dart';
 import 'package:gazzer_userapp/features/html/enums/html_type.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
-import 'package:gazzer_userapp/common/widgets/custom_app_bar_widget.dart';
-import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
-import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 // import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 class HtmlViewerScreen extends StatefulWidget {
   final HtmlType htmlType;

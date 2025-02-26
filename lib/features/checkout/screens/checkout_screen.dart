@@ -85,7 +85,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> initCall() async {
     bool isLoggedIn = AuthHelper.isLoggedIn();
-    AppConstants.isFreeCouponButtonTapped = false;
+    AppConstants.isUseWalletButtonTapped = false;
     // Get.find<CheckoutController>().streetNumberController.text =
     //     AddressHelper.getAddressFromSharedPref()!.road ?? '';
     // Get.find<CheckoutController>().houseController.text =
@@ -187,45 +187,41 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                 bool tomorrowClosed = false;
 
                 if (checkoutController.restaurant != null) {
-                todayClosed = checkoutController.isRestaurantClosed(
-                    DateTime.now(),
-                    checkoutController.restaurant!.active!,
-                    checkoutController.restaurant!.schedules);
-                tomorrowClosed = checkoutController.isRestaurantClosed(
-                    DateTime.now().add(const Duration(days: 1)),
-                    checkoutController.restaurant!.active!,
-                    checkoutController.restaurant!.schedules);
-                taxPercent = checkoutController.restaurant!.tax;
-              }
-              return GetBuilder<CouponController>(
-                  builder: (couponController) {
-                    bool showTips = checkoutController.orderType !=
-                        'take_away' &&
-                        Get
-                            .find<SplashController>()
-                            .configModel!
-                            .dmTipsStatus ==
-                            1 &&
-                        !checkoutController.subscriptionOrder;
-                    double deliveryCharge = -1;
-                    double charge = -1;
-                    double? maxCodOrderAmount;
-                    if (checkoutController.restaurant != null &&
-                        checkoutController.distance != null &&
-                        checkoutController.distance != -1) {
-                      deliveryCharge = _getDeliveryCharge(
-                          restaurant: checkoutController.restaurant,
-                          checkoutController: checkoutController,
-                          returnDeliveryCharge: true)!;
-                      charge = _getDeliveryCharge(
-                          restaurant: checkoutController.restaurant,
-                          checkoutController: checkoutController,
-                          returnDeliveryCharge: false)!;
-                      maxCodOrderAmount = _getDeliveryCharge(
-                          restaurant: checkoutController.restaurant,
-                          checkoutController: checkoutController,
-                          returnMaxCodOrderAmount: true);
-                    }
+                  todayClosed = checkoutController.isRestaurantClosed(
+                      DateTime.now(),
+                      checkoutController.restaurant!.active!,
+                      checkoutController.restaurant!.schedules);
+                  tomorrowClosed = checkoutController.isRestaurantClosed(
+                      DateTime.now().add(const Duration(days: 1)),
+                      checkoutController.restaurant!.active!,
+                      checkoutController.restaurant!.schedules);
+                  taxPercent = checkoutController.restaurant!.tax;
+                }
+                return GetBuilder<CouponController>(
+                    builder: (couponController) {
+                  bool showTips = checkoutController.orderType != 'take_away' &&
+                      Get.find<SplashController>().configModel!.dmTipsStatus ==
+                          1 &&
+                      !checkoutController.subscriptionOrder;
+                  double deliveryCharge = -1;
+                  double charge = -1;
+                  double? maxCodOrderAmount;
+                  if (checkoutController.restaurant != null &&
+                      checkoutController.distance != null &&
+                      checkoutController.distance != -1) {
+                    deliveryCharge = _getDeliveryCharge(
+                        restaurant: checkoutController.restaurant,
+                        checkoutController: checkoutController,
+                        returnDeliveryCharge: true)!;
+                    charge = _getDeliveryCharge(
+                        restaurant: checkoutController.restaurant,
+                        checkoutController: checkoutController,
+                        returnDeliveryCharge: false)!;
+                    maxCodOrderAmount = _getDeliveryCharge(
+                        restaurant: checkoutController.restaurant,
+                        checkoutController: checkoutController,
+                        returnMaxCodOrderAmount: true);
+                  }
 
                   double price = _calculatePrice(_cartList);
                   double addOnsPrice = _calculateAddonsPrice(_cartList);
@@ -242,9 +238,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       couponDiscount,
                       checkoutController.subscriptionOrder);
 
-                  double orderAmount = _calculateOrderAmount(
-                        price, addOnsPrice,
-                        discount, couponDiscount, referralDiscount);
+                  double orderAmount = _calculateOrderAmount(price, addOnsPrice,
+                      discount, couponDiscount, referralDiscount);
 
                   bool taxIncluded =
                       Get.find<SplashController>().configModel!.taxIncluded ==
@@ -263,9 +258,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       : 0;
 
                   if (checkoutController.restaurant != null) {
-                      restaurantSubscriptionActive = checkoutController
-                          .restaurant!.orderSubscriptionActive! &&
-                          widget.fromCart;
+                    restaurantSubscriptionActive = checkoutController
+                            .restaurant!.orderSubscriptionActive! &&
+                        widget.fromCart;
 
                     subscriptionQty = _getSubscriptionQty(
                         checkoutController: checkoutController,
@@ -273,34 +268,32 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                             restaurantSubscriptionActive);
 
                     if (checkoutController.orderType == 'take_away' ||
-                          checkoutController.restaurant!.freeDelivery! ||
-                          (Get
-                              .find<SplashController>()
-                              .configModel!
-                              .freeDeliveryOver !=
-                              null &&
-                              orderAmount >=
-                                  Get
-                                      .find<SplashController>()
-                                      .configModel!
-                                      .freeDeliveryOver!) ||
-                          couponController.freeDelivery) {
-                        deliveryCharge = 0;
-                      }
+                        checkoutController.restaurant!.freeDelivery! ||
+                        (Get.find<SplashController>()
+                                    .configModel!
+                                    .freeDeliveryOver !=
+                                null &&
+                            orderAmount >=
+                                Get.find<SplashController>()
+                                    .configModel!
+                                    .freeDeliveryOver!) ||
+                        couponController.freeDelivery) {
+                      deliveryCharge = 0;
                     }
+                  }
 
                   deliveryCharge = PriceConverter.toFixed(deliveryCharge);
 
                   // Group the cartList by restaurant
-                    Map<String, List<CartModel>> restaurantGroupedCartList = {};
-                    for (var cartItem in _cartList!) {
-                      String restaurantName = cartItem.product!.restaurantName!;
-                      if (!restaurantGroupedCartList
-                          .containsKey(restaurantName)) {
-                        restaurantGroupedCartList[restaurantName] = [];
-                      }
-                      restaurantGroupedCartList[restaurantName]!.add(cartItem);
+                  Map<String, List<CartModel>> restaurantGroupedCartList = {};
+                  for (var cartItem in _cartList!) {
+                    String restaurantName = cartItem.product!.restaurantName!;
+                    if (!restaurantGroupedCartList
+                        .containsKey(restaurantName)) {
+                      restaurantGroupedCartList[restaurantName] = [];
                     }
+                    restaurantGroupedCartList[restaurantName]!.add(cartItem);
+                  }
 
                   // Calculate delivery charge for grouped orders
                   double groupedDeliveryCharge =
@@ -313,36 +306,39 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                           : deliveryCharge;
 
                   calcTotal() {
-                      if (couponController.coupon?.couponType ==
-                          "free_delivery") {
-                        deliveryCharge = 0;
-                        return orderAmount + deliveryCharge;
-                      } else
-                      if (AppConstants.isFreeCouponButtonTapped == true) {
-                        return ((orderAmount + groupedDeliveryCharge) -
-                            (Get
-                                .find<ProfileController>()
-                                .userInfoModel!
-                                .walletBalance!));
+                    var total = orderAmount + groupedDeliveryCharge;
+                    var walletBalance = Get.find<ProfileController>()
+                        .userInfoModel!
+                        .walletBalance!;
+                    if (couponController.coupon?.couponType ==
+                        "free_delivery") {
+                      deliveryCharge = 0;
+                      return orderAmount + deliveryCharge;
+                    } else if (AppConstants.isUseWalletButtonTapped == true) {
+                      if (walletBalance > total) {
+                        return 0.0;
                       } else {
-                        return orderAmount + groupedDeliveryCharge;
+                        return total - walletBalance;
                       }
+                    } else {
+                      return total;
                     }
+                  }
 
                   double extraPackagingCharge =
                       _calculateExtraPackagingCharge(checkoutController);
 
                   double total = _calculateTotal(
-                        subTotal,
-                        groupedDeliveryCharge,
-                        discount,
-                        couponDiscount,
-                        taxIncluded,
-                        tax,
-                        showTips,
-                        checkoutController.tips,
-                        additionalCharge,
-                        extraPackagingCharge);
+                      subTotal,
+                      groupedDeliveryCharge,
+                      discount,
+                      couponDiscount,
+                      taxIncluded,
+                      tax,
+                      showTips,
+                      checkoutController.tips,
+                      additionalCharge,
+                      extraPackagingCharge);
 
                   if (kDebugMode) {
                     print('=====referralDiscount===?> $referralDiscount');
@@ -359,18 +355,15 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                           : 0));
 
                   if (_payableAmount != checkoutController.viewTotalPrice &&
-                        checkoutController.distance != null &&
-                        isLoggedIn &&
-                        Get
-                            .find<HomeController>()
-                            .cashBackOfferList != null &&
-                        Get
-                            .find<HomeController>()
-                            .cashBackOfferList!
-                            .isNotEmpty) {
-                      _payableAmount = checkoutController.viewTotalPrice;
-                      showCashBackSnackBar();
-                    }
+                      checkoutController.distance != null &&
+                      isLoggedIn &&
+                      Get.find<HomeController>().cashBackOfferList != null &&
+                      Get.find<HomeController>()
+                          .cashBackOfferList!
+                          .isNotEmpty) {
+                    _payableAmount = checkoutController.viewTotalPrice;
+                    showCashBackSnackBar();
+                  }
 
                   return (checkoutController.distance != null &&
                           checkoutController.restaurant != null)
@@ -452,7 +445,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                     flex: 4,
                                                     child: BottomSectionWidget(
                                                       isTapped: AppConstants
-                                                              .isFreeCouponButtonTapped
+                                                              .isUseWalletButtonTapped
                                                           ? true
                                                           : false,
                                                       isCashOnDeliveryActive:
@@ -566,7 +559,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                 ),
                                                 BottomSectionWidget(
                                                   isTapped: AppConstants
-                                                          .isFreeCouponButtonTapped
+                                                          .isUseWalletButtonTapped
                                                       ? true
                                                       : false,
                                                   isCashOnDeliveryActive:
@@ -668,7 +661,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                               ),
                                               PriceConverter
                                                   .convertAnimationPrice(
-                                                calcTotal(),
+                                                calcTotal() < 0
+                                                    ? 0
+                                                    : calcTotal(),
                                                 textStyle:
                                                     robotoMedium.copyWith(
                                                         fontSize: Dimensions

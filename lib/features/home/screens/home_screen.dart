@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gazzer_userapp/common/widgets/customizable_space_bar_widget.dart';
-import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
 import 'package:gazzer_userapp/common/widgets/web_menu_bar.dart';
 import 'package:gazzer_userapp/features/address/controllers/address_controller.dart';
@@ -11,18 +10,13 @@ import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.d
 import 'package:gazzer_userapp/features/home/controllers/home_controller.dart';
 import 'package:gazzer_userapp/features/home/screens/theme1_home_screen.dart';
 import 'package:gazzer_userapp/features/home/screens/web_home_screen.dart';
-import 'package:gazzer_userapp/features/home/widgets/all_restaurant_filter_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/all_restaurants_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/bad_weather_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/banner_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/best_review_item_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/cashback_dialog_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/cashback_logo_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/cuisine_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/enjoy_off_banner_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/new_on_stackfood_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/order_again_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/popular_restaurants_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/refer_banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/refer_bottom_sheet_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/today_trends_view_widget.dart';

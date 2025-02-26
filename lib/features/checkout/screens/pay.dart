@@ -228,9 +228,10 @@ class _PayScreenState extends State<PayScreen> {
         extraPackagingAmount: widget.extraPackagingAmount,
         deliveryCharge: widget.deliveryCharge,
         paymentId: paymentId,
-        isEftarRamadan: eftarCheck == false
-            ? eftarCheck
-            : SharedPrefHelper.getData(key: AppConstants.eftarRamadan),
+        isEftarRamadan: eftarCheck
+            ? (SharedPrefHelper.getData(key: AppConstants.eftarRamadan) ??
+                false)
+            : false,
       ),
       widget.checkoutController.restaurant!.zoneId!,
       widget.totalPrice,

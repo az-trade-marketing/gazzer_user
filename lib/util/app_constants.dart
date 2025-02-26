@@ -268,5 +268,5 @@ class AppConstants {
     {'title': 'cash_back_transactions', 'value': 'CashBack'},
   ];
 
-  static bool isFreeCouponButtonTapped = false;
+  static bool isUseWalletButtonTapped = false;
 }

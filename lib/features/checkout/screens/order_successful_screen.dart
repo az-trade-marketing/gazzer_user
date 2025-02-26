@@ -6,6 +6,7 @@ import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
 import 'package:gazzer_userapp/common/widgets/web_menu_bar.dart';
 import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
+import 'package:gazzer_userapp/features/checkout/controllers/checkout_controller.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_failed_dialog.dart';
 import 'package:gazzer_userapp/features/location/domain/models/zone_response_model.dart';
 import 'package:gazzer_userapp/features/order/controllers/order_controller.dart';
@@ -46,6 +47,7 @@ class _OrderSuccessfulScreenState extends State<OrderSuccessfulScreen> {
   void initState() {
     super.initState();
     SharedPrefHelper.saveData(key: AppConstants.eftarRamadan, value: false);
+    Get.find<CheckoutController>().noteController.clear();
     orderId = widget.orderID!;
     if (widget.orderID != null) {
       if (widget.orderID!.contains('?')) {

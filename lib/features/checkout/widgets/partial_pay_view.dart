@@ -119,8 +119,8 @@ class _PartialPayViewState extends State<PartialPayView> {
                           InkWell(
                             onTap: () {
                               setState(() {
-                                AppConstants.isFreeCouponButtonTapped =
-                                    !AppConstants.isFreeCouponButtonTapped;
+                                AppConstants.isUseWalletButtonTapped =
+                                    !AppConstants.isUseWalletButtonTapped;
                               });
                               if (Get.find<ProfileController>()
                                       .userInfoModel!

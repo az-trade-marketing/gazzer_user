@@ -126,15 +126,17 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
         : widget.deliveryCharge;
 
     calcTotal() {
+      var total = widget.orderAmount + widget.deliveryCharge;
+      var walletBalance =
+          Get.find<ProfileController>().userInfoModel!.walletBalance!;
       if (widget.couponController.coupon?.couponType == "free_delivery") {
         widget.deliveryCharge = 0;
-        return widget.orderAmount + widget.deliveryCharge;
+        return total;
       } else if (widget.isTapped == true &&
-          AppConstants.isFreeCouponButtonTapped == true) {
-        return ((widget.orderAmount + widget.deliveryCharge) -
-            (Get.find<ProfileController>().userInfoModel!.walletBalance!));
+          AppConstants.isUseWalletButtonTapped == true) {
+        return total - walletBalance;
       } else {
-        return widget.orderAmount + widget.deliveryCharge;
+        return total;
       }
     }
 
@@ -204,7 +206,8 @@ class _BottomSectionWidgetState extends State<BottomSectionWidget> {
                       color: Theme.of(context).primaryColor),
                 ),
                 Text(
-                  PriceConverter.convertPrice(calcTotal()),
+                  PriceConverter.convertPrice(
+                      calcTotal() < 0 ? 0 : calcTotal()),
                   textDirection: TextDirection.ltr,
                   style: robotoMedium.copyWith(
                       fontSize: Dimensions.fontSizeExtraLarge,

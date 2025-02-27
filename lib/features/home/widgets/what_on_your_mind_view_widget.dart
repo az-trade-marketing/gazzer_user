@@ -1,14 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:gazzer_userapp/common/widgets/custom_image_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_ink_well_widget.dart';
+import 'package:gazzer_userapp/features/category/controllers/category_controller.dart';
 import 'package:gazzer_userapp/features/home/widgets/arrow_icon_button_widget.dart';
 import 'package:gazzer_userapp/features/language/controllers/localization_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
-import 'package:gazzer_userapp/features/category/controllers/category_controller.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
-import 'package:gazzer_userapp/common/widgets/custom_image_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
@@ -166,10 +166,10 @@ class WhatOnYourMindViewWidget extends StatelessWidget {
                                 child: Text(
                               categoryController.categoryList![index].name!,
                               style: robotoMedium.copyWith(
-                                fontSize: Dimensions.fontSizeSmall,
+                                fontSize: 10,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                              overflow: TextOverflow.visible,
                               textAlign: TextAlign.center,
                             )),
                           ]),

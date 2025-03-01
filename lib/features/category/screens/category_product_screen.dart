@@ -65,19 +65,18 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
             categoryController.categoryRestaurantList != null) {
           final pageSize = (categoryController.restaurantPageSize! / 10).ceil();
           if (categoryController.offset < pageSize) {
-            var offset = categoryController.offset + 1;
             if (widget.categoryID == "1") {
               cuisineController.getCuisineList();
               Get.find<CuisineController>().getCuisineRestaurantList(
                 cuisineController.cuisineModel!.cuisines![0].id!,
-                offset,
+                categoryController.offset += 1,
                 false,
               );
             }
             if (widget.categoryID != "1") {
               categoryController.getCategoryRestaurantList(
                 widget.categoryID,
-                offset,
+                categoryController.offset += 1,
                 'all',
                 false,
               );

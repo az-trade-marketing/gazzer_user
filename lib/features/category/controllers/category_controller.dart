@@ -72,6 +72,11 @@ class CategoryController extends GetxController implements GetxService {
 
   int get offset => _offset;
 
+  set offset(int value) {
+    _offset = value;
+    update();
+  }
+
   // String? _restResultText = '';
   // String? _foodResultText = '';
 

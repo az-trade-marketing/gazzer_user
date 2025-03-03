@@ -1,12 +1,11 @@
-import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.dart';
-import 'package:gazzer_userapp/helper/responsive_helper.dart';
-import 'package:gazzer_userapp/util/dimensions.dart';
+import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/widgets/custom_app_bar_widget.dart';
 import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
-import 'package:gazzer_userapp/common/widgets/paginated_list_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/product_view_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.dart';
+import 'package:gazzer_userapp/helper/responsive_helper.dart';
+import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:get/get.dart';
 
 class CuisineRestaurantScreen extends StatefulWidget {
@@ -47,36 +46,24 @@ class _CuisineRestaurantScreenState extends State<CuisineRestaurantScreen> {
               child:
                   GetBuilder<CuisineController>(builder: (cuisineController) {
                 if (cuisineController.cuisineRestaurantsModel != null) {}
-                return PaginatedListViewWidget(
-                  scrollController: _scrollController,
-                  totalSize:
-                      cuisineController.cuisineRestaurantsModel?.totalSize,
-                  offset: cuisineController.cuisineRestaurantsModel != null
-                      ? int.parse(
-                          cuisineController.cuisineRestaurantsModel!.offset!)
-                      : null,
-                  onPaginate: (int? offset) async =>
-                      await cuisineController.getCuisineRestaurantList(
-                          widget.cuisineId, offset!, false),
-                  productView: ProductViewWidget(
-                    isRestaurant: true,
-                    products: null,
-                    restaurants:
-                        cuisineController.cuisineRestaurantsModel?.restaurants,
-                    padding: EdgeInsets.only(
-                      left: ResponsiveHelper.isDesktop(context)
-                          ? Dimensions.paddingSizeExtraSmall
-                          : Dimensions.paddingSizeSmall,
-                      right: ResponsiveHelper.isDesktop(context)
-                          ? Dimensions.paddingSizeExtraSmall
-                          : Dimensions.paddingSizeSmall,
-                      top: ResponsiveHelper.isDesktop(context)
-                          ? Dimensions.paddingSizeExtraSmall
-                          : Dimensions.paddingSizeDefault,
-                      bottom: ResponsiveHelper.isDesktop(context)
-                          ? Dimensions.paddingSizeExtraSmall
-                          : 0,
-                    ),
+                return ProductViewWidget(
+                  isRestaurant: true,
+                  products: null,
+                  restaurants:
+                      cuisineController.cuisineRestaurantsModel?.restaurants,
+                  padding: EdgeInsets.only(
+                    left: ResponsiveHelper.isDesktop(context)
+                        ? Dimensions.paddingSizeExtraSmall
+                        : Dimensions.paddingSizeSmall,
+                    right: ResponsiveHelper.isDesktop(context)
+                        ? Dimensions.paddingSizeExtraSmall
+                        : Dimensions.paddingSizeSmall,
+                    top: ResponsiveHelper.isDesktop(context)
+                        ? Dimensions.paddingSizeExtraSmall
+                        : Dimensions.paddingSizeDefault,
+                    bottom: ResponsiveHelper.isDesktop(context)
+                        ? Dimensions.paddingSizeExtraSmall
+                        : 0,
                   ),
                 );
               }),

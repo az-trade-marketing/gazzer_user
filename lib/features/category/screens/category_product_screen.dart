@@ -44,7 +44,7 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
       cuisineController.getCuisineList();
       Get.find<CuisineController>().getCuisineRestaurantList(
         cuisineController.cuisineModel!.cuisines![0].id!,
-        categoryController.offset,
+        1,
         false,
       );
     }
@@ -55,24 +55,33 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
         'all',
         false,
       );
-      // categoryController.getSubCategoryList(widget.categoryID);
+      categoryController.getSubCategoryList(widget.categoryID);
     }
 
     _restaurantScrollController.addListener(() {
       if (_restaurantScrollController.position.pixels >=
           0.7 * _restaurantScrollController.position.maxScrollExtent) {
+        if (!cuisineController.isLoading &&
+            cuisineController.cuisineModel != null) {
+          final pageSize =
+              (cuisineController.cuisineRestaurantsModel!.totalSize! / 10)
+                  .ceil();
+          if (cuisineController.offset < pageSize) {
+            if (widget.categoryID == "1") {
+              cuisineController.getCuisineRestaurantList(
+                cuisineController
+                    .cuisineModel!.cuisines![_selectedCuisineIndex].id!,
+                cuisineController.offset += 1,
+                false,
+              );
+              cuisineController.showBottomLoader();
+            }
+          }
+        }
         if (!categoryController.isLoading &&
             categoryController.categoryRestaurantList != null) {
           final pageSize = (categoryController.restaurantPageSize! / 10).ceil();
           if (categoryController.offset < pageSize) {
-            if (widget.categoryID == "1") {
-              cuisineController.getCuisineList();
-              Get.find<CuisineController>().getCuisineRestaurantList(
-                cuisineController.cuisineModel!.cuisines![0].id!,
-                categoryController.offset += 1,
-                false,
-              );
-            }
             if (widget.categoryID != "1") {
               categoryController.getCategoryRestaurantList(
                 widget.categoryID,
@@ -310,14 +319,6 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
                                         .id
                                         .toString(),
                                 catController.type,
-                              );
-                            } else {
-                              Get.find<CuisineController>()
-                                  .getCuisineRestaurantList(
-                                cuisineController.cuisineModel!
-                                    .cuisines![_selectedCuisineIndex].id!,
-                                catController.offset,
-                                false,
                               );
                             }
                           }

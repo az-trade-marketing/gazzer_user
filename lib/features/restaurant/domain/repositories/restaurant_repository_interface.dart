@@ -1,5 +1,6 @@
 import 'package:gazzer_userapp/common/models/product_model.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
+import 'package:gazzer_userapp/features/category/domain/models/category_model.dart';
 import 'package:gazzer_userapp/features/restaurant/domain/models/recommended_product_model.dart';
 import 'package:gazzer_userapp/interface/repository_interface.dart';
 
@@ -31,6 +32,8 @@ abstract class RestaurantRepositoryInterface extends RepositoryInterface {
 
   Future<ProductModel?> getRestaurantProductList(
       int? restaurantID, int offset, int? categoryID, String type);
+
+  Future<List<CategoryModel>?> getRestaurantCategoriesList(int? restaurantID);
 
   Future<ProductModel?> getRestaurantSearchProductList(
       String searchText, String? storeID, int offset, String type);

@@ -13,6 +13,8 @@ class AppConstants {
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String restaurantProductUri = '/api/v1/products/latest';
+  static const String restaurantCategoriesUri =
+      '/api/v1/get-restaurants-categories';
   static const String popularProductUri = '/api/v1/products/popular';
   static const String reviewedProductUri = '/api/v1/products/most-reviewed';
   static const String subCategoryUri = '/api/v1/categories/childes/';

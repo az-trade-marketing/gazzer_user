@@ -49,6 +49,8 @@ abstract class RestaurantServiceInterface {
   Future<ProductModel?> getRestaurantProductList(
       int? restaurantID, int offset, int? categoryID, String type);
 
+  Future<List<CategoryModel>?> getRestaurantCategoriesList(int? restaurantID);
+
   Future<ProductModel?> getRestaurantSearchProductList(
       String searchText, String? storeID, int offset, String type);
 

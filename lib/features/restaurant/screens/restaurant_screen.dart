@@ -76,7 +76,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         1,
         'all',
         false);
-
     Get.find<RestaurantController>().getRestaurantCategoriesList(
         widget.restaurant!.id ??
             Get.find<RestaurantController>().restaurant!.id!);
@@ -632,27 +631,16 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                     bool isSelected =
                                                         restController
                                                                 .categoryIndex ==
-                                                            category.id;
+                                                            (index == 0
+                                                                ? 0
+                                                                : category.id);
 
                                                     return InkWell(
                                                       onTap: () {
                                                         restController
                                                             .setCategoryIndex(
-                                                                category.id!);
-                                                        Get.find<
-                                                                RestaurantController>()
-                                                            .getRestaurantProductList(
-                                                          widget.restaurant
-                                                                  ?.id ??
-                                                              Get.find<
-                                                                      RestaurantController>()
-                                                                  .restaurant!
-                                                                  .id!,
-                                                          1,
-                                                          category.id
-                                                              .toString(),
-                                                          false,
-                                                        );
+                                                                category.id!,
+                                                                index);
                                                       },
                                                       child: Container(
                                                         padding:
@@ -683,7 +671,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                                         ),
                                                         child: Center(
                                                           child: Text(
-                                                            "${category.name}",
+                                                            "${index == 0 ? "all".tr : category.name}",
                                                             style: isSelected
                                                                 ? robotoMedium
                                                                     .copyWith(

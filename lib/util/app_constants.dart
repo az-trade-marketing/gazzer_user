@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class AppConstants {
   static const String appName = 'Gazzer';
-  static const double appVersion = 7.6;
+  static const double appVersion = 7.7;
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;

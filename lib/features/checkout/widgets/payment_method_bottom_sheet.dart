@@ -196,7 +196,11 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                             ? Dimensions.paddingSizeLarge
                             : 0,
                       ),
-                      !widget.isSubscriptionPackage
+                      !widget.isSubscriptionPackage &&
+                              Get.find<SplashController>()
+                                      .configModel!
+                                      .partialPaymentMethod! ==
+                                  'both'
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -277,21 +281,98 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                               ],
                             )
                           : const SizedBox(),
+                      !widget.isSubscriptionPackage &&
+                              Get.find<SplashController>()
+                                      .configModel!
+                                      .partialPaymentMethod! ==
+                                  'cod'
+                          ? widget.isCashOnDeliveryActive && notHideCod
+                              ? PaymentButtonNew(
+                                  icon: Images.codIcon,
+                                  title: 'cash_on_delivery'.tr,
+                                  isSelected:
+                                      checkoutController.paymentMethodIndex ==
+                                          0,
+                                  onTap: () {
+                                    checkoutController.setPaymentMethod(0);
+                                    Get.back();
+                                  },
+                                )
+                              : const SizedBox()
+                          : const SizedBox(),
+                      !widget.isSubscriptionPackage &&
+                              Get.find<SplashController>()
+                                      .configModel!
+                                      .partialPaymentMethod! ==
+                                  'digital_payment'
+                          ? widget.isDigitalPaymentActive && notHideDigital
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        widget.isDigitalPaymentActive &&
+                                                notHideDigital
+                                            ? Expanded(
+                                                child: PaymentButtonNew(
+                                                  icon: Images.digitalPayment,
+                                                  title: 'pay_visa'.tr,
+                                                  isSelected: checkoutController
+                                                          .paymentMethodIndex ==
+                                                      2,
+                                                  onTap: () {
+                                                    checkoutController
+                                                        .setPaymentMethod(2);
+                                                    Get.back();
+                                                  },
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        widget.isWalletActive && notHideWallet
+                                            ? Expanded(
+                                                child: PaymentButtonNew(
+                                                  icon: Images.partialWallet,
+                                                  title: 'pay_via_wallet'.tr,
+                                                  isSelected: checkoutController
+                                                          .paymentMethodIndex ==
+                                                      1,
+                                                  onTap: () {
+                                                    if (canSelectWallet) {
+                                                      checkoutController
+                                                          .setPaymentMethod(1);
+                                                      Get.back();
+                                                    } else if (checkoutController
+                                                        .isPartialPay) {
+                                                      showCustomSnackBar(
+                                                        'you_can_not_user_wallet_in_partial_payment'
+                                                            .tr,
+                                                      );
+                                                      Get.back();
+                                                    } else {
+                                                      showCustomSnackBar(
+                                                        'your_wallet_have_not_sufficient_balance'
+                                                            .tr,
+                                                      );
+                                                      Get.back();
+                                                    }
+                                                  },
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox()
+                          : const SizedBox(),
                       const SizedBox(height: Dimensions.paddingSizeLarge),
                     ],
                   ),
                 ),
               ),
-              // SafeArea(
-              //   child: Padding(
-              //     padding: const EdgeInsets.symmetric(
-              //         vertical: Dimensions.paddingSizeSmall),
-              //     child: CustomButtonWidget(
-              //       buttonText: 'select'.tr,
-              //       onPressed: () => Get.back(),
-              //     ),
-              //   ),
-              // ),
             ]),
           );
         });
@@ -344,8 +425,6 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
               if (cart.variations![i][j]!) {
                 variations[variations.length - 1].values!.label!.add(
                     cart.product!.variations![i].variationValues![j].level);
-                //I will try it later
-                // variations[variations.length - 1].values!.qty = cart.price!.toInt();
                 if (cart.product!.variations![i].variationValues![j].optionId !=
                     null) {
                   optionIds.add(cart

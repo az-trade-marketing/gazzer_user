@@ -13,6 +13,14 @@ class CuisineController extends GetxController implements GetxService {
   bool get isLoading => _isLoading;
 
   CuisineModel? _cuisineModel;
+  int _offset = 1;
+
+  int get offset => _offset;
+
+  set offset(int value) {
+    _offset = value;
+    update();
+  }
 
   CuisineModel? get cuisineModel => _cuisineModel;
 
@@ -51,23 +59,29 @@ class CuisineController extends GetxController implements GetxService {
 
   Future<void> getCuisineRestaurantList(
       int cuisineId, int offset, bool reload) async {
-    if (reload) {
-      _cuisineRestaurantsModel = null;
-      update();
+    _offset = offset;
+    if (offset == 1) {
+      // if (!reload && _cuisineRestaurantsModel != null) {
+      //   return;
+      // }
+      if (reload) {
+        _cuisineRestaurantsModel = null;
+        update();
+      }
     }
     CuisineRestaurantModel? restaurantModel =
         await cuisineServiceInterface.getRestaurantList(offset, cuisineId);
     if (restaurantModel != null) {
       if (offset == 1) {
         _cuisineRestaurantsModel = restaurantModel;
-      } else {
+      } else if (offset != 1) {
         _cuisineRestaurantsModel!.totalSize = restaurantModel.totalSize;
         _cuisineRestaurantsModel!.offset = restaurantModel.offset;
         _cuisineRestaurantsModel!.restaurants!
             .addAll(restaurantModel.restaurants!);
       }
+      _isLoading = false;
     }
-    _isLoading = false;
     update();
   }
 
@@ -82,6 +96,11 @@ class CuisineController extends GetxController implements GetxService {
 
   void removeCuisine(int index) {
     _selectedCuisines!.removeAt(index);
+    update();
+  }
+
+  void showBottomLoader() {
+    _isLoading = true;
     update();
   }
 }

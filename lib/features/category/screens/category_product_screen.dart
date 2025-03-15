@@ -47,10 +47,11 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
         1,
         false,
       );
-    } else {
+    }
+    if (widget.categoryID != "1") {
       categoryController.getCategoryRestaurantList(
         widget.categoryID,
-        1,
+        categoryController.offset,
         'all',
         false,
       );
@@ -58,22 +59,38 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
     }
 
     _restaurantScrollController.addListener(() {
-      if (_restaurantScrollController.position.pixels ==
-          _restaurantScrollController.position.maxScrollExtent) {
+      if (_restaurantScrollController.position.pixels >=
+          0.7 * _restaurantScrollController.position.maxScrollExtent) {
+        if (!cuisineController.isLoading &&
+            cuisineController.cuisineModel != null) {
+          final pageSize =
+              (cuisineController.cuisineRestaurantsModel!.totalSize! / 10)
+                  .ceil();
+          if (cuisineController.offset < pageSize) {
+            if (widget.categoryID == "1") {
+              cuisineController.getCuisineRestaurantList(
+                cuisineController
+                    .cuisineModel!.cuisines![_selectedCuisineIndex].id!,
+                cuisineController.offset += 1,
+                false,
+              );
+              cuisineController.showBottomLoader();
+            }
+          }
+        }
         if (!categoryController.isLoading &&
             categoryController.categoryRestaurantList != null) {
           final pageSize = (categoryController.restaurantPageSize! / 10).ceil();
           if (categoryController.offset < pageSize) {
+            if (widget.categoryID != "1") {
+              categoryController.getCategoryRestaurantList(
+                widget.categoryID,
+                categoryController.offset += 1,
+                'all',
+                false,
+              );
+            }
             categoryController.showBottomLoader();
-            // categoryController.getCategoryRestaurantList(
-            //   categoryController.subCategoryIndex == 0
-            //       ? widget.categoryID
-            //       : categoryController.subCategoryList?.elementAt(
-            //       categoryController.subCategoryIndex)?.id.toString(),
-            //   categoryController.offset + 1,
-            //   categoryController.type,
-            //   false,
-            // );
           }
         }
       }
@@ -303,20 +320,13 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
                                         .toString(),
                                 catController.type,
                               );
-                            } else {
-                              Get.find<CuisineController>()
-                                  .getCuisineRestaurantList(
-                                cuisineController.cuisineModel!
-                                    .cuisines![_selectedCuisineIndex].id!,
-                                1,
-                                false,
-                              );
                             }
                           }
                         }
                         return false;
                       },
                       child: SingleChildScrollView(
+                        controller: _restaurantScrollController,
                         child: FooterViewWidget(
                           child: Center(
                             child: SizedBox(

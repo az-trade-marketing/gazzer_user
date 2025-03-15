@@ -1,7 +1,7 @@
 name: gazzer_userapp
 description: A new Flutter application.
 publish_to: 'none' #
-version: 1.1.0+2
+version: 1.2.0+4
 
 environment:
   sdk: '>=3.2.1 <4.0.0'

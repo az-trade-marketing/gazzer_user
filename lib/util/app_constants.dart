@@ -4,15 +4,19 @@ import 'package:get/get.dart';
 
 class AppConstants {
   static const String appName = 'Gazzer';
-  static const double appVersion = 7.6;
+  static const double appVersion = 7.7;
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
   static const String baseUrl = 'https://dashboard.gazzerapp.com';
+
+  // static const String baseUrl = 'https://carrot.refilex.com';
   static const String webHostedUrl = baseUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String restaurantProductUri = '/api/v1/products/latest';
+  static const String restaurantCategoriesUri =
+      '/api/v1/get-restaurants-categories';
   static const String popularProductUri = '/api/v1/products/popular';
   static const String reviewedProductUri = '/api/v1/products/most-reviewed';
   static const String subCategoryUri = '/api/v1/categories/childes/';

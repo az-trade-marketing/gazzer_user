@@ -1,7 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gazzer_userapp/common/models/product_model.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
@@ -16,6 +12,9 @@ import 'package:gazzer_userapp/features/restaurant/domain/models/cart_suggested_
 import 'package:gazzer_userapp/features/restaurant/domain/models/recommended_product_model.dart';
 import 'package:gazzer_userapp/features/restaurant/domain/services/restaurant_service_interface.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RestaurantController extends GetxController implements GetxService {
   final RestaurantServiceInterface restaurantServiceInterface;
@@ -68,6 +67,10 @@ class RestaurantController extends GetxController implements GetxService {
   List<CategoryModel>? _categoryList;
 
   List<CategoryModel>? get categoryList => _categoryList;
+
+  List<CategoryModel>? _restaurantCategoryList;
+
+  List<CategoryModel>? get restaurantCategoryList => _restaurantCategoryList;
 
   bool _isLoading = false;
 
@@ -376,14 +379,13 @@ class RestaurantController extends GetxController implements GetxService {
         .getCartRestaurantSuggestedItemList(restaurantID);
     update();
   }
-
-  Future<void> getRestaurantProductList(
-      int? restaurantID, int offset, String type, bool notify) async {
+  Future<void> getRestaurantProductList(int? restaurantID,
+      int offset,
+      String type,
+      bool notify, {
+        int? categoryId,
+      }) async {
     _foodOffset = offset;
-
-    // Print debug information
-    debugPrint('restaurantProducts length: ${restaurantProducts?.length}');
-    debugPrint('Requested category ID: $_categoryIndex');
 
     // Reset the list if it's the first page or if the product list is null
     if (offset == 1 || _restaurantProducts == null) {
@@ -400,15 +402,16 @@ class RestaurantController extends GetxController implements GetxService {
     if (!_foodOffsetList.contains(offset)) {
       _foodOffsetList.add(offset);
 
-      // Determine the category ID for the API call
-      int categoryId = _categoryIndex; // Use the category ID directly
+      // Use the provided categoryId or default to _categoryIndex
+      final int selectedCategoryId = categoryId ?? _categoryIndex;
 
       ProductModel? productModel =
           await restaurantServiceInterface.getRestaurantProductList(
-              restaurantID,
-              offset,
-              categoryId, // Use the correct category ID
-              type);
+        restaurantID,
+        offset,
+        selectedCategoryId,
+        type,
+      );
 
       if (productModel != null) {
         if (offset == 1) {
@@ -426,6 +429,18 @@ class RestaurantController extends GetxController implements GetxService {
         update();
       }
     }
+  }
+
+  Future<List<CategoryModel>?> getRestaurantCategoriesList(
+      int? restaurantID) async {
+    var categoryModel = await restaurantServiceInterface
+        .getRestaurantCategoriesList(restaurantID);
+    if (categoryModel != null && categoryModel.isNotEmpty) {
+      _restaurantCategoryList = categoryModel;
+      update();
+    }
+    update();
+    return categoryModel;
   }
 
   void showFoodBottomLoader() {
@@ -483,16 +498,21 @@ class RestaurantController extends GetxController implements GetxService {
     _searchType = 'all';
   }
 
-  void setCategoryIndex(int categoryId) {
-    // Print debug information
-    debugPrint('Set category ID: $categoryId');
-    debugPrint('restaurantProducts length: ${restaurantProducts?.length}');
+  void setCategoryIndex(int categoryId, int index) {
+    if (index == 0) {
+      _categoryIndex = 0;
+      getRestaurantProductList(
+          _restaurant!.id,
+          categoryId: 0,
+          1,
+          Get.find<RestaurantController>().type,
+          false);
+    } else {
+      _categoryIndex = categoryId;
+      getRestaurantProductList(
+          _restaurant!.id, 1, Get.find<RestaurantController>().type, false);
+    }
 
-    _categoryIndex = categoryId; // Set to the category ID directly
-
-    _restaurantProducts = null;
-    getRestaurantProductList(
-        _restaurant!.id, 1, Get.find<RestaurantController>().type, false);
     update();
   }
 
@@ -512,6 +532,13 @@ class RestaurantController extends GetxController implements GetxService {
 
   double? getDiscount(Restaurant restaurant) =>
       restaurant.discount != null ? restaurant.discount!.discount : 0;
+
+  void setCategoryListIndex(int index, {bool notify = true}) {
+    _categoryIndex = index;
+    if (notify) {
+      update();
+    }
+  }
 
   String? getDiscountType(Restaurant restaurant) => restaurant.discount != null
       ? restaurant.discount!.discountType

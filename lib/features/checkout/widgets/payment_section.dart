@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/features/cart/domain/models/cart_model.dart';
 import 'package:gazzer_userapp/features/checkout/controllers/checkout_controller.dart';
+import 'package:gazzer_userapp/features/checkout/screens/checkout_screen.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_method_bottom_sheet.dart';
+import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
@@ -23,6 +26,7 @@ class PaymentSection extends StatelessWidget {
   final double? extraPackagingAmount;
   final int? subscriptionQty;
   final List<CartModel> cartList;
+  final Function backBottomSheetCalc;
   const PaymentSection({
     super.key,
     required this.isCashOnDeliveryActive,
@@ -39,6 +43,7 @@ class PaymentSection extends StatelessWidget {
     this.isGuestLogIn,
     this.extraPackagingAmount,
     this.discount,
+    required this.backBottomSheetCalc
   });
 
   @override
@@ -83,7 +88,15 @@ class PaymentSection extends StatelessWidget {
                       cartList: cartList,
                       checkoutController: checkoutController,
                       extraPackagingAmount: extraPackagingAmount!,
-                    )));
+                    ))).then((value){
+                      if(value=='visa'){
+                          if(Get.find<ProfileController>().userInfoModel!.walletBalance! < total){
+                            AppConstants.isUseButtonTapped = true;
+                          }if(Get.find<ProfileController>().userInfoModel!.walletBalance! >= total){
+                            AppConstants.isUseButtonTapped = false;
+                          }
+                      }
+                });
               } else {
                 showModalBottomSheet(
                   context: context,
@@ -103,7 +116,13 @@ class PaymentSection extends StatelessWidget {
                     checkoutController: checkoutController,
                     extraPackagingAmount: extraPackagingAmount!,
                   ),
-                );
+                ).then((value){
+                  if(value=='visa'){
+                    if(Get.find<ProfileController>().userInfoModel!.walletBalance! < total){
+                      AppConstants.isUseButtonTapped = true;
+                    }
+                  }
+                });
               }
             },
             child: Image.asset(Images.paymentSelect, height: 24, width: 24),

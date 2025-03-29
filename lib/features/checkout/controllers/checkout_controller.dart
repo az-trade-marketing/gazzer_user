@@ -791,6 +791,8 @@ class CheckoutController extends GetxController implements GetxService {
     }
   }
 
+
+
   void clearPrevData() {
     _addressIndex = 0;
     _paymentMethodIndex = -1;

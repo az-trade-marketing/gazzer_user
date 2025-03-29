@@ -233,9 +233,18 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                                       .paymentMethodIndex ==
                                       2,
                                   onTap: () {
-                                    checkoutController
-                                        .setPaymentMethod(2);
-                                    Get.back();
+                                    checkoutController.setPaymentMethod(2);
+
+                                    // عند اختيار الفيزا، تحقق من رصيد المحفظة
+                                    if (AppConstants.isUseButtonTapped) {
+                                      double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;
+                                      if (walletBalance < widget.totalPrice) {
+                                        // إذا كان الرصيد غير كافٍ، فعّل الدفع الجزئي
+                                        checkoutController.changePartialPayment();
+                                      }
+                                    }
+
+                                    Navigator.pop(context, 'visa');
                                   },
                                 ),
                               )

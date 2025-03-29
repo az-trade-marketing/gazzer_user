@@ -35,6 +35,10 @@ import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
+double  totalMoney=0.0;
+double  totalMoneyVisa=0.0;
+double  totalMoneyWalete=0.0;
+
 class CheckoutScreen extends StatefulWidget {
   final List<CartModel>? cartList;
   final bool fromCart;
@@ -79,7 +83,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
-
+    totalMoney=0.0;
+      totalMoneyVisa=0.0;
+      totalMoneyWalete=0.0;
     initCall();
   }
 
@@ -305,19 +311,25 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                           : deliveryCharge;
 
                   calcTotal() {
-                    if (couponController.coupon?.couponType ==
-                        "free_delivery") {
+                    if (couponController.coupon?.couponType == "free_delivery") {
                       deliveryCharge = 0;
-                      return orderAmount + deliveryCharge;
-                    } 
-                    // else if (AppConstants.isUseButtonTapped == true) {
-                    //   return ((orderAmount + groupedDeliveryCharge) -
-                    //       (Get.find<ProfileController>()
-                    //           .userInfoModel!
-                    //           .walletBalance!));
-                    // } 
-                    else {
-                      return orderAmount + groupedDeliveryCharge;
+                    }
+
+                    double totalAmount = orderAmount + deliveryCharge;
+
+                    if (AppConstants.isUseButtonTapped) {
+                      double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;
+
+                      if (walletBalance >= totalAmount) {
+                        // الحالة الأولى: المحفظة تغطي كامل المبلغ
+                        return totalAmount; // إظهار نفس المبلغ الإجمالي
+                      } else {
+                        // الحالة الثانية: المحفظة لا تغطي كامل المبلغ
+                        return totalAmount - walletBalance; // المبلغ المتبقي للدفع بالفيزا
+                      }
+                    } else {
+                      // لم يتم اختيار استخدام المحفظة
+                      return totalAmount;
                     }
                   }
 

@@ -9,7 +9,7 @@ import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
 import 'package:gazzer_userapp/features/cart/domain/models/cart_model.dart';
 import 'package:gazzer_userapp/features/checkout/controllers/checkout_controller.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart'
-    as place_order_model;
+as place_order_model;
 import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/pricing_view_model.dart';
 import 'package:gazzer_userapp/features/checkout/domain/services/paymob.dart';
@@ -59,33 +59,33 @@ class OrderPlaceButton extends StatelessWidget {
 
   const OrderPlaceButton(
       {super.key,
-      required this.checkoutController,
-      required this.locationController,
-      required this.todayClosed,
-      required this.tomorrowClosed,
-      required this.orderAmount,
-      required this.deliveryCharge,
-      required this.tax,
-      this.discount,
-      required this.total,
-      this.maxCodOrderAmount,
-      required this.subscriptionQty,
-      required this.cartList,
-      required this.isCashOnDeliveryActive,
-      required this.isDigitalPaymentActive,
-      required this.isWalletActive,
-      required this.fromCart,
-      required this.guestNameTextEditingController,
-      required this.guestNumberTextEditingController,
-      required this.guestNumberNode,
-      required this.isOfflinePaymentActive,
-      required this.couponController,
-      required this.subTotal,
-      required this.taxIncluded,
-      required this.taxPercent,
-      required this.guestEmailController,
-      required this.guestEmailNode,
-      required this.extraPackagingAmount});
+        required this.checkoutController,
+        required this.locationController,
+        required this.todayClosed,
+        required this.tomorrowClosed,
+        required this.orderAmount,
+        required this.deliveryCharge,
+        required this.tax,
+        this.discount,
+        required this.total,
+        this.maxCodOrderAmount,
+        required this.subscriptionQty,
+        required this.cartList,
+        required this.isCashOnDeliveryActive,
+        required this.isDigitalPaymentActive,
+        required this.isWalletActive,
+        required this.fromCart,
+        required this.guestNameTextEditingController,
+        required this.guestNumberTextEditingController,
+        required this.guestNumberNode,
+        required this.isOfflinePaymentActive,
+        required this.couponController,
+        required this.subTotal,
+        required this.taxIncluded,
+        required this.taxPercent,
+        required this.guestEmailController,
+        required this.guestEmailNode,
+        required this.extraPackagingAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,7 @@ class OrderPlaceButton extends StatelessWidget {
               DateTime scheduleStartDate = _processScheduleStartDate();
               DateTime scheduleEndDate = _processScheduleEndDate();
               bool isAvailable =
-                  _checkAvailability(scheduleStartDate, scheduleEndDate);
+              _checkAvailability(scheduleStartDate, scheduleEndDate);
               bool isGuestLogIn = Get.find<AuthController>().isGuestLoggedIn();
               bool datePicked = _isDatePicked();
 
@@ -122,19 +122,39 @@ class OrderPlaceButton extends StatelessWidget {
                   context, isGuestLogIn, datePicked, isAvailable)) {
                 debugPrint('Warning shows');
               } else {
+                // تحديد المبلغ الذي سيتم دفعه والمبلغ الذي سيتم خصمه من المحفظة
+                double amountToCharge = total;  // المبلغ الذي سيرسل للدفع
+                double amountFromWallet = 0;    // المبلغ الذي سيخصم من المحفظة
+
+                // إذا تم اختيار استخدام المحفظة
+                if (AppConstants.isUseButtonTapped) {
+                  double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;
+
+                  if (walletBalance >= total) {
+                    // الحالة الأولى: المحفظة تغطي كامل المبلغ
+                    amountFromWallet = total;
+                    amountToCharge = total; // إرسال نفس المبلغ للدفع كما طلبت
+                  } else {
+                    // الحالة الثانية: المحفظة لا تغطي كامل المبلغ
+                    amountFromWallet = walletBalance;
+                    amountToCharge = total - walletBalance; // المبلغ المتبقي للدفع بالفيزا
+                  }
+                }
+
                 AddressModel? finalAddress = _processFinalAddress(isGuestLogIn);
                 List<place_order_model.OnlineCart> carts =
-                    _generateOnlineCartList();
+                _generateOnlineCartList();
                 List<place_order_model.SubscriptionDays> days =
-                    _generateSubscriptionDays();
+                _generateSubscriptionDays();
+
                 PlaceOrderBodyModel placeOrderBody = _preparePlaceOrderModel(
-                    carts, scheduleStartDate, finalAddress, isGuestLogIn, days);
+                    carts, scheduleStartDate, finalAddress, isGuestLogIn, days, amountFromWallet);
 
                 if (checkoutController.paymentMethodIndex == 3) {
                   Get.toNamed(RouteHelper.getOfflinePaymentScreen(
                     placeOrderBody: placeOrderBody,
                     zoneId: checkoutController.restaurant!.zoneId!,
-                    total: total,
+                    total: amountToCharge,  // استخدام المبلغ المعدل
                     maxCodOrderAmount: maxCodOrderAmount,
                     fromCart: fromCart,
                     isCodActive: isCashOnDeliveryActive,
@@ -145,14 +165,14 @@ class OrderPlaceButton extends StatelessWidget {
                       taxIncluded: taxIncluded,
                       tax: tax,
                       deliveryCharge: deliveryCharge,
-                      total: total,
+                      total: amountToCharge,  // استخدام المبلغ المعدل
                       taxPercent: taxPercent,
                     ),
                   ));
                 } else if (checkoutController.paymentMethodIndex == 2) {
                   checkoutController.loading();
                   Map<String, String>? result =
-                      await Paymob().getPaymobIntention(amount: orderAmount);
+                  await Paymob().getPaymobIntention(amount: amountToCharge);  // استخدام المبلغ المعدل
                   String? checkoutUrl = result?['checkout_url'];
                   String? paymentId = result?['payment_id'];
                   Get.to(() => PayScreen(
@@ -160,7 +180,7 @@ class OrderPlaceButton extends StatelessWidget {
                       url: checkoutUrl!,
                       checkoutController: checkoutController,
                       carts: carts,
-                      totalPrice: orderAmount,
+                      totalPrice: amountToCharge,  // استخدام المبلغ المعدل
                       scheduleStartDate: scheduleStartDate,
                       extraPackagingAmount: extraPackagingAmount,
                       discount: discount!,
@@ -173,7 +193,7 @@ class OrderPlaceButton extends StatelessWidget {
                   checkoutController.placeOrder(
                       placeOrderBody,
                       checkoutController.restaurant!.zoneId!,
-                      orderAmount,
+                      amountToCharge,  // استخدام المبلغ المعدل
                       maxCodOrderAmount,
                       fromCart,
                       isCashOnDeliveryActive);
@@ -202,8 +222,8 @@ class OrderPlaceButton extends StatelessWidget {
       DateTime date = checkoutController.selectedDateSlot == 0
           ? DateTime.now()
           : checkoutController.selectedDateSlot == 1
-              ? DateTime.now().add(const Duration(days: 1))
-              : checkoutController.selectedCustomDate ?? DateTime.now();
+          ? DateTime.now().add(const Duration(days: 1))
+          : checkoutController.selectedCustomDate ?? DateTime.now();
       DateTime startTime = checkoutController
           .timeSlots![checkoutController.selectedTimeSlot!].startTime!;
       scheduleStartDate = DateTime(date.year, date.month, date.day,
@@ -219,8 +239,8 @@ class OrderPlaceButton extends StatelessWidget {
       DateTime date = checkoutController.selectedDateSlot == 0
           ? DateTime.now()
           : checkoutController.selectedDateSlot == 1
-              ? DateTime.now().add(const Duration(days: 1))
-              : checkoutController.selectedCustomDate ?? DateTime.now();
+          ? DateTime.now().add(const Duration(days: 1))
+          : checkoutController.selectedCustomDate ?? DateTime.now();
       DateTime endTime = checkoutController
           .timeSlots![checkoutController.selectedTimeSlot!].endTime!;
       scheduleEndDate = DateTime(
@@ -238,12 +258,12 @@ class OrderPlaceButton extends StatelessWidget {
     } else {
       for (CartModel cart in cartList) {
         if (!DateConverter.isAvailable(
-              cart.product!.availableTimeStarts,
-              cart.product!.availableTimeEnds,
-              time: checkoutController.restaurant!.scheduleOrder!
-                  ? scheduleStartDate
-                  : null,
-            ) &&
+          cart.product!.availableTimeStarts,
+          cart.product!.availableTimeEnds,
+          time: checkoutController.restaurant!.scheduleOrder!
+              ? scheduleStartDate
+              : null,
+        ) &&
             !DateConverter.isAvailable(
               cart.product!.availableTimeStarts,
               cart.product!.availableTimeEnds,
@@ -262,8 +282,8 @@ class OrderPlaceButton extends StatelessWidget {
   bool _showsWarningMessage(BuildContext context, bool isGuestLogIn,
       bool datePicked, bool isAvailable) {
     if (isGuestLogIn &&
-            checkoutController.guestAddress == null &&
-            checkoutController.orderType != 'take_away' ||
+        checkoutController.guestAddress == null &&
+        checkoutController.orderType != 'take_away' ||
         Get.find<AddressController>().addressList!.isEmpty) {
       showCustomSnackBar('please_setup_your_delivery_address_first'.tr);
       Get.to(const AddressScreen());
@@ -435,8 +455,8 @@ class OrderPlaceButton extends StatelessWidget {
                 values: place_order_model.OrderVariationValue(label: [])));
             // ,qty: 0
             for (int j = 0;
-                j < cart.product!.variations![i].variationValues!.length;
-                j++) {
+            j < cart.product!.variations![i].variationValues!.length;
+            j++) {
               if (cart.variations![i][j]!) {
                 variations[variations.length - 1].values!.label!.add(
                     cart.product!.variations![i].variationValues![j].level);
@@ -473,17 +493,17 @@ class OrderPlaceButton extends StatelessWidget {
   List<place_order_model.SubscriptionDays> _generateSubscriptionDays() {
     List<place_order_model.SubscriptionDays> days = [];
     for (int index = 0;
-        index < checkoutController.selectedDays.length;
-        index++) {
+    index < checkoutController.selectedDays.length;
+    index++) {
       if (checkoutController.selectedDays[index] != null) {
         days.add(place_order_model.SubscriptionDays(
           day: checkoutController.subscriptionType == 'weekly'
               ? (index == 6 ? 0 : (index + 1)).toString()
               : checkoutController.subscriptionType == 'monthly'
-                  ? (index + 1).toString()
-                  : index.toString(),
+              ? (index + 1).toString()
+              : index.toString(),
           time:
-              DateConverter.dateToTime(checkoutController.selectedDays[index]!),
+          DateConverter.dateToTime(checkoutController.selectedDays[index]!),
         ));
       }
     }
@@ -495,7 +515,8 @@ class OrderPlaceButton extends StatelessWidget {
       DateTime scheduleStartDate,
       AddressModel? finalAddress,
       bool isGuestLogIn,
-      List<place_order_model.SubscriptionDays> days) {
+      List<place_order_model.SubscriptionDays> days,
+      [double walletAmount = 0]) {
     return PlaceOrderBodyModel(
       cart: carts,
       couponDiscountAmount: Get.find<CouponController>().discount,
@@ -506,22 +527,22 @@ class OrderPlaceButton extends StatelessWidget {
       scheduleAt: !checkoutController.restaurant!.scheduleOrder!
           ? null
           : (checkoutController.selectedDateSlot == 0 &&
-                  checkoutController.selectedTimeSlot == 0)
-              ? null
-              : DateConverter.dateToDateAndTime(scheduleStartDate),
+          checkoutController.selectedTimeSlot == 0)
+          ? null
+          : DateConverter.dateToDateAndTime(scheduleStartDate),
       orderAmount: orderAmount,
       orderNote: checkoutController.noteController.text,
       orderType: checkoutController.orderType,
       paymentMethod: checkoutController.paymentMethodIndex == 0
           ? 'cash_on_delivery'
           : checkoutController.paymentMethodIndex == 1
-              ? 'wallet'
-              : checkoutController.paymentMethodIndex == 2
-                  ? 'digital_payment'
-                  : 'offline_payment',
+          ? 'wallet'
+          : checkoutController.paymentMethodIndex == 2
+          ? 'digital_payment'
+          : 'offline_payment',
       couponCode: (Get.find<CouponController>().discount! > 0 ||
-              (Get.find<CouponController>().coupon != null &&
-                  Get.find<CouponController>().freeDelivery))
+          (Get.find<CouponController>().coupon != null &&
+              Get.find<CouponController>().freeDelivery))
           ? Get.find<CouponController>().coupon!.code
           : null,
       restaurantId: cartList[0].product!.restaurantId,
@@ -541,8 +562,8 @@ class OrderPlaceButton extends StatelessWidget {
       house: "${Get.find<AddressController>().addressList?[0].house}",
       floor: "${Get.find<AddressController>().addressList?[0].floor}",
       dmTips: (checkoutController.orderType == 'take_away' ||
-              checkoutController.subscriptionOrder ||
-              checkoutController.selectedTips == 0)
+          checkoutController.subscriptionOrder ||
+          checkoutController.selectedTips == 0)
           ? ''
           : checkoutController.tips.toString(),
       subscriptionOrder: checkoutController.subscriptionOrder ? '1' : '0',
@@ -551,27 +572,28 @@ class OrderPlaceButton extends StatelessWidget {
       subscriptionDays: days,
       subscriptionStartAt: checkoutController.subscriptionOrder
           ? DateConverter.dateToDateAndTime(
-              checkoutController.subscriptionRange!.start)
+          checkoutController.subscriptionRange!.start)
           : '',
       subscriptionEndAt: checkoutController.subscriptionOrder
           ? DateConverter.dateToDateAndTime(
-              checkoutController.subscriptionRange!.end)
+          checkoutController.subscriptionRange!.end)
           : '',
       unavailableItemNote: Get.find<CartController>().notAvailableIndex != -1
           ? Get.find<CartController>()
-              .notAvailableList[Get.find<CartController>().notAvailableIndex]
+          .notAvailableList[Get.find<CartController>().notAvailableIndex]
           : '',
       deliveryInstruction: checkoutController.selectedInstruction != -1
           ? AppConstants
-              .deliveryInstructionList[checkoutController.selectedInstruction]
+          .deliveryInstructionList[checkoutController.selectedInstruction]
           : '',
-      partialPayment: checkoutController.isPartialPay ? 1 : 0,
+      partialPayment: AppConstants.isUseButtonTapped ? 1 : 0,
       guestId:
-          isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
+      isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
       isBuyNow: fromCart ? 0 : 1,
       guestEmail: isGuestLogIn ? finalAddress.email : null,
       extraPackagingAmount: extraPackagingAmount,
       deliveryCharge: deliveryCharge,
+      // walletAmount: walletAmount > 0 ? walletAmount : null,
     );
   }
 }

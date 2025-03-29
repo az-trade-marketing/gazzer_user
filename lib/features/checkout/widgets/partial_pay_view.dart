@@ -120,15 +120,28 @@ class _PartialPayViewState extends State<PartialPayView> {
                             onTap: () {
                               setState(() {
                                 AppConstants.isUseButtonTapped = !AppConstants.isUseButtonTapped;
-                                debugPrint('tapped ${AppConstants.isUseButtonTapped}');
                               });
 
-                              if (Get.find<ProfileController>().userInfoModel!.walletBalance! < widget.totalPrice) {
-                                checkoutController.changePartialPayment();
-                              } else {
-                                if (checkoutController.paymentMethodIndex != 1) {
-                                  checkoutController.setPaymentMethod(1);
+                              double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;
+                              double totalPrice = widget.totalPrice;
+
+                              if (AppConstants.isUseButtonTapped) {
+                                if (walletBalance >= totalPrice) {
+                                  // المحفظة تغطي المبلغ الكامل - يمكن استخدامها مباشرة
+                                  if (checkoutController.paymentMethodIndex != 1) {
+                                    checkoutController.setPaymentMethod(1); // حدد طريقة الدفع كمحفظة
+                                  }
                                 } else {
+                                  // المحفظة لا تغطي المبلغ الكامل - فعّل الدفع الجزئي
+                                  checkoutController.changePartialPayment();
+                                  // يمكن الاحتفاظ بطريقة الدفع الحالية أو تغييرها
+                                }
+                              } else {
+                                // تم إلغاء استخدام المحفظة
+                                if (checkoutController.isPartialPay) {
+                                  checkoutController.changePartialPayment();
+                                }
+                                if (checkoutController.paymentMethodIndex == 1) {
                                   checkoutController.setPaymentMethod(-1);
                                 }
                               }

@@ -119,12 +119,11 @@ class BottomSectionWidget extends StatelessWidget {
       if (couponController.coupon?.couponType == "free_delivery") {
         deliveryCharge = 0;
         return orderAmount + deliveryCharge;
-      }
-      // else if (isTapped == true && AppConstants.isUseButtonTapped == true) {
-      //   return ((orderAmount + deliveryCharge) -
-      //       (Get.find<ProfileController>().userInfoModel!.walletBalance!));
-      // }
-      else {
+      } else if (AppConstants.isUseButtonTapped == true) {
+        return Get.find<ProfileController>().userInfoModel!.walletBalance! >= (orderAmount + deliveryCharge)
+            ? 0.0
+            : (orderAmount + deliveryCharge) - Get.find<ProfileController>().userInfoModel!.walletBalance!;
+      } else {
         return orderAmount + deliveryCharge;
       }
     }
@@ -208,6 +207,11 @@ class BottomSectionWidget extends StatelessWidget {
                 subscriptionQty: subscriptionQty,
                 tax: tax,
                 cartList: cartList,
+          backBottomSheetCalc: (){
+
+
+
+          }
               )
             : const SizedBox(),
       ]),

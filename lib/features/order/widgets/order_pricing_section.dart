@@ -1,31 +1,56 @@
 import 'package:dotted_border/dotted_border.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:gazzer_userapp/features/order/controllers/order_controller.dart';
+
 import 'package:gazzer_userapp/features/order/domain/models/order_model.dart';
+
 import 'package:gazzer_userapp/features/order/widgets/bottom_view_widget.dart';
+
 import 'package:gazzer_userapp/features/order/widgets/order_product_widget.dart';
+
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
+
 import 'package:gazzer_userapp/helper/price_converter.dart';
+
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
+
 import 'package:gazzer_userapp/util/dimensions.dart';
+
 import 'package:gazzer_userapp/util/styles.dart';
+
 import 'package:get/get.dart';
 
 class OrderPricingSection extends StatelessWidget {
   final double itemsPrice;
+
   final double addOns;
+
   final OrderModel order;
+
   final double subTotal;
+
   final double discount;
+
   final double couponDiscount;
+
   final double tax;
+
   final double dmTips;
+
   final double deliveryCharge;
+
   final double total;
+
   final OrderController orderController;
+
   final int? orderId;
+
   final String? contactNumber;
+
   final double extraPackagingAmount;
+
   final double referrerBonusAmount;
 
   const OrderPricingSection(
@@ -49,6 +74,7 @@ class OrderPricingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool subscription = order.subscription != null;
+
     bool taxIncluded = order.taxStatus ?? false;
 
     return Container(
@@ -89,11 +115,13 @@ class OrderPricingSection extends StatelessWidget {
               horizontal: Dimensions.paddingSizeLarge),
           child: Column(children: [
             // Total
+
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text('item_price'.tr, style: robotoRegular),
               Text(PriceConverter.convertPrice(itemsPrice),
                   style: robotoRegular, textDirection: TextDirection.ltr),
             ]),
+
             const SizedBox(height: 10),
 
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -118,6 +146,7 @@ class OrderPricingSection extends StatelessWidget {
                             textDirection: TextDirection.ltr),
                       ])
                 : const SizedBox(),
+
             SizedBox(height: !subscription ? Dimensions.paddingSizeSmall : 0),
 
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -125,6 +154,7 @@ class OrderPricingSection extends StatelessWidget {
               Text('(-) ${PriceConverter.convertPrice(discount)}',
                   style: robotoRegular, textDirection: TextDirection.ltr),
             ]),
+
             const SizedBox(height: Dimensions.paddingSizeSmall),
 
             couponDiscount > 0
@@ -139,6 +169,7 @@ class OrderPricingSection extends StatelessWidget {
                         ),
                       ])
                 : const SizedBox(),
+
             SizedBox(
                 height: couponDiscount > 0 ? Dimensions.paddingSizeSmall : 0),
 
@@ -154,6 +185,7 @@ class OrderPricingSection extends StatelessWidget {
                     ],
                   )
                 : const SizedBox(),
+
             SizedBox(height: referrerBonusAmount > 0 ? 10 : 0),
 
             !taxIncluded
@@ -166,6 +198,7 @@ class OrderPricingSection extends StatelessWidget {
                             textDirection: TextDirection.ltr),
                       ])
                 : const SizedBox(),
+
             SizedBox(height: taxIncluded ? 0 : Dimensions.paddingSizeSmall),
 
             (!subscription &&
@@ -181,6 +214,7 @@ class OrderPricingSection extends StatelessWidget {
                     ],
                   )
                 : const SizedBox(),
+
             SizedBox(
                 height: (order.orderType != 'take_away' &&
                         Get.find<SplashController>()
@@ -202,6 +236,7 @@ class OrderPricingSection extends StatelessWidget {
                     ],
                   )
                 : const SizedBox(),
+
             SizedBox(height: extraPackagingAmount > 0 ? 10 : 0),
 
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

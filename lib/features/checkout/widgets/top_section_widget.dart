@@ -15,6 +15,7 @@ import 'package:gazzer_userapp/features/location/controllers/location_controller
 import 'package:gazzer_userapp/helper/auth_helper.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
@@ -305,6 +306,10 @@ class TopSectionWidget extends StatelessWidget {
                   deliveryCharge: deliveryCharge,
                   fromCart: fromCart,
                   cartList: cartList,
+            backBottomSheetCalc: (){
+
+              }
+
                 )
               : const SizedBox(),
           // SizedBox(height: isGuestLoggedIn && !isDesktop ? 0 : Dimensions.paddingSizeDefault),

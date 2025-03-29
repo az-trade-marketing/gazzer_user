@@ -119,19 +119,14 @@ class _PartialPayViewState extends State<PartialPayView> {
                           InkWell(
                             onTap: () {
                               setState(() {
-                                AppConstants.isUseButtonTapped =
-                                    !AppConstants.isUseButtonTapped;
-                                debugPrint(
-                                    'tapped ${AppConstants.isUseButtonTapped}');
+                                AppConstants.isUseButtonTapped = !AppConstants.isUseButtonTapped;
+                                debugPrint('tapped ${AppConstants.isUseButtonTapped}');
                               });
-                              if (Get.find<ProfileController>()
-                                      .userInfoModel!
-                                      .walletBalance! <
-                                  widget.totalPrice) {
+
+                              if (Get.find<ProfileController>().userInfoModel!.walletBalance! < widget.totalPrice) {
                                 checkoutController.changePartialPayment();
                               } else {
-                                if (checkoutController.paymentMethodIndex !=
-                                    1) {
+                                if (checkoutController.paymentMethodIndex != 1) {
                                   checkoutController.setPaymentMethod(1);
                                 } else {
                                   checkoutController.setPaymentMethod(-1);

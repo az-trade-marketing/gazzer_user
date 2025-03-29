@@ -13,6 +13,7 @@ import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:get/get.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
@@ -35,21 +36,21 @@ class PaymentMethodBottomSheet extends StatefulWidget {
 
   const PaymentMethodBottomSheet(
       {super.key,
-      required this.isCashOnDeliveryActive,
-      required this.isDigitalPaymentActive,
-      required this.isWalletActive,
-      required this.totalPrice,
-      required this.deliveryCharge,
-      required this.fromCart,
-      required this.discount,
-      required this.checkoutController,
-      required this.extraPackagingAmount,
-      this.isGuestLogIn,
-      this.subscriptionQty,
-      required this.tax,
-      required this.cartList,
-      this.isSubscriptionPackage = false,
-      required this.isOfflinePaymentActive});
+        required this.isCashOnDeliveryActive,
+        required this.isDigitalPaymentActive,
+        required this.isWalletActive,
+        required this.totalPrice,
+        required this.deliveryCharge,
+        required this.fromCart,
+        required this.discount,
+        required this.checkoutController,
+        required this.extraPackagingAmount,
+        this.isGuestLogIn,
+        this.subscriptionQty,
+        required this.tax,
+        required this.cartList,
+        this.isSubscriptionPackage = false,
+        required this.isOfflinePaymentActive});
 
   @override
   State<PaymentMethodBottomSheet> createState() =>
@@ -76,7 +77,7 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
     if (!widget.isSubscriptionPackage &&
         !Get.find<AuthController>().isGuestLoggedIn()) {
       double walletBalance =
-          Get.find<ProfileController>().userInfoModel!.walletBalance!;
+      Get.find<ProfileController>().userInfoModel!.walletBalance!;
       if (walletBalance < widget.totalPrice) {
         canSelectWallet = false;
       }
@@ -87,14 +88,14 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
           notHideCod = true;
           notHideDigital = false;
         } else if (Get.find<SplashController>()
-                .configModel!
-                .partialPaymentMethod! ==
+            .configModel!
+            .partialPaymentMethod! ==
             'digital_payment') {
           notHideCod = false;
           notHideDigital = true;
         } else if (Get.find<SplashController>()
-                .configModel!
-                .partialPaymentMethod! ==
+            .configModel!
+            .partialPaymentMethod! ==
             'both') {
           notHideCod = true;
           notHideDigital = true;
@@ -128,33 +129,33 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               ResponsiveHelper.isDesktop(context)
                   ? Align(
-                      alignment: Alignment.topRight,
-                      child: InkWell(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          height: 30,
-                          width: 30,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: Dimensions.paddingSizeExtraSmall),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(50)),
-                          child: const Icon(Icons.clear),
-                        ),
-                      ),
-                    )
+                alignment: Alignment.topRight,
+                child: InkWell(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: Dimensions.paddingSizeExtraSmall),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(50)),
+                    child: const Icon(Icons.clear),
+                  ),
+                ),
+              )
                   : Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        height: 4,
-                        width: 35,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: Dimensions.paddingSizeExtraSmall),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).disabledColor,
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
+                alignment: Alignment.center,
+                child: Container(
+                  height: 4,
+                  width: 35,
+                  margin: const EdgeInsets.symmetric(
+                      vertical: Dimensions.paddingSizeExtraSmall),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).disabledColor,
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
               Flexible(
                 child: SingleChildScrollView(
@@ -172,10 +173,10 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                       const SizedBox(height: Dimensions.paddingSizeLarge),
                       !widget.isSubscriptionPackage && notHideCod
                           ? Text(
-                              'choose_payment_method'.tr,
-                              style: robotoBold.copyWith(
-                                  fontSize: Dimensions.fontSizeDefault),
-                            )
+                        'choose_payment_method'.tr,
+                        style: robotoBold.copyWith(
+                            fontSize: Dimensions.fontSizeDefault),
+                      )
                           : const SizedBox(),
                       SizedBox(
                         height: !widget.isSubscriptionPackage && notHideCod
@@ -184,12 +185,12 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                       ),
                       !widget.isSubscriptionPackage && notHideCod
                           ? Text(
-                              'click_one_of_the_option_below'.tr,
-                              style: robotoRegular.copyWith(
-                                fontSize: Dimensions.fontSizeSmall,
-                                color: Theme.of(context).hintColor,
-                              ),
-                            )
+                        'click_one_of_the_option_below'.tr,
+                        style: robotoRegular.copyWith(
+                          fontSize: Dimensions.fontSizeSmall,
+                          color: Theme.of(context).hintColor,
+                        ),
+                      )
                           : const SizedBox(),
                       SizedBox(
                         height: !widget.isSubscriptionPackage
@@ -198,84 +199,85 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                       ),
                       !widget.isSubscriptionPackage
                           ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    widget.isCashOnDeliveryActive && notHideCod
-                                        ? Expanded(
-                                            child: PaymentButtonNew(
-                                              icon: Images.codIcon,
-                                              title: 'cash_on_delivery'.tr,
-                                              isSelected: checkoutController
-                                                      .paymentMethodIndex ==
-                                                  0,
-                                              onTap: () {
-                                                checkoutController
-                                                    .setPaymentMethod(0);
-                                                Get.back();
-                                              },
-                                            ),
-                                          )
-                                        : const SizedBox(),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    widget.isDigitalPaymentActive &&
-                                            notHideDigital
-                                        ? Expanded(
-                                            child: PaymentButtonNew(
-                                              icon: Images.digitalPayment,
-                                              title: 'pay_visa'.tr,
-                                              isSelected: checkoutController
-                                                      .paymentMethodIndex ==
-                                                  2,
-                                              onTap: () {
-                                                checkoutController
-                                                    .setPaymentMethod(2);
-                                                Get.back();
-                                              },
-                                            ),
-                                          )
-                                        : const SizedBox(),
-                                  ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              // Only show cash on delivery if not using wallet (AppConstants.isUseButtonTapped is false)
+                              widget.isCashOnDeliveryActive && notHideCod && !AppConstants.isUseButtonTapped
+                                  ? Expanded(
+                                child: PaymentButtonNew(
+                                  icon: Images.codIcon,
+                                  title: 'cash_on_delivery'.tr,
+                                  isSelected: checkoutController
+                                      .paymentMethodIndex ==
+                                      0,
+                                  onTap: () {
+                                    checkoutController
+                                        .setPaymentMethod(0);
+                                    Get.back();
+                                  },
                                 ),
-                                const SizedBox(
-                                    height: Dimensions.paddingSizeSmall),
-                                widget.isWalletActive &&
-                                        notHideWallet &&
-                                        !checkoutController.subscriptionOrder &&
-                                        isLoggedIn
-                                    ? PaymentButtonNew(
-                                        icon: Images.partialWallet,
-                                        title: 'pay_via_wallet'.tr,
-                                        isSelected: checkoutController
-                                                .paymentMethodIndex ==
-                                            1,
-                                        onTap: () {
-                                          if (canSelectWallet) {
-                                            checkoutController
-                                                .setPaymentMethod(1);
-                                            Get.back();
-                                          } else if (checkoutController
-                                              .isPartialPay) {
-                                            showCustomSnackBar(
-                                              'you_can_not_user_wallet_in_partial_payment'
-                                                  .tr,
-                                            );
-                                            Get.back();
-                                          } else {
-                                            showCustomSnackBar(
-                                              'your_wallet_have_not_sufficient_balance'
-                                                  .tr,
-                                            );
-                                            Get.back();
-                                          }
-                                        },
-                                      )
-                                    : const SizedBox(),
-                              ],
-                            )
+                              )
+                                  : const SizedBox(),
+                              SizedBox(
+                                width: (widget.isDigitalPaymentActive && notHideDigital) ? 10 : 0,
+                              ),
+                              widget.isDigitalPaymentActive &&
+                                  notHideDigital
+                                  ? Expanded(
+                                child: PaymentButtonNew(
+                                  icon: Images.digitalPayment,
+                                  title: 'pay_visa'.tr,
+                                  isSelected: checkoutController
+                                      .paymentMethodIndex ==
+                                      2,
+                                  onTap: () {
+                                    checkoutController
+                                        .setPaymentMethod(2);
+                                    Get.back();
+                                  },
+                                ),
+                              )
+                                  : const SizedBox(),
+                            ],
+                          ),
+                          const SizedBox(
+                              height: Dimensions.paddingSizeSmall),
+                          widget.isWalletActive &&
+                              notHideWallet &&
+                              !checkoutController.subscriptionOrder &&
+                              isLoggedIn
+                              ? PaymentButtonNew(
+                            icon: Images.partialWallet,
+                            title: 'pay_via_wallet'.tr,
+                            isSelected: checkoutController
+                                .paymentMethodIndex ==
+                                1,
+                            onTap: () {
+                              if (canSelectWallet) {
+                                checkoutController
+                                    .setPaymentMethod(1);
+                                Get.back();
+                              } else if (checkoutController
+                                  .isPartialPay) {
+                                showCustomSnackBar(
+                                  'you_can_not_user_wallet_in_partial_payment'
+                                      .tr,
+                                );
+                                Get.back();
+                              } else {
+                                showCustomSnackBar(
+                                  'your_wallet_have_not_sufficient_balance'
+                                      .tr,
+                                );
+                                Get.back();
+                              }
+                            },
+                          )
+                              : const SizedBox(),
+                        ],
+                      )
                           : const SizedBox(),
                       const SizedBox(height: Dimensions.paddingSizeLarge),
                     ],
@@ -302,15 +304,15 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
   List<SubscriptionDays> generateSubscriptionDays() {
     List<SubscriptionDays> days = [];
     for (int index = 0;
-        index < widget.checkoutController.selectedDays.length;
-        index++) {
+    index < widget.checkoutController.selectedDays.length;
+    index++) {
       if (widget.checkoutController.selectedDays[index] != null) {
         days.add(SubscriptionDays(
           day: widget.checkoutController.subscriptionType == 'weekly'
               ? (index == 6 ? 0 : (index + 1)).toString()
               : widget.checkoutController.subscriptionType == 'monthly'
-                  ? (index + 1).toString()
-                  : index.toString(),
+              ? (index + 1).toString()
+              : index.toString(),
           time: DateConverter.dateToTime(
               widget.checkoutController.selectedDays[index]!),
         ));
@@ -339,8 +341,8 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                 values: OrderVariationValue(label: [])));
             // ,qty: 0
             for (int j = 0;
-                j < cart.product!.variations![i].variationValues!.length;
-                j++) {
+            j < cart.product!.variations![i].variationValues!.length;
+            j++) {
               if (cart.variations![i][j]!) {
                 variations[variations.length - 1].values!.label!.add(
                     cart.product!.variations![i].variationValues![j].level);
@@ -381,8 +383,8 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
       DateTime date = widget.checkoutController.selectedDateSlot == 0
           ? DateTime.now()
           : widget.checkoutController.selectedDateSlot == 1
-              ? DateTime.now().add(const Duration(days: 1))
-              : widget.checkoutController.selectedCustomDate ?? DateTime.now();
+          ? DateTime.now().add(const Duration(days: 1))
+          : widget.checkoutController.selectedCustomDate ?? DateTime.now();
       DateTime startTime = widget.checkoutController
           .timeSlots![widget.checkoutController.selectedTimeSlot!].startTime!;
       scheduleStartDate = DateTime(date.year, date.month, date.day,

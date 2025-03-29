@@ -309,12 +309,14 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                         "free_delivery") {
                       deliveryCharge = 0;
                       return orderAmount + deliveryCharge;
-                    } else if (AppConstants.isUseButtonTapped == true) {
-                      return ((orderAmount + groupedDeliveryCharge) -
-                          (Get.find<ProfileController>()
-                              .userInfoModel!
-                              .walletBalance!));
-                    } else {
+                    } 
+                    // else if (AppConstants.isUseButtonTapped == true) {
+                    //   return ((orderAmount + groupedDeliveryCharge) -
+                    //       (Get.find<ProfileController>()
+                    //           .userInfoModel!
+                    //           .walletBalance!));
+                    // } 
+                    else {
                       return orderAmount + groupedDeliveryCharge;
                     }
                   }

@@ -71,7 +71,7 @@ class HomeScreen extends StatefulWidget {
     if (Get.find<SplashController>().configModel!.mostReviewedFoods == 1) {
       Get.find<ReviewController>().getReviewedProductList(reload, 'all', false);
     }
-    Get.find<RestaurantController>().getRestaurantList(1, reload);
+    // Get.find<RestaurantController>().getRestaurantList(1, reload);
     if (Get.find<AuthController>().isLoggedIn()) {
       await Get.find<ProfileController>().getUserInfo();
       Get.find<RestaurantController>()
@@ -537,67 +537,70 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
 
                             SliverToBoxAdapter(
-                              child: Center(
-                                  child: SizedBox(
-                                width: Dimensions.webMaxWidth,
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const BannerViewWidget(),
-                                      const BadWeatherWidget(),
-                                      const WhatOnYourMindViewWidget(),
-                                      const TodayTrendsViewWidget(),
-                                      const LocationBannerViewWidget(),
-                                      _isLogin
-                                          ? const OrderAgainViewWidget()
-                                          : const SizedBox(),
-                                      _configModel!.mostReviewedFoods == 1
-                                          ? const BestReviewItemViewWidget(
-                                              isPopular: false)
-                                          : const SizedBox(),
-                                      const CuisineViewWidget(),
-                                      _configModel.popularRestaurant == 1
-                                          ? const PopularRestaurantsViewWidget()
-                                          : const SizedBox(),
-                                      const ReferBannerViewWidget(),
-                                      _isLogin
-                                          ? const PopularRestaurantsViewWidget(
-                                              isRecentlyViewed: true)
-                                          : const SizedBox(),
-                                      _configModel.popularFood == 1
-                                          ? const PopularFoodNearbyViewWidget()
-                                          : const SizedBox(),
-                                      _configModel.newRestaurant == 1
-                                          ? const NewOnStackFoodViewWidget(
-                                              isLatest: true)
-                                          : const SizedBox(),
-                                      const PromotionalBannerViewWidget(),
-                                    ]),
-                              )),
-                            ),
-
-                            SliverPersistentHeader(
-                              pinned: true,
-                              delegate: SliverDelegate(
-                                height: 85,
-                                child: const AllRestaurantFilterWidget(),
-                              ),
-                            ),
-
-                            SliverToBoxAdapter(
-                                child: Center(
-                                    child: FooterViewWidget(
                               child: Padding(
-                                padding: ResponsiveHelper.isDesktop(context)
-                                    ? EdgeInsets.zero
-                                    : const EdgeInsets.only(
-                                        bottom:
-                                            Dimensions.paddingSizeOverLarge),
-                                child: AllRestaurantsWidget(
-                                    scrollController: _scrollController),
+                                padding: const EdgeInsets.only(bottom: 25.0),
+                                child: Center(
+                                    child: SizedBox(
+                                  width: Dimensions.webMaxWidth,
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const BannerViewWidget(),
+                                        const BadWeatherWidget(),
+                                        const WhatOnYourMindViewWidget(),
+                                        const TodayTrendsViewWidget(),
+                                        const LocationBannerViewWidget(),
+                                        _isLogin
+                                            ? const OrderAgainViewWidget()
+                                            : const SizedBox(),
+                                        _configModel!.mostReviewedFoods == 1
+                                            ? const BestReviewItemViewWidget(
+                                                isPopular: false)
+                                            : const SizedBox(),
+                                        const CuisineViewWidget(),
+                                        _configModel.popularRestaurant == 1
+                                            ? const PopularRestaurantsViewWidget()
+                                            : const SizedBox(),
+                                        const ReferBannerViewWidget(),
+                                        _isLogin
+                                            ? const PopularRestaurantsViewWidget(
+                                                isRecentlyViewed: true)
+                                            : const SizedBox(),
+                                        _configModel.popularFood == 1
+                                            ? const PopularFoodNearbyViewWidget()
+                                            : const SizedBox(),
+                                        _configModel.newRestaurant == 1
+                                            ? const NewOnStackFoodViewWidget(
+                                                isLatest: true)
+                                            : const SizedBox(),
+                                        const PromotionalBannerViewWidget(),
+                                      ]),
+                                )),
                               ),
-                            ))),
+                            ),
+
+                            // SliverPersistentHeader(
+                            //   pinned: true,
+                            //   delegate: SliverDelegate(
+                            //     height: 85,
+                            //     child: const AllRestaurantFilterWidget(),
+                            //   ),
+                            // ),
+
+                            // SliverToBoxAdapter(
+                            //     child: Center(
+                            //         child: FooterViewWidget(
+                            //   child: Padding(
+                            //     padding: ResponsiveHelper.isDesktop(context)
+                            //         ? EdgeInsets.zero
+                            //         : const EdgeInsets.only(
+                            //             bottom:
+                            //                 Dimensions.paddingSizeOverLarge),
+                            //     child: AllRestaurantsWidget(
+                            //         scrollController: _scrollController),
+                            //   ),
+                            // ))),
                           ],
                         ),
             ),

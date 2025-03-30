@@ -168,8 +168,8 @@ class WhatOnYourMindViewWidget extends StatelessWidget {
                               style: robotoMedium.copyWith(
                                 fontSize: Dimensions.fontSizeSmall,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                              overflow: TextOverflow.visible,
                               textAlign: TextAlign.center,
                             )),
                           ]),

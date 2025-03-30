@@ -599,7 +599,7 @@ class OrderPlaceButton extends StatelessWidget {
           ? AppConstants
               .deliveryInstructionList[checkoutController.selectedInstruction]
           : '',
-      partialPayment: AppConstants.isUseButtonTapped ? 1 : 0,
+      partialPayment: AppConstants.isUseButtonTapped && !(walletAmount  ==  orderAmount)? 1 : 0,
       guestId:
           isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
       isBuyNow: fromCart ? 0 : 1,

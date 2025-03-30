@@ -116,6 +116,7 @@ class BottomSectionWidget extends StatelessWidget {
                     .deliveryFeeMultiVendor!
         : deliveryCharge;
     calcTotal() {
+      debugPrint("delivery charge button section:: $deliveryCharge");
       if (couponController.coupon?.couponType == "free_delivery") {
         deliveryCharge = 0;
         return orderAmount + deliveryCharge;

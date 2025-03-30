@@ -315,7 +315,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       deliveryCharge = 0;
                     }
 
-                    double totalAmount = orderAmount + deliveryCharge;
+                    double totalAmount = orderAmount + groupedDeliveryCharge;
 
                     if (AppConstants.isUseButtonTapped) {
                       double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;

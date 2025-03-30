@@ -65,6 +65,7 @@ dependencies:
   #  flutter_polyline_points: ^2.0.0
   custom_info_window: ^1.0.1
   webview_flutter: ^4.7.0
+  pretty_http_logger: ^1.0.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

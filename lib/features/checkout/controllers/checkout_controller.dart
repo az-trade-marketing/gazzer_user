@@ -366,6 +366,7 @@ class CheckoutController extends GetxController implements GetxService {
 
   void changePartialPayment({bool isUpdate = true}) {
     _isPartialPay = !_isPartialPay;
+    _paymentMethodIndex = 2;
     if (isUpdate) {
       update();
     }

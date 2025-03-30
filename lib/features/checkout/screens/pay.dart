@@ -30,6 +30,7 @@ class PayScreen extends StatefulWidget {
   final double extraPackagingAmount;
   final int subscriptionQty;
   final List<SubscriptionDays> days;
+  final double? wallet;
 
   const PayScreen({
     super.key,
@@ -45,7 +46,7 @@ class PayScreen extends StatefulWidget {
     required this.subscriptionQty,
     required this.fromCart,
     required this.deliveryCharge,
-    required this.days,
+    required this.days,required this.wallet,
   });
 
   @override
@@ -73,7 +74,8 @@ class _PayScreenState extends State<PayScreen> {
             paymentStatus = result?['payment_status'];
             paymentMessage = result?['message'];
             if (paymentStatus == "success") {
-              startPaymentProcess(widget.paymentId);
+              //todo need to check to call on success one time only it getting on line 93
+           //   startPaymentProcess(widget.paymentId);
             } else {
               backToApp();
               showCustomSnackBar(paymentMessage ?? "failed".tr);
@@ -160,6 +162,7 @@ class _PayScreenState extends State<PayScreen> {
                     widget.checkoutController.selectedTimeSlot == 0)
                 ? null
                 : DateConverter.dateToDateAndTime(widget.scheduleStartDate),
+        wallet: widget.wallet??0.0,
         orderAmount: widget.totalPrice,
         orderNote: widget.checkoutController.noteController.text,
         orderType: widget.checkoutController.orderType,

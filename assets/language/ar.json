@@ -181,6 +181,7 @@
   "delivery_to": "التوصيل إلى",
   "confirm_order": "أكد الطلب",
   "proceed_to_checkout": "إجراء عملية الدفع",
+  "not_active": "غير متاح",
   "you_placed_the_order_successfully": "قمت بإجراء الطلب بنجاح",
   "your_order_is_failed_to_place": "فشل تقديم طلبك",
   "your_order_is_failed_to_place_because": "فشل تقديم الطلب الخاص بك بسبب فشل الدفع الخاص بك. يرجى التأكد من الدفع الناجح لتقديم طلب.",

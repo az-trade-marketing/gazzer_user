@@ -9,11 +9,13 @@ import 'package:http/http.dart' as http;
 class Paymob {
   Future<Map<String, String>?> getPaymobIntention({
     required double amount,
+    required List<int> cartIDs,
   }) async {
     try {
+      String url = "${AppConstants.baseUrl}/api/v1/customer/paymob/intention?amount=$amount&cart_ids=${cartIDs.join(",")}";
+      debugPrint("url:::: $url");
       final response = await http.get(
-        Uri.parse(
-            "${AppConstants.baseUrl}/api/v1/customer/paymob/intention?amount=$amount"),
+        Uri.parse(url),
         headers: {
           "Authorization":
               "Bearer ${Get.find<AuthController>().getUserToken()}",

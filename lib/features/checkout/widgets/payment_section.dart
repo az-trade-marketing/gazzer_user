@@ -118,9 +118,10 @@ class PaymentSection extends StatelessWidget {
                   ),
                 ).then((value){
                   if(value=='visa'){
-                    if(Get.find<ProfileController>().userInfoModel!.walletBalance! < total){
-                      AppConstants.isUseButtonTapped = true;
-                    }
+                    //todo no need to make it
+                 //   if(Get.find<ProfileController>().userInfoModel!.walletBalance! < total){
+                 //     AppConstants.isUseButtonTapped = true;
+                 //   }
                   }
                 });
               }

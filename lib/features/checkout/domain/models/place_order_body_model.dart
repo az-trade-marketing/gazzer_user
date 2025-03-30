@@ -41,6 +41,7 @@ class PlaceOrderBodyModel {
   int? _isBuyNow;
   String? _guestEmail;
   double? _extraPackagingAmount;
+  double? _wallet;
   String? _paymentId;
 
   PlaceOrderBodyModel({
@@ -82,7 +83,7 @@ class PlaceOrderBodyModel {
     required int isBuyNow,
     required String? guestEmail,
     required double extraPackagingAmount,
-    String? paymentId,
+    String? paymentId, required double wallet,
   }) {
     _cart = cart;
     _couponDiscountAmount = couponDiscountAmount;
@@ -123,11 +124,13 @@ class PlaceOrderBodyModel {
     _guestEmail = guestEmail;
     _extraPackagingAmount = extraPackagingAmount;
     _paymentId = paymentId;
+    _wallet = wallet;
   }
 
   List<OnlineCart>? get cart => _cart;
 
   double? get couponDiscountAmount => _couponDiscountAmount;
+  double? get wallet => _wallet;
 
   String? get couponDiscountTitle => _couponDiscountTitle;
 
@@ -229,6 +232,7 @@ class PlaceOrderBodyModel {
     _house = json['house'];
     _floor = json['floor'];
     _dmTips = json['dm_tips'];
+    _wallet = json['wallet'] ??0.0;
     _subscriptionOrder = json['subscription_order'];
     _subscriptionType = json['subscription_type'];
     if (json['subscription_days'] != null) {
@@ -292,6 +296,7 @@ class PlaceOrderBodyModel {
     data['dm_tips'] = _dmTips;
     data['subscription_order'] = _subscriptionOrder;
     data['subscription_type'] = _subscriptionType;
+    data['wallet'] = _wallet;
     if (_subscriptionDays != null) {
       data['subscription_days'] =
           jsonEncode(_subscriptionDays!.map((v) => v.toJson()).toList());

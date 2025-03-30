@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:pretty_http_logger/pretty_http_logger.dart';
 
 class ApiClient extends GetxService {
   final String appBaseUrl;
@@ -23,7 +24,9 @@ class ApiClient extends GetxService {
 
   String? token;
   late Map<String, String> _mainHeaders;
-
+  HttpClientWithMiddleware httpClient = HttpClientWithMiddleware.build(middlewares: [
+    HttpLogger(logLevel: LogLevel.BODY),
+  ]);
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
     token = sharedPreferences.getString(AppConstants.token);
     if (kDebugMode) {
@@ -70,7 +73,7 @@ class ApiClient extends GetxService {
       if (kDebugMode) {
         debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
       }
-      http.Response response = await http
+      http.Response response = await httpClient
           .get(
             Uri.parse(appBaseUrl + uri),
             headers: headers ?? _mainHeaders,
@@ -91,9 +94,12 @@ class ApiClient extends GetxService {
     try {
       if (kDebugMode) {
         debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
-        log('====> API Body: $body');
+        String prettyJson = JsonEncoder.withIndent('  ').convert(body);
+        debugPrint('=========> body');
+        log(prettyJson);
+      //  log('====> API Body: $body');
       }
-      http.Response response = await http
+      http.Response response = await httpClient
           .post(
             Uri.parse(appBaseUrl + uri),
             body: jsonEncode(body),
@@ -173,7 +179,7 @@ class ApiClient extends GetxService {
         debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
         debugPrint('====> API Body: $body');
       }
-      http.Response response = await http
+      http.Response response = await httpClient
           .put(
             Uri.parse(appBaseUrl + uri),
             body: jsonEncode(body),
@@ -192,7 +198,7 @@ class ApiClient extends GetxService {
       if (kDebugMode) {
         debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
       }
-      http.Response response = await http
+      http.Response response = await httpClient
           .delete(
             Uri.parse(appBaseUrl + uri),
             headers: headers ?? _mainHeaders,

@@ -1,5 +1,7 @@
 import 'package:gazzer_userapp/common/models/product_model.dart';
 
+import '../../../../common/models/restaurant_model.dart';
+
 class CartModel {
   int? _id;
   double? _price;
@@ -13,6 +15,7 @@ class CartModel {
   Product? _product;
   int? _quantityLimit;
   List<List<int?>>? _variationsStock;
+  //Restaurant? _restaurant;
 
   CartModel(
       int? id,
@@ -26,7 +29,7 @@ class CartModel {
       Product? product,
       List<List<bool?>> variations,
       int? quantityLimit,
-      List<List<int?>> variationsStock) {
+      List<List<int?>> variationsStock/*,Restaurant restaurant*/) {
     _id = id;
     _price = price;
     _discountedPrice = discountedPrice;
@@ -39,9 +42,12 @@ class CartModel {
     _variations = variations;
     _quantityLimit = quantityLimit;
     _variationsStock = variationsStock;
+  //  _restaurant = restaurant;
   }
 
   int? get id => _id;
+
+ // Restaurant? get restaurant => _restaurant;
 
   double? get price => _price;
 
@@ -75,6 +81,7 @@ class CartModel {
     _discountedPrice = json['discounted_price']?.toDouble();
     _discountAmount = json['discount_amount']?.toDouble();
     _quantity = json['quantity'];
+   // _restaurant = json['restaurant'];
     if (json['add_on_ids'] != null) {
       _addOnIds = [];
       json['add_on_ids'].forEach((v) {
@@ -120,6 +127,7 @@ class CartModel {
     data['discounted_price'] = _discountedPrice;
     data['discount_amount'] = _discountAmount;
     data['quantity'] = _quantity;
+   // data['restaurant'] = restaurant?.toJson();
     if (_addOnIds != null) {
       data['add_on_ids'] = _addOnIds!.map((v) => v.toJson()).toList();
     }

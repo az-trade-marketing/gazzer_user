@@ -2,6 +2,7 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/product_model.dart';
+import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_button_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_favourite_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_image_widget.dart';
@@ -1815,7 +1816,7 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
                                               discountType,
                                               addOnIdList,
                                               addOnsList,
-                                              price,
+                                              price
                                             );
                                           } else {
                                               _onButtonPressed(
@@ -1899,7 +1900,7 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
       String? discountType,
       List<AddOn> addOnIdList,
       List<AddOns> addOnsList,
-      double priceWithAddonsVariation,) async {
+      double priceWithAddonsVariation) async {
     _processVariationWarning(productController);
 
     if (productController.canAddToCartProduct) {

@@ -209,8 +209,6 @@ class BottomSectionWidget extends StatelessWidget {
                 cartList: cartList,
           backBottomSheetCalc: (){
 
-
-
           }
               )
             : const SizedBox(),

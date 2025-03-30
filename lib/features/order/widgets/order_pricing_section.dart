@@ -289,7 +289,7 @@ class OrderPricingSection extends StatelessWidget {
                                   )),
                               Text(
                                 PriceConverter.convertPrice(
-                                    total + (order.payments?[0].amount ?? 0)),
+                                    total/* + (order.payments?[0].amount ?? 0)*/),
                                 textDirection: TextDirection.ltr,
                                 style: robotoMedium.copyWith(
                                     fontSize:
@@ -300,34 +300,25 @@ class OrderPricingSection extends StatelessWidget {
                               ),
                             ]),
                         const SizedBox(height: 10),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('paid_by_wallet'.tr,
-                                  style: robotoMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeSmall)),
-                              Text(
-                                PriceConverter.convertPrice(
-                                    order.payments?[0].amount ?? 0),
-                                style: robotoMedium.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall),
-                              ),
-                            ]),
-                        const SizedBox(height: 10),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${order.payments?[1].paymentStatus == 'paid' ? 'paid_by'.tr : 'due_amount'.tr} (${order.payments?[1].paymentMethod?.toString().replaceAll('_', ' ')})',
-                                style: robotoMedium.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall),
-                              ),
-                              Text(
-                                PriceConverter.convertPrice(total),
-                                style: robotoMedium.copyWith(
-                                    fontSize: Dimensions.fontSizeSmall),
-                              ),
-                            ]),
+                        ...order.payments?.map((e) {
+                          String type = e.paymentMethod == "wallet"?'paid_by_wallet'.tr:'${e.paymentStatus == 'paid' ? 'paid_by'.tr : 'due_amount'.tr} (${e.paymentMethod?.toString().replaceAll('_', ' ')})';
+                          return  Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(type,
+                                      style: robotoMedium.copyWith(
+                                          fontSize: Dimensions.fontSizeSmall)),
+                                  Text(
+                                    PriceConverter.convertPrice(
+                                        e.amount ?? 0),
+                                    style: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeSmall),
+                                  ),
+                                ]),
+                          );
+                        }).toList()??[],
                       ]),
                     ),
                   )

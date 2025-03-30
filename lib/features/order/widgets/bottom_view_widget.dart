@@ -45,9 +45,9 @@ class BottomViewWidget extends StatelessWidget {
     bool pickedUp = order.orderStatus == AppConstants.pickedUp;
     bool delivered = order.orderStatus == AppConstants.delivered;
     bool cancelled = order.orderStatus == AppConstants.cancelled;
-    bool cod = order.paymentMethod == 'cash_on_delivery';
     bool digitalPay = order.paymentMethod == 'digital_payment';
     bool offlinePay = order.paymentMethod == 'offline_payment';
+    bool partialPayment = order.paymentMethod == 'partial_payment';
 
     return Column(children: [
       !orderController.showCancelled
@@ -287,10 +287,10 @@ class BottomViewWidget extends StatelessWidget {
           ),
         ),
       ),
-      (!offlinePay &&
+      /*(!offlinePay &&
               (order.orderStatus == 'failed' || cancelled) &&
-              !cod &&
-              Get.find<SplashController>().configModel!.cashOnDelivery!)
+              Get.find<SplashController>().configModel!.cashOnDelivery! && !partialPayment)*/
+    false
           ? Center(
               child: Container(
                 width: Dimensions.webMaxWidth,

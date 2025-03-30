@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 
 class AppConstants {
   static const String appName = 'Gazzer';
-  static const double appVersion = 7.6;
+  static const double appVersion = 8.2;
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
-  static const String webHostedUrl = 'https://carrot.refilex.com';
+  static const String webHostedUrl = 'https://dashboard.gazzerapp.com';
   static const String baseUrl = webHostedUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';

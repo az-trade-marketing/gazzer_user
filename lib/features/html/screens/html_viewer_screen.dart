@@ -13,7 +13,6 @@ import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter_html/flutter_html.dart';
-
 class HtmlViewerScreen extends StatefulWidget {
   final HtmlType htmlType;
 
@@ -121,9 +120,9 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
                                         ),
                                       )
                                     : const SizedBox(),
-                                (htmlController.htmlText!.contains('<ol>') ||
+                               /* (htmlController.htmlText!.contains('<ol>') ||
                                         htmlController.htmlText!
-                                            .contains('<ul>'))
+                                            .contains('<ul>'))*/true
                                     ? HtmlWidget(
                                         htmlController.htmlText ?? '',
                                         key: Key(widget.htmlType.toString()),
@@ -133,7 +132,7 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
                                                   .externalApplication);
                                         },
                                       )
-                                    : SelectableHtml(
+                                    : Container()/*SelectableHtml(
                                         data: htmlController.htmlText,
                                         shrinkWrap: true,
                                         onLinkTap: (String? url,
@@ -148,7 +147,7 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
                                           }
                                           html.window.open(url, "_blank");
                                         },
-                                      ),
+                                      )*/,
                               ]),
                         ),
                       ),

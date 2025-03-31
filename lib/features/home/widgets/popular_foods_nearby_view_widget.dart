@@ -1,4 +1,4 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as c;
 import 'package:gazzer_userapp/features/home/widgets/arrow_icon_button_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/item_card_widget.dart';
 import 'package:gazzer_userapp/features/product/controllers/product_controller.dart';
@@ -19,7 +19,7 @@ class PopularFoodNearbyViewWidget extends StatefulWidget {
 
 class _PopularFoodNearbyViewWidgetState
     extends State<PopularFoodNearbyViewWidget> {
-  CarouselController carouselController = CarouselController();
+  c.CarouselSliderController carouselController = c.CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +75,9 @@ class _PopularFoodNearbyViewWidgetState
                               : const SizedBox(),
                           productController.popularProductList != null
                               ? Expanded(
-                                  child: CarouselSlider.builder(
+                                  child: c.CarouselSlider.builder(
                                     carouselController: carouselController,
-                                    options: CarouselOptions(
+                                    options: c.CarouselOptions(
                                       height: ResponsiveHelper.isMobile(context)
                                           ? 300
                                           : 300,

@@ -21,8 +21,6 @@ abstract class ChatServiceInterface {
   int findOutConversationUnreadIndex(
       List<Conversation?>? conversations, int? conversationID);
 
-  Future<XFile> compressImage(XFile file);
-
   List<MultipartBody> processMultipartBody(List<XFile> chatImage);
 
   Future<MessageModel?> sendMessage(String message, List<MultipartBody> images,

@@ -5,9 +5,8 @@ import 'package:gazzer_userapp/features/chat/domain/repositories/chat_repository
 import 'package:gazzer_userapp/features/chat/domain/services/chat_service_interface.dart';
 import 'package:gazzer_userapp/features/chat/enums/user_type_enum.dart';
 import 'package:gazzer_userapp/features/notification/domain/models/notification_body_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
-import 'package:image_compression_flutter/image_compression_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatService implements ChatServiceInterface {
   final ChatRepositoryInterface chatRepositoryInterface;
@@ -71,29 +70,6 @@ class ChatService implements ChatServiceInterface {
     return index0;
   }
 
-  @override
-  Future<XFile> compressImage(XFile file) async {
-    final ImageFile input =
-        ImageFile(filePath: file.path, rawBytes: await file.readAsBytes());
-    final Configuration config = Configuration(
-      outputType: ImageOutputType.webpThenPng,
-      useJpgPngNativeCompressor: false,
-      quality: (input.sizeInBytes / 1048576) < 2
-          ? 50
-          : (input.sizeInBytes / 1048576) < 5
-              ? 30
-              : (input.sizeInBytes / 1048576) < 10
-                  ? 2
-                  : 1,
-    );
-    final ImageFile output = await compressor
-        .compress(ImageFileConfiguration(input: input, config: config));
-    if (kDebugMode) {
-      print('Input size : ${input.sizeInBytes / 1048576}');
-      print('Output size : ${output.sizeInBytes / 1048576}');
-    }
-    return XFile.fromData(output.rawBytes);
-  }
 
   @override
   List<MultipartBody> processMultipartBody(List<XFile> chatImage) {

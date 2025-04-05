@@ -43,11 +43,9 @@ dependencies:
   dotted_border: ^2.0.0+2
   share_plus: ^7.2.1
   custom_map_markers: ^0.0.2+1
-  image_compression_flutter: ^1.0.4
   card_swiper: ^3.0.1
   expandable_bottom_sheet: ^1.1.1+1
-  uni_links: ^0.5.1
-  sign_in_with_apple: ^5.0.0
+  sign_in_with_apple: ^7.0.1
   flutter_html: ^3.0.0
  # flutter_html_v3: ^3.0.6
   flutter_widget_from_html: ^0.16.0

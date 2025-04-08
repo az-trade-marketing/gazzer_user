@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_app_bar_widget.dart';
-import 'package:gazzer_userapp/common/widgets/custom_ink_well_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
 import 'package:gazzer_userapp/common/widgets/footer_view_widget.dart';
 import 'package:gazzer_userapp/common/widgets/menu_drawer_widget.dart';
@@ -13,21 +12,39 @@ import 'package:gazzer_userapp/common/widgets/web_page_title_widget.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
 import 'package:gazzer_userapp/features/cart/widgets/cart_product_widget.dart';
 import 'package:gazzer_userapp/features/cart/widgets/checkout_button_widget.dart';
+import 'package:gazzer_userapp/features/cart/widgets/pricing_view_widget.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
-import 'package:gazzer_userapp/helper/date_converter.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
 
+// فئة مساعدة لتجميع معلومات المطعم والطلبات
+class RestaurantCartGroup {
+  final int id;
+  final String name;
+  bool isOpen;
+  List<int> cartIndices;
+
+  RestaurantCartGroup({
+    required this.id,
+    required this.name,
+    required this.isOpen,
+    required this.cartIndices,
+  });
+}
+
 class CartScreen extends StatefulWidget {
   final bool fromNav;
   final bool fromReorder;
 
-  const CartScreen(
-      {super.key, required this.fromNav, this.fromReorder = false});
+  const CartScreen({
+    super.key, 
+    required this.fromNav, 
+    this.fromReorder = false
+  });
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -35,23 +52,32 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final ScrollController scrollController = ScrollController();
+  
+  // خريطة لتخزين معلومات المطاعم وطلباتها
+  Map<int, RestaurantCartGroup> _restaurantCartGroups = {};
+
+  // حالة التحميل لحالة المطاعم
+  bool _isLoadingRestaurantStatus = true;
 
   @override
   void initState() {
     super.initState();
-
     initCall();
   }
 
+  // دالة التهيئة الأولية
   Future<void> initCall() async {
     Get.find<RestaurantController>().makeEmptyRestaurant(willUpdate: false);
     await Get.find<CartController>().getCartDataOnline();
+    
     if (Get.find<CartController>().cartList.isNotEmpty) {
-      await Get.find<RestaurantController>().getRestaurantDetails(
-          Restaurant(
-              id: Get.find<CartController>().cartList[0].product!.restaurantId,
-              name: null),
-          fromCart: true);
+      setState(() {
+        _isLoadingRestaurantStatus = true;
+      });
+      
+      await _updateRestaurantMaps();
+      
+      // معالجة عناصر السلة
       Get.find<CartController>().calculationCart();
       if (Get.find<CartController>().addCutlery) {
         Get.find<CartController>().updateCutlery(isUpdate: false);
@@ -60,9 +86,93 @@ class _CartScreenState extends State<CartScreen> {
         Get.find<CartController>().toggleExtraPackage(willUpdate: false);
       }
       Get.find<CartController>().setAvailableIndex(-1, isUpdate: false);
-      Get.find<RestaurantController>().getCartRestaurantSuggestedItemList(
-          Get.find<CartController>().cartList[0].product!.restaurantId);
+      
+      setState(() {
+        _isLoadingRestaurantStatus = false;
+      });
+      
       showReferAndEarnSnackBar();
+    }
+  }
+
+  // تحديث خريطة المطاعم والطلبات
+  Future<void> _updateRestaurantMaps() async {
+    // مسح الخريطة السابقة
+    _restaurantCartGroups.clear();
+    
+    CartController cartController = Get.find<CartController>();
+    
+    // تجميع عناصر السلة حسب المطعم
+    for (int i = 0; i < cartController.cartList.length; i++) {
+      // التأكد من صحة بيانات المنتج والمطعم
+      if (cartController.cartList[i].product == null ||
+          cartController.cartList[i].product?.restaurantId == null) {
+        continue; // تخطي العناصر غير الصالحة
+      }
+
+      int restaurantId = cartController.cartList[i].product!.restaurantId!;
+
+      // جلب تفاصيل المطعم إذا لم تكن موجودة
+      if (!_restaurantCartGroups.containsKey(restaurantId)) {
+        await Get.find<RestaurantController>().getRestaurantDetails(
+          Restaurant(id: restaurantId, name: null),
+          fromCart: true
+        );
+        
+        Restaurant? restaurant = Get.find<RestaurantController>().restaurant;
+        if (restaurant != null) {
+          bool isOpen = Get.find<RestaurantController>().isRestaurantOpenNow(
+            restaurant.active!,
+            restaurant.schedules
+          );
+          
+          _restaurantCartGroups[restaurantId] = RestaurantCartGroup(
+            id: restaurantId,
+            name: restaurant.name ?? '',
+            isOpen: isOpen,
+            cartIndices: [i]
+          );
+        }
+      } else {
+        // إضافة فهرس العنصر للمطعم الموجود
+        _restaurantCartGroups[restaurantId]!.cartIndices.add(i);
+      }
+      
+      // جلب العناصر المقترحة للمطعم
+      Get.find<RestaurantController>().getCartRestaurantSuggestedItemList(restaurantId);
+    }
+  }
+
+  // التحقق مما إذا كانت جميع المطاعم مفتوحة
+  bool areAllRestaurantsOpen() {
+    return _restaurantCartGroups.values.every((group) => group.isOpen);
+  }
+  
+  // إزالة عناصر مطعم بالكامل
+  void removeRestaurantItems(int restaurantId, CartController cartController) async {
+    setState(() {
+      _isLoadingRestaurantStatus = true;
+    });
+    
+    try {
+      // استدعاء دالة المتحكم لإزالة جميع العناصر من هذا المطعم
+      bool success = await cartController.removeRestaurantItemsOnline(restaurantId);
+      
+      if (success) {
+        // تحديث خريطة المطاعم بعد الإزالة الناجحة
+        await _updateRestaurantMaps();
+        
+        showCustomSnackBar('removed_restaurant_from_cart'.tr, isError: false);
+      } else {
+        showCustomSnackBar('failed_to_remove_restaurant_items'.tr, isError: true);
+      }
+    } catch (e) {
+      print('Error removing restaurant items: $e');
+      showCustomSnackBar('failed_to_remove_restaurant_items'.tr, isError: true);
+    } finally {
+      setState(() {
+        _isLoadingRestaurantStatus = false;
+      });
     }
   }
 
@@ -78,19 +188,12 @@ class _CartScreenState extends State<CartScreen> {
       body: GetBuilder<RestaurantController>(builder: (restaurantController) {
         return GetBuilder<CartController>(
           builder: (cartController) {
-            bool isRestaurantOpen = true;
-
-            if (restaurantController.restaurant != null) {
-              isRestaurantOpen = restaurantController.isRestaurantOpenNow(
-                  restaurantController.restaurant!.active!,
-                  restaurantController.restaurant!.schedules);
-            }
-
-            // print('====build====cart page check: ${cartController.cartList[0].variations}');
-
+            bool allRestaurantsOpen = areAllRestaurantsOpen();
+            
             bool suggestionEmpty =
                 (restaurantController.suggestedItems != null &&
                     restaurantController.suggestedItems!.isEmpty);
+                    
             return (cartController.isLoading && widget.fromReorder)
                 ? const Center(
                     child: SizedBox(
@@ -161,180 +264,187 @@ class _CartScreenState extends State<CartScreen> {
                                                                           minHeight: suggestionEmpty
                                                                               ? 0.6
                                                                               : 0.3,
-                                                                          child: Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                !isRestaurantOpen && restaurantController.restaurant != null
-                                                                                    ? !isDesktop
-                                                                                        ? Center(
-                                                                                            child: Padding(
-                                                                                              padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
-                                                                                              child: RichText(
-                                                                                                textAlign: TextAlign.center,
-                                                                                                text: TextSpan(children: [
-                                                                                                  TextSpan(text: 'currently_the_restaurant_is_unavailable_the_restaurant_will_be_available_at'.tr, style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
-                                                                                                  const TextSpan(text: ' '),
-                                                                                                  TextSpan(
-                                                                                                    text: restaurantController.restaurant!.restaurantOpeningTime == 'closed' ? 'tomorrow'.tr : DateConverter.timeStringToTime(restaurantController.restaurant!.restaurantOpeningTime!),
-                                                                                                    style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
-                                                                                                  ),
-                                                                                                ]),
-                                                                                              ),
-                                                                                            ),
-                                                                                          )
-                                                                                        : Container(
+                                                                          child: _isLoadingRestaurantStatus
+                                                                              ? Center(
+                                                                                  child: Padding(
+                                                                                    padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                                                                                    child: Column(
+                                                                                      mainAxisSize: MainAxisSize.min,
+                                                                                      children: [
+                                                                                        const CircularProgressIndicator(),
+                                                                                        const SizedBox(height: Dimensions.paddingSizeSmall),
+                                                                                        Text(
+                                                                                          'checking_restaurant_status'.tr,
+                                                                                          style: robotoRegular.copyWith(
+                                                                                            color: Theme.of(context).disabledColor,
+                                                                                            fontSize: Dimensions.fontSizeSmall,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              : Column(
+                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                  children: [
+                                                                                    // رسالة التحذير إذا كان أي مطعم مغلق
+                                                                                    !allRestaurantsOpen && _restaurantCartGroups.isNotEmpty
+                                                                                        ? Container(
                                                                                             padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                                                                                            margin: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
                                                                                             decoration: BoxDecoration(
                                                                                               color: Theme.of(context).primaryColor.withOpacity(0.1),
-                                                                                              borderRadius: const BorderRadius.only(
-                                                                                                topLeft: Radius.circular(Dimensions.radiusDefault),
-                                                                                                topRight: Radius.circular(Dimensions.radiusDefault),
-                                                                                              ),
+                                                                                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                                                                                             ),
-                                                                                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                                                                              RichText(
-                                                                                                textAlign: TextAlign.start,
-                                                                                                text: TextSpan(children: [
-                                                                                                  TextSpan(text: 'currently_the_restaurant_is_unavailable_the_restaurant_will_be_available_at'.tr, style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
-                                                                                                  const TextSpan(text: ' '),
-                                                                                                  TextSpan(
-                                                                                                    text: restaurantController.restaurant!.restaurantOpeningTime == 'closed' ? 'tomorrow'.tr : DateConverter.timeStringToTime(restaurantController.restaurant!.restaurantOpeningTime!),
-                                                                                                    style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
-                                                                                                  ),
-                                                                                                ]),
-                                                                                              ),
-                                                                                              !isRestaurantOpen
-                                                                                                  ? Align(
-                                                                                                      alignment: Alignment.center,
-                                                                                                      child: InkWell(
-                                                                                                        onTap: () {
-                                                                                                          cartController.clearCartOnline();
-                                                                                                        },
-                                                                                                        child: Container(
-                                                                                                          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                                                                                                          margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                                                                                                          decoration: BoxDecoration(
-                                                                                                            color: Theme.of(context).cardColor,
-                                                                                                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                                                                                                            border: Border.all(width: 1, color: Theme.of(context).disabledColor.withOpacity(0.3)),
-                                                                                                          ),
-                                                                                                          child: !cartController.isClearCartLoading
-                                                                                                              ? Row(mainAxisSize: MainAxisSize.min, children: [
-                                                                                                                  Icon(CupertinoIcons.delete_solid, color: Theme.of(context).colorScheme.error, size: 20),
-                                                                                                                  const SizedBox(width: Dimensions.paddingSizeSmall),
-                                                                                                                  Text(
-                                                                                                                    cartController.cartList.length > 1 ? 'remove_all_from_cart'.tr : 'remove_from_cart'.tr,
-                                                                                                                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge!.color?.withOpacity(0.7)),
-                                                                                                                  ),
-                                                                                                                ])
-                                                                                                              : const SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    )
-                                                                                                  : const SizedBox(),
-                                                                                            ]),
-                                                                                          )
-                                                                                    : const SizedBox(),
-                                                                                ConstrainedBox(
-                                                                                  constraints: BoxConstraints(maxHeight: isDesktop ? MediaQuery.of(context).size.height * 0.4 : double.infinity),
-                                                                                  child: ListView.builder(
-                                                                                    physics: isDesktop ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
-                                                                                    shrinkWrap: true,
-                                                                                    padding: const EdgeInsets.only(
-                                                                                      left: Dimensions.paddingSizeDefault,
-                                                                                      right: Dimensions.paddingSizeDefault,
-                                                                                      top: Dimensions.paddingSizeDefault,
-                                                                                    ),
-                                                                                    itemCount: cartController.cartList.length,
-                                                                                    itemBuilder: (context, index) {
-                                                                                      return CartProductWidget(
-                                                                                        cart: cartController.cartList[index],
-                                                                                        cartIndex: index,
-                                                                                        addOns: cartController.addOnsList[index],
-                                                                                        isAvailable: cartController.availableList[index],
-                                                                                        isRestaurantOpen: isRestaurantOpen,
-                                                                                      );
-                                                                                    },
-                                                                                  ),
-                                                                                ),
-
-                                                                                !isRestaurantOpen
-                                                                                    ? !isDesktop
-                                                                                        ? Align(
-                                                                                            alignment: Alignment.center,
-                                                                                            child: Padding(
-                                                                                              padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                                                                                              child: CustomInkWellWidget(
-                                                                                                onTap: () {
-                                                                                                  cartController.clearCartOnline();
-                                                                                                },
-                                                                                                child: Container(
-                                                                                                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                                                                                                  decoration: BoxDecoration(
-                                                                                                    color: Theme.of(context).cardColor,
-                                                                                                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                                                                                                    border: Border.all(width: 1, color: Theme.of(context).disabledColor.withOpacity(0.3)),
-                                                                                                  ),
-                                                                                                  child: !cartController.isClearCartLoading
-                                                                                                      ? Row(mainAxisSize: MainAxisSize.min, children: [
-                                                                                                          Icon(CupertinoIcons.delete_solid, color: Theme.of(context).colorScheme.error, size: 20),
-                                                                                                          const SizedBox(width: Dimensions.paddingSizeSmall),
-                                                                                                          Text(cartController.cartList.length > 1 ? 'remove_all_from_cart'.tr : 'remove_from_cart'.tr, style: robotoMedium.copyWith(color: Theme.of(context).colorScheme.error, fontSize: Dimensions.fontSizeSmall)),
-                                                                                                        ])
-                                                                                                      : const SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
+                                                                                            child: Center(
+                                                                                              child: Text(
+                                                                                                'restaurant_is_closed'.tr,
+                                                                                                style: robotoRegular.copyWith(
+                                                                                                  color: Theme.of(context).colorScheme.error,
+                                                                                                  fontSize: Dimensions.fontSizeSmall,
                                                                                                 ),
+                                                                                                textAlign: TextAlign.center,
                                                                                               ),
                                                                                             ),
                                                                                           )
-                                                                                        : const SizedBox()
-                                                                                    : const SizedBox(),
+                                                                                        : const SizedBox(),
+                                                                                    
+                                                                                    // تجميع عناصر السلة حسب المطعم
+                                                                                    ..._restaurantCartGroups.values.map((restaurantGroup) {
+                                                                                      return Column(
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        children: [
+                                                                                          // عنوان المطعم مع حالته وزر الإزالة
+                                                                                          Container(
+                                                                                            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                                                                                            margin: const EdgeInsets.only(bottom: 4.0),
+                                                                                            decoration: BoxDecoration(
+                                                                                              color: Theme.of(context).cardColor,
+                                                                                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                                                              boxShadow: [
+                                                                                                BoxShadow(
+                                                                                                  color: Colors.grey.withOpacity(0.1),
+                                                                                                  spreadRadius: 1,
+                                                                                                  blurRadius: 3,
+                                                                                                  offset: const Offset(0, 1),
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
+                                                                                            child: Row(
+                                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                              children: [
+                                                                                              
+                                                                                                // زر إزالة المطعم
+                                                                                                if (!restaurantGroup.isOpen)
+                                                                                                  InkWell(
+                                                                                                    onTap: !cartController.isCartLoading ? () {
+                                                                                                      removeRestaurantItems(restaurantGroup.id, cartController);
+                                                                                                    } : null,
+                                                                                                    child: Container(
+                                                                                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                                                                      decoration: BoxDecoration(
+                                                                                                      
+                                                                                                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                                                                      ),
+                                                                                                      child: !cartController.isCartLoading
+                                                                                                          ? Container(
+                                                                                                            
+                                                                                                            child: Row(
+                                                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                                                children: [
+                                                                                                                  Icon(
+                                                                                                                    Icons.delete_outline,
+                                                                                                                    color: Theme.of(context).colorScheme.error,
+                                                                                                                    size: 18,
+                                                                                                                  ),
+                                                                                                                  const SizedBox(width: 4),
+                                                                                                                  Text(
+                                                                                                                    'remove'.tr,
+                                                                                                                    style: robotoMedium.copyWith(
+                                                                                                                      color: Theme.of(context).colorScheme.error,
+                                                                                                                      fontSize: Dimensions.fontSizeSmall,
+                                                                                                                    ),
+                                                                                                                  ),
+                                                                                                                ],
+                                                                                                              ),
+                                                                                                          )
+                                                                                                          : SizedBox(
+                                                                                                              height: 18,
+                                                                                                              width: 18,
+                                                                                                              child: CircularProgressIndicator(
+                                                                                                                strokeWidth: 2,
+                                                                                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                                                                                  Theme.of(context).colorScheme.error,
+                                                                                                                ),
+                                                                                                              ),
+                                                                                                            ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                              ],
+                                                                                            ),
+                                                                                          ),
+                                                                                          
+                                                                                          // عناصر السلة لهذا المطعم
+                                                                                          ...restaurantGroup.cartIndices
+                                                                                            .where((index) => 
+                                                                                              index >= 0 && index < cartController.cartList.length
+                                                                                            )
+                                                                                            .map((index) {
+                                                                                              return Opacity(
+                                                                                                opacity: restaurantGroup.isOpen ? 1.0 : 0.6,
+                                                                                                child: CartProductWidget(
+                                                                                                  cart: cartController.cartList[index],
+                                                                                                  cartIndex: index,
+                                                                                                  addOns: index < cartController.addOnsList.length 
+                                                                                                    ? cartController.addOnsList[index] 
+                                                                                                    : [],
+                                                                                                  isAvailable: index < cartController.availableList.length 
+                                                                                                    ? cartController.availableList[index] 
+                                                                                                    : false,
+                                                                                                  isRestaurantOpen: restaurantGroup.isOpen,
+                                                                                                ),
+                                                                                              );
+                                                                                            }).toList(),
+                                                                                          
+                                                                                         
+                                                                                        ],
+                                                                                      );
+                                                                                    }).toList(),
 
-                                                                                // !isDesktop ? const SizedBox(height: Dimensions.paddingSizeLarge): const SizedBox(),
-
-                                                                                // !isDesktop ? Container(height: 1, color: Theme.of(context).disabledColor.withOpacity(0.3)) : const SizedBox(),
-
-                                                                                SizedBox(height: isDesktop ? 40 : 0),
-
-                                                                                // !isDesktop ? CartSuggestedItemViewWidget(cartList: cartController.cartList) : const SizedBox(),
-                                                                              ]),
+                                                                                    SizedBox(height: isDesktop ? 40 : 0),
+                                                                                  ]),
                                                                         ),
-                                                                        // const SizedBox(
-                                                                        //     height:
-                                                                        //         Dimensions.paddingSizeSmall),
-                                                                        // !isDesktop
-                                                                        //     ? PricingViewWidget(
-                                                                        //         cartController: cartController,
-                                                                        //         isRestaurantOpen: isRestaurantOpen,
-                                                                        //       )
-                                                                        //     : const SizedBox(),
+                                                                        // عرض التسعير للعرض المحمول
+                                                                        !isDesktop && !_isLoadingRestaurantStatus
+                                                                            ? PricingViewWidget(
+                                                                                cartController: cartController,
+                                                                                isRestaurantOpen: allRestaurantsOpen,
+                                                                                restaurantOpenStatusMap: _restaurantCartGroups.map((key, value) => 
+                                                                                  MapEntry(key, value.isOpen)
+                                                                                ),
+                                                                              )
+                                                                            : const SizedBox(),
                                                                       ]),
                                                                 ),
-                                                                // const SizedBox(
-                                                                //     height: Dimensions
-                                                                //         .paddingSizeSmall),
-                                                                // isDesktop
-                                                                //     ? CartSuggestedItemViewWidget(
-                                                                //         cartList:
-                                                                //             cartController.cartList)
-                                                                //     : const SizedBox(),
                                                               ]),
                                                         ),
-                                                        // SizedBox(
-                                                        //     width: isDesktop
-                                                        //         ? Dimensions
-                                                        //             .paddingSizeLarge
-                                                        //         : 0),
-                                                        // isDesktop
-                                                        //     ? Expanded(
-                                                        //         flex: 4,
-                                                        //         child:
-                                                        //             PricingViewWidget(
-                                                        //           cartController:
-                                                        //               cartController,
-                                                        //           isRestaurantOpen:
-                                                        //               isRestaurantOpen,
-                                                        //         ))
-                                                        //     : const SizedBox(),
+                                                        SizedBox(
+                                                            width: isDesktop
+                                                                ? Dimensions
+                                                                    .paddingSizeLarge
+                                                                : 0),
+                                                        // عرض التسعير للعرض المكتبي
+                                                        isDesktop && !_isLoadingRestaurantStatus
+                                                            ? Expanded(
+                                                                flex: 4,
+                                                                child: PricingViewWidget(
+                                                                  cartController: cartController,
+                                                                  isRestaurantOpen: allRestaurantsOpen,
+                                                                  restaurantOpenStatusMap: _restaurantCartGroups.map((key, value) => 
+                                                                    MapEntry(key, value.isOpen)
+                                                                  ),
+                                                                ))
+                                                            : const SizedBox(),
                                                       ]),
                                                 ]),
                                           ),
@@ -345,7 +455,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ],
                               ),
                               persistentContentHeight: isDesktop ? 0 : 25,
-                              expandableContent: isDesktop
+                              expandableContent: isDesktop || _isLoadingRestaurantStatus
                                   ? const SizedBox()
                                   : Container(
                                       width: context.width,
@@ -465,12 +575,14 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                             ),
                           ),
-                          isDesktop
+                          isDesktop || _isLoadingRestaurantStatus
                               ? const SizedBox.shrink()
                               : CheckoutButtonWidget(
                                   cartController: cartController,
-                                  availableList: cartController.availableList,
-                                  isRestaurantOpen: isRestaurantOpen),
+                                  restaurantOpenStatusMap: _restaurantCartGroups.map((key, value) => 
+                                    MapEntry(key, value.isOpen)
+                                  ),
+                                ),
                         ],
                       )
                     : SingleChildScrollView(
@@ -484,6 +596,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
+  // عرض رسالة الخصم للإحالة
   Future<void> showReferAndEarnSnackBar() async {
     String text = 'your_referral_discount_added_on_your_first_order'.tr;
     if (Get.find<ProfileController>().userInfoModel != null &&

@@ -15,37 +15,34 @@ import 'package:get/get.dart';
 
 class CheckoutButtonWidget extends StatelessWidget {
   final CartController cartController;
-  final List<bool> availableList;
-  final bool isRestaurantOpen;
+  final Map<int, bool> restaurantOpenStatusMap;
 
-  const CheckoutButtonWidget(
-      {super.key,
-      required this.cartController,
-      required this.availableList,
-      required this.isRestaurantOpen});
+  const CheckoutButtonWidget({
+    super.key,
+    required this.cartController,
+    required this.restaurantOpenStatusMap,
+  });
 
   @override
   Widget build(BuildContext context) {
     double percentage = 0;
     bool isDesktop = ResponsiveHelper.isDesktop(context);
 
-    // Calculate the total subtotal for all items
+    // Check if ALL restaurants are open (not just any)
+    bool allRestaurantsOpen = restaurantOpenStatusMap.isNotEmpty &&
+        !restaurantOpenStatusMap.values.contains(false);
+
+    // Calculate total subtotal
     double totalSubtotal = cartController.cartList.fold(
       0,
-      (sum, item) =>
-          sum +
+          (sum, item) =>
+      sum +
           (((cartController.itemPrice +
-                  cartController.variationPrice +
-                  cartController.addOns) /
+              cartController.variationPrice +
+              cartController.addOns) /
               cartController.cartList.length)),
     );
 
-
-
-    //  cartController.cartList.length == 1 ?   : cartController.cartList.fold(
-    // 0,
-    // (sum, item) => sum + (item.price! * item.quantity!),
-    // )
     return Container(
       width: Dimensions.webMaxWidth,
       padding: const EdgeInsets.symmetric(
@@ -54,90 +51,105 @@ class CheckoutButtonWidget extends StatelessWidget {
       decoration: isDesktop
           ? null
           : BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
+        color: Theme.of(context).cardColor,
+      ),
       child: SafeArea(
-        child:
-            GetBuilder<RestaurantController>(builder: (restaurantController) {
+        child: GetBuilder<RestaurantController>(builder: (restaurantController) {
           if (Get.find<RestaurantController>().restaurant != null &&
-              Get.find<RestaurantController>().restaurant!.freeDelivery !=
-                  null &&
+              Get.find<RestaurantController>().restaurant!.freeDelivery != null &&
               !Get.find<RestaurantController>().restaurant!.freeDelivery! &&
-              Get.find<SplashController>().configModel!.freeDeliveryOver !=
-                  null) {
+              Get.find<SplashController>().configModel!.freeDeliveryOver != null) {
             percentage = totalSubtotal /
                 Get.find<SplashController>().configModel!.freeDeliveryOver!;
           }
+
           return Column(mainAxisSize: MainAxisSize.min, children: [
-            (restaurantController.restaurant != null &&
-                    restaurantController.restaurant!.freeDelivery != null &&
-                    !restaurantController.restaurant!.freeDelivery! &&
-                    Get.find<SplashController>()
-                            .configModel!
-                            .freeDeliveryOver !=
-                        null &&
-                    percentage < 1)
+            // Warning message if any restaurant is closed
+            !allRestaurantsOpen && restaurantOpenStatusMap.isNotEmpty
                 ? Padding(
-                    padding: EdgeInsets.only(
-                        bottom: isDesktop ? Dimensions.paddingSizeLarge : 0),
-                    child: Column(children: [
-                      Row(children: [
-                        Image.asset(Images.percentTag, height: 20, width: 20),
-                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                        PriceConverter.convertAnimationPrice(
-                          Get.find<SplashController>()
-                                  .configModel!
-                                  .freeDeliveryOver! -
-                              totalSubtotal,
-                          textStyle: robotoMedium.copyWith(
-                              color: Theme.of(context).primaryColor),
-                        ),
-                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                        Text('more_for_free_delivery'.tr,
-                            style: robotoMedium.copyWith(
-                                color: Theme.of(context).disabledColor)),
-                      ]),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                      LinearProgressIndicator(
-                        backgroundColor:
-                            Theme.of(context).primaryColor.withOpacity(0.2),
-                        value: percentage,
-                      ),
-                    ]),
-                  )
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+              'restaurant_is_closed'.tr,
+                style: robotoRegular.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: Dimensions.fontSizeSmall,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            )
                 : const SizedBox(),
+
+            // Free delivery progress indicator
+            (restaurantController.restaurant != null &&
+                restaurantController.restaurant!.freeDelivery != null &&
+                !restaurantController.restaurant!.freeDelivery! &&
+                Get.find<SplashController>().configModel!.freeDeliveryOver != null &&
+                percentage < 1)
+                ? Padding(
+              padding: EdgeInsets.only(
+                  bottom: isDesktop ? Dimensions.paddingSizeLarge : 0),
+              child: Column(children: [
+                Row(children: [
+                  Image.asset(Images.percentTag, height: 20, width: 20),
+                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                  PriceConverter.convertAnimationPrice(
+                    Get.find<SplashController>()
+                        .configModel!
+                        .freeDeliveryOver! -
+                        totalSubtotal,
+                    textStyle: robotoMedium.copyWith(
+                        color: Theme.of(context).primaryColor),
+                  ),
+                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                  Text('more_for_free_delivery'.tr,
+                      style: robotoMedium.copyWith(
+                          color: Theme.of(context).disabledColor)),
+                ]),
+                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                LinearProgressIndicator(
+                  backgroundColor:
+                  Theme.of(context).primaryColor.withOpacity(0.2),
+                  value: percentage,
+                ),
+              ]),
+            )
+                : const SizedBox(),
+
+            // Subtotal display
             !isDesktop
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: Dimensions.paddingSizeSmall),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('subtotal'.tr,
-                            style: robotoMedium.copyWith(
-                                color: Theme.of(context).primaryColor)),
-                        PriceConverter.convertAnimationPrice(
-                          totalSubtotal,
-                          textStyle: robotoRegular.copyWith(
-                              color: Theme.of(context).primaryColor),
-                        ),
-                      ],
-                    ),
-                  )
+              padding: const EdgeInsets.symmetric(
+                  vertical: Dimensions.paddingSizeSmall),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('subtotal'.tr,
+                      style: robotoMedium.copyWith(
+                          color: Theme.of(context).primaryColor)),
+                  PriceConverter.convertAnimationPrice(
+                    totalSubtotal,
+                    textStyle: robotoRegular.copyWith(
+                        color: Theme.of(context).primaryColor),
+                  ),
+                ],
+              ),
+            )
                 : const SizedBox(),
+
+            // Checkout button
             GetBuilder<CartController>(builder: (cartController) {
               return CustomButtonWidget(
                 radius: 10,
-                buttonText:/* !(restaurantController.isRestaurantOpenNow(
-                    restaurantController.restaurant?.active?? false, restaurantController.restaurant?.schedules??[]))
-                    ? 'not_active'.tr
-                    :*/ 'proceed_to_checkout'.tr,
-                onPressed: cartController.isLoading ||
-                         restaurantController.restaurant == null
+                buttonText: allRestaurantsOpen
+                    ? 'proceed_to_checkout'.tr
+                    : 'restaurant_is_closed'.tr,
+                onPressed: (cartController.isLoading ||
+                    restaurantController.restaurant == null ||
+                    !allRestaurantsOpen)
                     ? null
                     : () {
-                        _processToCheckoutButtonPressed(restaurantController);
-                      },
+                  _processToCheckoutButtonPressed(restaurantController);
+                },
               );
             }),
             SizedBox(height: isDesktop ? Dimensions.paddingSizeExtraLarge : 0),
@@ -147,19 +159,14 @@ class CheckoutButtonWidget extends StatelessWidget {
     );
   }
 
-  void _processToCheckoutButtonPressed(
-      RestaurantController restaurantController) {
+  void _processToCheckoutButtonPressed(RestaurantController restaurantController) {
     if (!cartController.cartList.first.product!.scheduleOrder! &&
         cartController.availableList.contains(false)) {
       showCustomSnackBar('one_or_more_product_unavailable'.tr);
     } else if (restaurantController.restaurant!.freeDelivery == null ||
         restaurantController.restaurant!.cutlery == null) {
       showCustomSnackBar('restaurant_is_unavailable'.tr);
-    }
-    /* else if(!isRestaurantOpen) {
-      showCustomSnackBar('restaurant_is_close_now'.tr);
-    } */
-    else {
+    } else {
       Get.find<CouponController>().removeCouponData(false);
       Get.toNamed(RouteHelper.getCheckoutRoute('cart'));
     }

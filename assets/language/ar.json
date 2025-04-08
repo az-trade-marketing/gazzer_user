@@ -1128,5 +1128,6 @@
   "payment_amount": "المبلغ المستحق للدفع",
   "street_number_is_required": "رقم الشارع مطلوب",
   "house_is_required": "المنزل مطلوب",
-  "floor_is_required": "الطابق مطلوب"
+  "floor_is_required": "الطابق مطلوب",
+  "level_is_required" : "اسم العنوان مطلوب"
 }

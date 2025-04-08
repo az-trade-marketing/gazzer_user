@@ -1127,5 +1127,6 @@
   "payment_amount": "Amount Due for Payment",
   "street_number_is_required": "Street number is required",
   "house_is_required": "House is required",
-  "floor_is_required": "Floor is required"
+  "floor_is_required": "Floor is required",
+  "level_is_required" : "Label is required"
 }

@@ -64,8 +64,10 @@ class CartProductWidget extends StatelessWidget {
                 extentRatio: 0.2,
                 children: [
                   SlidableAction(
-                    onPressed: (context) =>
-                        cartController.removeFromCart(cartIndex),
+                    onPressed: (context) {
+                      print(cartIndex);
+                        cartController.removeFromCart(cartIndex);
+                    },
                     backgroundColor: Theme.of(context).colorScheme.error,
                     borderRadius: BorderRadius.horizontal(
                         right: Radius.circular(
@@ -279,6 +281,7 @@ class CartProductWidget extends StatelessWidget {
                                             cartController.setQuantity(
                                                 false, cart);
                                           } else {
+                                            print('hii');
                                             cartController
                                                 .removeFromCart(cartIndex);
                                           }

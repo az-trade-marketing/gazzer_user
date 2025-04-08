@@ -57,10 +57,10 @@ class CartController extends GetxController implements GetxService {
 
   List<String> notAvailableList = [
     'Remove it from my cart',
-    'I’ll wait until it’s restocked',
+    'I will wait until its restocked',
     'Please cancel the order',
     'Call me ASAP',
-    'Notify me when it’s back'
+    'Notify me when its back'
   ];
 
   bool _isLoading = false;
@@ -70,6 +70,10 @@ class CartController extends GetxController implements GetxService {
   bool _isClearCartLoading = false;
 
   bool get isClearCartLoading => _isClearCartLoading;
+  
+  bool _isCartLoading = false;
+
+  bool get isCartLoading => _isCartLoading;
 
   double _variationPrice = 0;
 
@@ -178,12 +182,73 @@ class CartController extends GetxController implements GetxService {
   }
 
   void removeFromCart(int index) {
-    int cartId = _cartList[index].id!;
-    _cartList.removeAt(index);
-    update();
-    removeCartItemOnline(cartId);
+    // تأكد من وجود عناصر في القائمة
+    if (_cartList.isEmpty) {
+      print('Cannot remove from an empty cart');
+      return;
+    }
+
+    // تأكد من صحة الإندكس
+    if (index < 0 || index >= _cartList.length) {
+      print('Invalid cart index: $index. Cart list length: ${_cartList.length}');
+      return;
+    }
+
+    try {
+      // احصل على معرف العنصر قبل الإزالة
+      int cartId = _cartList[index].id!;
+      
+      // إزالة العنصر من القائمة المحلية
+      _cartList.removeAt(index);
+      
+      // تحديث واجهة المستخدم
+      update();
+      
+      // إزالة العنصر من الخادم
+      removeCartItemOnline(cartId);
+    } catch (e) {
+      print('Unexpected error in removeFromCart: $e');
+    }
   }
 
+  Future<bool> removeFromCartOnline(int index) async {
+    int cartId = _cartList[index].id!;
+    return await removeCartItemOnline(cartId);
+  }
+
+Future<bool> removeRestaurantItemsOnline(int restaurantId) async {
+  _isCartLoading = true;
+  update();
+  
+  bool success = true;
+  
+  try {
+    // Find cart items ONLY from this specific restaurant
+    List<int> cartIds = _cartList
+        .where((cart) => cart.product!.restaurantId == restaurantId)
+        .map((cart) => cart.id!)
+        .toList();
+    
+    // إزالة العناصر من هذا المطعم فقط
+    for (int cartId in cartIds) {
+      bool result = await removeCartItemOnline(cartId);
+      if (!result) {
+        success = false;
+      }
+    }
+    
+    // إعادة تحميل بيانات السلة للتأكد
+    await getCartDataOnline();
+  } catch (e) {
+    print('Error removing restaurant items: $e');
+    success = false;
+  } finally {
+    _isCartLoading = false;
+    update();
+  }
+  
+  return success;
+}
   void removeAddOn(int index, int addOnIndex) {
     _cartList[index].addOnIds!.removeAt(addOnIndex);
     cartServiceInterface.addToSharedPrefCartList(_cartList);
@@ -340,12 +405,26 @@ class CartController extends GetxController implements GetxService {
   Future<bool> removeCartItemOnline(int cartId) async {
     _isLoading = true;
     update();
-    bool isSuccess = await cartServiceInterface.removeCartItemOnline(
-        cartId, AuthHelper.isLoggedIn() ? null : AuthHelper.getGuestId());
-    getCartDataOnline();
-    _isLoading = false;
-    update();
-    return isSuccess;
+    
+    try {
+      bool isSuccess = await cartServiceInterface.removeCartItemOnline(
+          cartId, AuthHelper.isLoggedIn() ? null : AuthHelper.getGuestId());
+      
+      // إعادة تحميل بيانات السلة بالكامل
+      await getCartDataOnline();
+      
+      return isSuccess;
+    } catch (e) {
+      print('Error removing cart item online: $e');
+      
+      // محاولة إعادة تحميل بيانات السلة حتى في حالة الفشل
+      await getCartDataOnline();
+      
+      return false;
+    } finally {
+      _isLoading = false;
+      update();
+    }
   }
 
   Future<bool> clearCartOnline() async {

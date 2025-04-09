@@ -70,6 +70,7 @@ class PaymentSection extends StatelessWidget {
       child: Column(children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('payment_method'.tr, style: robotoBold),
+          AppConstants.isUseButtonTapped == false ?
           InkWell(
             onTap: () {
               if (ResponsiveHelper.isDesktop(context)) {
@@ -127,7 +128,7 @@ class PaymentSection extends StatelessWidget {
               }
             },
             child: Image.asset(Images.paymentSelect, height: 24, width: 24),
-          ),
+          ) : SizedBox()
         ]),
         const Divider(),
         Container(

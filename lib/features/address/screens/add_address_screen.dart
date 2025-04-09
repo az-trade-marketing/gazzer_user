@@ -157,7 +157,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           }
 
           return GetBuilder<LocationController>(builder: (locationController) {
-            _addressController.text = locationController.address ?? '';
+            // _addressController.text = locationController.address ?? '';
 
             return Column(children: [
               Expanded(
@@ -543,7 +543,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           focusNode: _addressNode,
           nextFocus: _nameNode,
           controller: _addressController,
-          onChanged: (text) => locationController.setPlaceMark(text),
+          // onChanged: (text) => locationController.setPlaceMark(text),
           showBorder: true,
         ),
         SizedBox(

@@ -12,6 +12,8 @@ import 'package:gazzer_userapp/helper/route_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../helper/config_model_db_helper.dart';
+
 class SplashController extends GetxController implements GetxService {
   final SplashServiceInterface splashServiceInterface;
 
@@ -50,23 +52,54 @@ class SplashController extends GetxController implements GetxService {
   Future<bool> getConfigData() async {
     _hasConnection = true;
     _savedCookiesData = getCookiesData();
+
+    // Check if config exists in database
+    bool hasLocalConfig = await ConfigModelDBHelper.hasConfig();
+    print('Has local config: $hasLocalConfig');
+
+    if (hasLocalConfig) {
+      final localConfig = await ConfigModelDBHelper.getConfig();
+      if (localConfig != null) {
+        print('Successfully loaded local config');
+        _configModel = localConfig;
+        update();
+        return true;
+      } else {
+        print('Local config found but failed to load');
+      }
+    }
+
+    // Fetch from network
+    print('Fetching config from network');
     Response response = await splashServiceInterface.getConfigData();
     bool isSuccess = false;
+
     if (response.statusCode == 200) {
       _configModel = splashServiceInterface.prepareConfigData(response);
       if (_configModel != null) {
+        // Save to local database
+        print('Saving network config to database');
+        await ConfigModelDBHelper.saveConfig(_configModel!);
         isSuccess = true;
       }
     } else {
       if (response.statusText == ApiClient.noInternetMessage) {
         _hasConnection = false;
+
+        // Try to load any stored config if no connection
+        final localConfig = await ConfigModelDBHelper.getConfig();
+        if (localConfig != null) {
+          _configModel = localConfig;
+          isSuccess = true;
+        }
+      } else {
+        isSuccess = false;
       }
-      isSuccess = false;
     }
+
     update();
     return isSuccess;
   }
-
   Future<bool> initSharedData() {
     return splashServiceInterface.initSharedData();
   }

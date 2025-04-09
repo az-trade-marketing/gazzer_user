@@ -26,7 +26,7 @@ import 'package:get/get.dart';
 import 'package:meta_seo/meta_seo.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'helper/get_di.dart' as di;
-
+import 'package:hive_flutter/hive_flutter.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -46,7 +46,7 @@ Future<void> main() async {
   //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
   //   return true;
   // };
-
+  await Hive.initFlutter();
   DeepLinkBody? linkBody;
 
   if (GetPlatform.isWeb) {
@@ -141,14 +141,14 @@ class _MyAppState extends State<MyApp> {
         Get.find<CartController>().getCartDataOnline();
       }
     }
-    Get.find<SplashController>().getConfigData().then((bool isSuccess) async {
-      if (isSuccess) {
-        if (Get.find<AuthController>().isLoggedIn()) {
-          Get.find<AuthController>().updateToken();
-          await Get.find<FavouriteController>().getFavouriteList();
-        }
-      }
-    });
+    // Get.find<SplashController>().getConfigData().then((bool isSuccess) async {
+    //   if (isSuccess) {
+    //     if (Get.find<AuthController>().isLoggedIn()) {
+    //       Get.find<AuthController>().updateToken();
+    //       await Get.find<FavouriteController>().getFavouriteList();
+    //     }
+    //   }
+    // });
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:gazzer_userapp/features/splash/domain/models/cache_version_model.dart';
 import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
 import 'package:gazzer_userapp/features/splash/domain/repositories/splash_repository_interface.dart';
 import 'package:gazzer_userapp/features/splash/domain/services/splash_service_interface.dart';
@@ -15,12 +16,26 @@ class SplashService implements SplashServiceInterface {
   }
 
   @override
+  Future<Response> getCacheVersionData() async {
+    return await splashRepositoryInterface.getCacheVersionData();
+  }
+
+  @override
   ConfigModel? prepareConfigData(Response response) {
     ConfigModel? configModel;
     if (response.statusCode == 200) {
       configModel = ConfigModel.fromJson(response.body);
     }
     return configModel;
+  }
+
+  @override
+  CacheVersionModel? prepareCacheVersion(Response response) {
+    CacheVersionModel? cacheVersionModel;
+    if (response.statusCode == 200) {
+      cacheVersionModel = CacheVersionModel.fromJson(response.body);
+    }
+    return cacheVersionModel;
   }
 
   @override

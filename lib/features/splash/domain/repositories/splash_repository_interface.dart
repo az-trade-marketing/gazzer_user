@@ -3,7 +3,7 @@ import 'package:get/get_connect/http/src/response/response.dart';
 
 abstract class SplashRepositoryInterface extends RepositoryInterface {
   Future<Response> getConfigData();
-
+  Future<Response> getCacheVersionData();
   Future<bool> initSharedData();
 
   void disableIntro();

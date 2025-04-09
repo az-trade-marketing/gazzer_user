@@ -15,6 +15,10 @@ class SplashRepository implements SplashRepositoryInterface {
   Future<Response> getConfigData() async {
     return await apiClient.getData(AppConstants.configUri);
   }
+  @override
+  Future<Response> getCacheVersionData() async {
+    return await apiClient.getData('/api/v1/cache-versions');
+  }
 
   @override
   Future<bool> initSharedData() {

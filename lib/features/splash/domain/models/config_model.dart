@@ -89,6 +89,7 @@ class ConfigModel {
   String? favIcon;
   bool? extraPackagingChargeStatus;
   int? deliveryFeeMultiVendor;
+  String? cacheVersion;
 
   ConfigModel({
     this.businessName,
@@ -329,6 +330,7 @@ class ConfigModel {
     favIcon = json['fav_icon'];
     extraPackagingChargeStatus = json['extra_packaging_charge'];
     deliveryFeeMultiVendor = json['delivery_fee_multi_vendor'];
+    cacheVersion = json['cache_version'];
   }
 
   Map<String, dynamic> toJson() {
@@ -436,6 +438,7 @@ class ConfigModel {
     data['guest_checkout_status'] = guestCheckoutStatus;
     data['fav_icon'] = favIcon;
     data['extra_packaging_charge'] = extraPackagingChargeStatus;
+    data['cache_version'] = cacheVersion;
     return data;
   }
 }

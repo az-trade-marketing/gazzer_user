@@ -4,6 +4,7 @@ import 'package:gazzer_userapp/features/address/controllers/address_controller.d
 import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
 import 'package:gazzer_userapp/features/location/widgets/pick_map_dialog.dart';
+import 'package:gazzer_userapp/features/splash/domain/models/cache_version_model.dart';
 import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
 import 'package:gazzer_userapp/features/splash/domain/services/splash_service_interface.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
@@ -53,20 +54,35 @@ class SplashController extends GetxController implements GetxService {
     _hasConnection = true;
     _savedCookiesData = getCookiesData();
 
+    // Fetch cache version data
+    Response cacheResponse = await splashServiceInterface.getCacheVersionData();
+    CacheVersionModel? cacheVersionModel = splashServiceInterface.prepareCacheVersion(cacheResponse);
+    String? configUuid;
+
+    // Extract the UUID for 'config' API if available
+    if (cacheVersionModel != null && cacheVersionModel.data != null) {
+      for (var item in cacheVersionModel.data!) {
+        if (item.api == 'config' && item.uuid != null) {
+          configUuid = item.uuid;
+          break;
+        }
+      }
+    }
+
     // Check if config exists in database
     bool hasLocalConfig = await ConfigModelDBHelper.hasConfig();
     print('Has local config: $hasLocalConfig');
 
-    if (hasLocalConfig) {
       final localConfig = await ConfigModelDBHelper.getConfig();
-      if (localConfig != null) {
-        print('Successfully loaded local config');
+    print(localConfig!.cacheVersion.toString());
+    print(configUuid.toString());
+      // Check if the local config is the latest version by comparing UUIDs
+      // Assuming ConfigModel has a cacheVersion or version field that stores the UUID
+      if (localConfig != null && localConfig.cacheVersion == configUuid) {
+        print('Successfully loaded local config with matching version');
         _configModel = localConfig;
         update();
         return true;
-      } else {
-        print('Local config found but failed to load');
-      }
     }
 
     // Fetch from network

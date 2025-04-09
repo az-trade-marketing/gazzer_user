@@ -1021,7 +1021,13 @@ class OrderInfoSection extends StatelessWidget {
                 }
               },
               child: DeliveryDetails(
-                  from: true, address: order.restaurant?.address ?? ''),
+                from: true,
+                address: orderController.orderDetails!
+                    .map((e) => '- ${e.foodDetails?.restaurantName}' ?? '')
+                    .where((name) => name.isNotEmpty)
+                    .toSet() // removes duplicates
+                    .join(' \n'),
+              ),
             ),
             const Divider(height: Dimensions.paddingSizeLarge),
             InkWell(
@@ -1455,7 +1461,7 @@ class OrderInfoSection extends StatelessWidget {
                           ? Images.cash
                           : order.paymentMethod == 'wallet'
                               ? Images.wallet
-                                  : Images.digitalPayment,
+                              : Images.digitalPayment,
                       width: 24,
                       height: 24,
                       color: Theme.of(context).textTheme.bodyMedium!.color,

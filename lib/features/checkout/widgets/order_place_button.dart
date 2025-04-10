@@ -322,7 +322,7 @@ class OrderPlaceButton extends StatelessWidget {
             checkoutController.preferableTime == 'Not Available')) {
       showCustomSnackBar('please_select_order_preference_time'.tr);
       return true;
-    } else if (checkoutController.paymentMethodIndex == -1) {
+    } else if (orderAmount < checkoutController.restaurant!.minimumOrder!) {
       if (ResponsiveHelper.isDesktop(context)) {
         Get.dialog(Dialog(
             backgroundColor: Colors.transparent,

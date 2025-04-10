@@ -6,6 +6,8 @@ import 'package:gazzer_userapp/features/home/widgets/refer_bottom_sheet_widget.d
 import 'package:gazzer_userapp/features/product/controllers/campaign_controller.dart';
 import 'package:gazzer_userapp/features/home/controllers/home_controller.dart';
 import 'package:gazzer_userapp/features/home/screens/web_home_screen.dart';
+import 'package:gazzer_userapp/features/home/widgets/cuisine_view_widget.dart';
+import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.dart';
 import 'package:gazzer_userapp/features/home/widgets/all_restaurant_filter_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/all_restaurants_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/bad_weather_widget.dart';
@@ -53,6 +55,7 @@ class HomeScreen extends StatefulWidget {
   static Future<void> loadData(bool reload) async {
     Get.find<HomeController>().getBannerList(reload);
     Get.find<CategoryController>().getCategoryList(reload);
+    Get.find<CuisineController>().getCuisineList();
     if (Get.find<SplashController>().configModel!.popularRestaurant == 1) {
       Get.find<RestaurantController>()
           .getPopularRestaurantList(reload, 'all', false);

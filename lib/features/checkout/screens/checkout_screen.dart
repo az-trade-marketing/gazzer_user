@@ -209,13 +209,17 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       Get.find<SplashController>().configModel!.dmTipsStatus ==
                           1 &&
                       !checkoutController.subscriptionOrder;
-                  double deliveryCharge = -1;
+                  double deliveryCharge = Get.find<SplashController>()
+                      .configModel!
+                      .fixedDeliveryFee!.toDouble();
                   double charge = -1;
                   double? maxCodOrderAmount;
                   if (checkoutController.restaurant != null &&
                       checkoutController.distance != null &&
                       checkoutController.distance != -1) {
-                    deliveryCharge = 0;
+                    deliveryCharge = Get.find<SplashController>()
+                        .configModel!
+                        .fixedDeliveryFee!.toDouble();
                     charge = _getDeliveryCharge(
                         restaurant: checkoutController.restaurant,
                         checkoutController: checkoutController,
@@ -281,7 +285,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                     .configModel!
                                     .freeDeliveryOver!) ||
                         couponController.freeDelivery) {
-                      deliveryCharge = 0;
+                      deliveryCharge = Get.find<SplashController>()
+                          .configModel!
+                          .fixedDeliveryFee!.toDouble();
                     }
                   }
 
@@ -300,7 +306,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   // Calculate delivery charge for grouped orders
                   double groupedDeliveryCharge =
                       restaurantGroupedCartList.length > 1
-                          ? deliveryCharge +
+                          ? Get.find<SplashController>()
+                          .configModel!
+                          .fixedDeliveryFee!.toDouble() +
                               (restaurantGroupedCartList.length - 1) *
                                   Get.find<SplashController>()
                                       .configModel!
@@ -309,7 +317,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
                   calcTotal() {
                     if (couponController.coupon?.couponType == "free_delivery") {
-                      deliveryCharge = 0;
+                      deliveryCharge = Get.find<SplashController>()
+                          .configModel!
+                          .fixedDeliveryFee!.toDouble();
                     }
 
                     double totalAmount = orderAmount + groupedDeliveryCharge;
@@ -835,11 +845,9 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     if (returnMaxCodOrderAmount) {
       return maxCodOrderAmount;
     } else {
-      if (returnDeliveryCharge) {
-        return deliveryCharge;
-      } else {
-        return charge;
-      }
+      return Get.find<SplashController>()
+          .configModel!
+          .fixedDeliveryFee!.toDouble();
     }
   }
 

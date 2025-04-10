@@ -54,63 +54,19 @@ class SplashController extends GetxController implements GetxService {
   Future<bool> getConfigData() async {
     _hasConnection = true;
     _savedCookiesData = getCookiesData();
-
-    // Fetch cache version data
-    Response cacheResponse = await splashServiceInterface.getCacheVersionData();
-    CacheVersionModel? cacheVersionModel = splashServiceInterface.prepareCacheVersion(cacheResponse);
-    CacheVersionHelper.versionModel = cacheVersionModel;
-    String? configUuid;
-
-    // Extract the UUID for 'config' API if available
-    if (cacheVersionModel != null && cacheVersionModel.data != null) {
-      for (var item in cacheVersionModel.data!) {
-        if (item.api == 'config' && item.uuid != null) {
-          configUuid = item.uuid;
-          break;
-        }
-      }
-    }
-
-    // Check if config exists in database
-    bool hasLocalConfig = await ConfigModelDBHelper.hasConfig();
-
-      final localConfig = await ConfigModelDBHelper.getConfig();
-      // Check if the local config is the latest version by comparing UUIDs
-      // Assuming ConfigModel has a cacheVersion or version field that stores the UUID
-      if (localConfig != null && localConfig.cacheVersion == configUuid) {
-        _configModel = localConfig;
-        update();
-        return true;
-    }
-
-    // Fetch from network
-    print('Fetching config from network');
     Response response = await splashServiceInterface.getConfigData();
     bool isSuccess = false;
-
     if (response.statusCode == 200) {
       _configModel = splashServiceInterface.prepareConfigData(response);
       if (_configModel != null) {
-        // Save to local database
-        print('Saving network config to database');
-        await ConfigModelDBHelper.saveConfig(_configModel!);
         isSuccess = true;
       }
     } else {
       if (response.statusText == ApiClient.noInternetMessage) {
         _hasConnection = false;
-
-        // Try to load any stored config if no connection
-        final localConfig = await ConfigModelDBHelper.getConfig();
-        if (localConfig != null) {
-          _configModel = localConfig;
-          isSuccess = true;
-        }
-      } else {
-        isSuccess = false;
       }
+      isSuccess = false;
     }
-
     update();
     return isSuccess;
   }

@@ -11,7 +11,6 @@ import 'package:gazzer_userapp/features/home/widgets/all_restaurants_widget.dart
 import 'package:gazzer_userapp/features/home/widgets/bad_weather_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/best_review_item_view_widget.dart';
-import 'package:gazzer_userapp/features/home/widgets/cuisine_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/enjoy_off_banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/location_banner_view_widget.dart';
 import 'package:gazzer_userapp/features/home/widgets/new_on_stackfood_view_widget.dart';
@@ -33,7 +32,6 @@ import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
 import 'package:gazzer_userapp/features/address/controllers/address_controller.dart';
 import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/category/controllers/category_controller.dart';
-import 'package:gazzer_userapp/features/cuisine/controllers/cuisine_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
 import 'package:gazzer_userapp/features/product/controllers/product_controller.dart';
 import 'package:gazzer_userapp/features/review/controllers/review_controller.dart';
@@ -55,7 +53,6 @@ class HomeScreen extends StatefulWidget {
   static Future<void> loadData(bool reload) async {
     Get.find<HomeController>().getBannerList(reload);
     Get.find<CategoryController>().getCategoryList(reload);
-    Get.find<CuisineController>().getCuisineList();
     if (Get.find<SplashController>().configModel!.popularRestaurant == 1) {
       Get.find<RestaurantController>()
           .getPopularRestaurantList(reload, 'all', false);
@@ -187,7 +184,6 @@ class _HomeScreenState extends State<HomeScreen> {
               onRefresh: () async {
                 await Get.find<HomeController>().getBannerList(true);
                 await Get.find<CategoryController>().getCategoryList(true);
-                await Get.find<CuisineController>().getCuisineList();
                 await Get.find<RestaurantController>()
                     .getPopularRestaurantList(true, 'all', false);
                 await Get.find<CampaignController>().getItemCampaignList(true);
@@ -472,7 +468,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const BadWeatherWidget(),
                                         const WhatOnYourMindViewWidget(),
                                         const TodayTrendsViewWidget(),
-                                        const LocationBannerViewWidget(),
                                         _isLogin
                                             ? const OrderAgainViewWidget()
                                             : const SizedBox(),
@@ -480,7 +475,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ? const BestReviewItemViewWidget(
                                                 isPopular: false)
                                             : const SizedBox(),
-                                        const CuisineViewWidget(),
                                         _configModel.popularRestaurant == 1
                                             ? const PopularRestaurantsViewWidget()
                                             : const SizedBox(),

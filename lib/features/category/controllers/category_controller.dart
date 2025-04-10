@@ -4,6 +4,9 @@ import 'package:gazzer_userapp/features/category/domain/models/category_model.da
 import 'package:gazzer_userapp/features/category/domain/services/category_service_interface.dart';
 import 'package:get/get.dart';
 
+import '../../../helper/cache_version_helper.dart';
+import '../../../helper/category_model_db_helper.dart';
+
 class CategoryController extends GetxController implements GetxService {
   final CategoryServiceInterface categoryServiceInterface;
 
@@ -76,14 +79,60 @@ class CategoryController extends GetxController implements GetxService {
   // String? _foodResultText = '';
 
   Future<void> getCategoryList(bool reload) async {
+    String? categoryUuid;
+
+    // Check if we need to reload or if the category list is null
     if (_categoryList == null || reload) {
-      _categoryList =
-          await categoryServiceInterface.getCategoryList(reload, _categoryList);
-      // _interestCategorySelectedList = categoryServiceInterface.processCategorySelectedList(_categoryList);
+
+      // Extract the UUID for 'category' API if available from CacheVersionHelper
+      if (CacheVersionHelper.versionModel != null &&
+          CacheVersionHelper.versionModel?.data != null) {
+        for (var item in CacheVersionHelper.versionModel!.data!) {
+          if (item.api == 'category' && item.uuid != null) {
+            categoryUuid = item.uuid;
+            break;
+          }
+        }
+      }
+
+      // Check if category list exists in database and has the latest version
+      bool hasLocalCategoryList = await CategoryListDBHelper.hasCategoryList();
+
+      if (hasLocalCategoryList) {
+        // Get the cached version
+        final localCacheVersion = await CategoryListDBHelper.getCategoryListCacheVersion();
+
+        // Check if the local category list is the latest version by comparing UUIDs
+        if (localCacheVersion == categoryUuid) {
+          final localCategoryList = await CategoryListDBHelper.getCategoryList();
+          if (localCategoryList != null) {
+            // Use the cached category list data
+            _categoryList = localCategoryList;
+            update();
+            return;
+          }
+        }
+      }
+
+      // Fetch from network
+      print('Fetching category list from network');
+      _categoryList = await categoryServiceInterface.getCategoryList(true, null);
+
+      if (_categoryList != null) {
+        // Save to local database with cache version
+        print('Saving network category list to database');
+        await CategoryListDBHelper.saveCategoryList(_categoryList!, cacheVersion: categoryUuid);
+      } else {
+        // Attempt to load cached data if network fetch failed
+        final localCategoryList = await CategoryListDBHelper.getCategoryList();
+        if (localCategoryList != null) {
+          _categoryList = localCategoryList;
+        }
+      }
+
       update();
     }
   }
-
   void getSubCategoryList(String? categoryID) async {
     _subCategoryIndex = 0;
     _subCategoryList = null;

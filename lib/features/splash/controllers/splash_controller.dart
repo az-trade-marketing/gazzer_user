@@ -13,6 +13,7 @@ import 'package:gazzer_userapp/helper/route_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../helper/cache_version_helper.dart';
 import '../../../helper/config_model_db_helper.dart';
 
 class SplashController extends GetxController implements GetxService {
@@ -57,6 +58,7 @@ class SplashController extends GetxController implements GetxService {
     // Fetch cache version data
     Response cacheResponse = await splashServiceInterface.getCacheVersionData();
     CacheVersionModel? cacheVersionModel = splashServiceInterface.prepareCacheVersion(cacheResponse);
+    CacheVersionHelper.versionModel = cacheVersionModel;
     String? configUuid;
 
     // Extract the UUID for 'config' API if available

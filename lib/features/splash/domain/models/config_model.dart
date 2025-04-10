@@ -89,6 +89,7 @@ class ConfigModel {
   String? favIcon;
   bool? extraPackagingChargeStatus;
   int? deliveryFeeMultiVendor;
+  int? fixedDeliveryFee;
   String? cacheVersion;
 
   ConfigModel({
@@ -181,6 +182,7 @@ class ConfigModel {
     this.guestCheckoutStatus,
     this.favIcon,
     this.extraPackagingChargeStatus,
+    this.fixedDeliveryFee,
     this.deliveryFeeMultiVendor,
   });
 
@@ -329,6 +331,7 @@ class ConfigModel {
     guestCheckoutStatus = json['guest_checkout_status'] == 1;
     favIcon = json['fav_icon'];
     extraPackagingChargeStatus = json['extra_packaging_charge'];
+    fixedDeliveryFee = json['fixed_delivery_fee'];
     deliveryFeeMultiVendor = json['delivery_fee_multi_vendor'];
     cacheVersion = json['cache_version'];
   }

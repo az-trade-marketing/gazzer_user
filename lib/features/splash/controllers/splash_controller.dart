@@ -71,15 +71,11 @@ class SplashController extends GetxController implements GetxService {
 
     // Check if config exists in database
     bool hasLocalConfig = await ConfigModelDBHelper.hasConfig();
-    print('Has local config: $hasLocalConfig');
 
       final localConfig = await ConfigModelDBHelper.getConfig();
-    print(localConfig!.cacheVersion.toString());
-    print(configUuid.toString());
       // Check if the local config is the latest version by comparing UUIDs
       // Assuming ConfigModel has a cacheVersion or version field that stores the UUID
       if (localConfig != null && localConfig.cacheVersion == configUuid) {
-        print('Successfully loaded local config with matching version');
         _configModel = localConfig;
         update();
         return true;

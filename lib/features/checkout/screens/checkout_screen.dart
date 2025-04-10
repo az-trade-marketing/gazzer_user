@@ -215,10 +215,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   if (checkoutController.restaurant != null &&
                       checkoutController.distance != null &&
                       checkoutController.distance != -1) {
-                    deliveryCharge = _getDeliveryCharge(
-                        restaurant: checkoutController.restaurant,
-                        checkoutController: checkoutController,
-                        returnDeliveryCharge: true)!;
+                    deliveryCharge = 0;
                     charge = _getDeliveryCharge(
                         restaurant: checkoutController.restaurant,
                         checkoutController: checkoutController,

@@ -289,11 +289,14 @@ class CartProductWidget extends StatelessWidget {
                                   isIncrement: false,
                                   showRemoveIcon: cart.quantity! == 1,
                                 ),
-                                AnimatedFlipCounter(
-                                  duration: const Duration(milliseconds: 500),
-                                  value: cart.quantity!.toDouble(),
-                                  textStyle: robotoMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeExtraLarge),
+                                Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: AnimatedFlipCounter(
+                                    duration: const Duration(milliseconds: 500),
+                                    value: cart.quantity!.toDouble(),
+                                    textStyle: robotoMedium.copyWith(
+                                        fontSize: Dimensions.fontSizeExtraLarge),
+                                  ),
                                 ),
                                 QuantityButton(
                                   onTap: cartController.isLoading

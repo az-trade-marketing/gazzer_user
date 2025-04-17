@@ -47,12 +47,12 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen>
   void _loadData(BuildContext context) async {
     await Get.find<OrderController>()
         .trackOrder(widget.orderId.toString(), widget.orderModel, false,
-            contactNumber: widget.contactNumber)
+        contactNumber: widget.contactNumber)
         .then((value) {
       if (widget.fromOfflinePayment) {
         Future.delayed(
             const Duration(seconds: 2),
-            () => showAnimatedDialog(
+                () => showAnimatedDialog(
                 context, OfflineSuccessDialog(orderId: widget.orderId)));
       }
     });
@@ -144,13 +144,13 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen>
                 'saturday'
               ];
               for (SubscriptionScheduleModel schedule
-                  in orderController.schedules!) {
+              in orderController.schedules!) {
                 schedules.add(
                     '${weekDays[schedule.day!].tr} (${DateConverter.convertTimeToTime(schedule.time!)})');
               }
             } else if (order.subscription!.type == 'monthly') {
               for (SubscriptionScheduleModel schedule
-                  in orderController.schedules!) {
+              in orderController.schedules!) {
                 schedules.add(
                     '${'day_capital'.tr} ${schedule.day} (${DateConverter.convertTimeToTime(schedule.time!)})');
               }
@@ -169,7 +169,7 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen>
           referrerBonusAmount = order.referrerBonusAmount!;
 
           for (OrderDetailsModel orderDetails
-              in orderController.orderDetails!) {
+          in orderController.orderDetails!) {
             for (AddOn addOn in orderDetails.addOns!) {
               addOns = addOns + (addOn.price! * addOn.quantity!);
             }
@@ -199,16 +199,12 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen>
           }
         }
         // Calculate delivery charges based on grouped restaurant orders
-        double totalDeliveryCharge = Get.find<SplashController>()
-            .configModel!
-            .fixedDeliveryFee!.toDouble();
+        double totalDeliveryCharge = 0;
         bool isFirstRestaurant = true; // To track the first restaurant
         restaurantDeliveryCharges.forEach((name, charge) {
           double deliveryCharge;
           if (isFirstRestaurant) {
-            deliveryCharge = Get.find<SplashController>()
-                .configModel!
-                .fixedDeliveryFee!.toDouble(); // Charge for the first restaurant
+            deliveryCharge = 15; // Charge for the first restaurant
             isFirstRestaurant = false; // Set to false after the first order
           } else {
             deliveryCharge = Get.find<SplashController>()
@@ -243,186 +239,186 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen>
         return Scaffold(
           appBar: subscription && !ResponsiveHelper.isDesktop(context)
               ? AppBar(
-                  surfaceTintColor: Theme.of(context).cardColor,
-                  title: Column(children: [
-                    Text('${'subscription'.tr} # ${order?.id.toString()}',
-                        style: robotoBold.copyWith(
-                            fontSize: Dimensions.fontSizeLarge)),
-                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                    Text('${'your_order_is'.tr} ${order?.orderStatus}',
-                        style: robotoRegular.copyWith(
-                            color: Theme.of(context).primaryColor)),
-                  ]),
-                  centerTitle: true,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () {
-                      if ((widget.orderModel == null ||
-                              widget.fromOfflinePayment) &&
-                          !widget.fromGuestTrack) {
-                        Get.offAllNamed(RouteHelper.getInitialRoute());
-                      } else if (widget.fromGuestTrack) {
-                        Get.back();
-                      } else {
-                        Get.back();
-                      }
-                    },
-                  ),
-                  actions: const [SizedBox()],
-                  backgroundColor: Theme.of(context).cardColor,
-                  elevation: 0,
-                )
+            surfaceTintColor: Theme.of(context).cardColor,
+            title: Column(children: [
+              Text('${'subscription'.tr} # ${order?.id.toString()}',
+                  style: robotoBold.copyWith(
+                      fontSize: Dimensions.fontSizeLarge)),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+              Text('${'your_order_is'.tr} ${order?.orderStatus}',
+                  style: robotoRegular.copyWith(
+                      color: Theme.of(context).primaryColor)),
+            ]),
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                if ((widget.orderModel == null ||
+                    widget.fromOfflinePayment) &&
+                    !widget.fromGuestTrack) {
+                  Get.offAllNamed(RouteHelper.getInitialRoute());
+                } else if (widget.fromGuestTrack) {
+                  Get.back();
+                } else {
+                  Get.back();
+                }
+              },
+            ),
+            actions: const [SizedBox()],
+            backgroundColor: Theme.of(context).cardColor,
+            elevation: 0,
+          )
               : CustomAppBarWidget(
-                  title: subscription
-                      ? 'subscription_details'.tr
-                      : 'order_details'.tr,
-                  onBackPressed: () {
-                    if ((widget.orderModel == null ||
-                            widget.fromOfflinePayment) &&
-                        !widget.fromGuestTrack) {
-                      Get.offAllNamed(RouteHelper.getInitialRoute());
-                    } else if (widget.fromGuestTrack) {
-                      Get.back();
-                    } else {
-                      Get.back();
-                    }
-                  }),
+              title: subscription
+                  ? 'subscription_details'.tr
+                  : 'order_details'.tr,
+              onBackPressed: () {
+                if ((widget.orderModel == null ||
+                    widget.fromOfflinePayment) &&
+                    !widget.fromGuestTrack) {
+                  Get.offAllNamed(RouteHelper.getInitialRoute());
+                } else if (widget.fromGuestTrack) {
+                  Get.back();
+                } else {
+                  Get.back();
+                }
+              }),
           endDrawer: const MenuDrawerWidget(),
           endDrawerEnableOpenDragGesture: false,
           body: SafeArea(
             child: (order != null && orderController.orderDetails != null)
                 ? Column(children: [
-                    WebScreenTitleWidget(
-                        title: subscription
-                            ? 'subscription_details'.tr
-                            : 'order_details'.tr),
-                    Expanded(
-                        child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: FooterViewWidget(
-                          child: SizedBox(
-                        width: Dimensions.webMaxWidth,
-                        child: ResponsiveHelper.isDesktop(context)
-                            ? Padding(
-                                padding: const EdgeInsets.only(
-                                    top: Dimensions.paddingSizeLarge),
-                                child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                          flex: 6,
-                                          child: Column(
-                                            children: [
-                                              subscription
-                                                  ? Text(
-                                                      '${'subscription'.tr} # ${order.id.toString()}',
-                                                      style: robotoBold.copyWith(
-                                                          fontSize: Dimensions
-                                                              .fontSizeLarge))
-                                                  : const SizedBox(),
-                                              SizedBox(
-                                                  height: subscription
-                                                      ? Dimensions
-                                                          .paddingSizeExtraSmall
-                                                      : 0),
-                                              subscription
-                                                  ? Text(
-                                                      '${'your_order_is'.tr} ${order.orderStatus}',
-                                                      style: robotoRegular
-                                                          .copyWith(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .primaryColor))
-                                                  : const SizedBox(),
-                                              SizedBox(
-                                                  height: subscription
-                                                      ? Dimensions
-                                                          .paddingSizeLarge
-                                                      : 0),
-                                              OrderInfoSection(
-                                                  order: order,
-                                                  orderController:
-                                                      orderController,
-                                                  schedules: schedules,
-                                                  showChatPermission:
-                                                      showChatPermission,
-                                                  contactNumber:
-                                                      widget.contactNumber,
-                                                  totalAmount: total),
-                                            ],
-                                          )),
-                                      const SizedBox(
-                                          width: Dimensions.paddingSizeLarge),
-                                      Expanded(
-                                          flex: 4,
-                                          child: OrderPricingSection(
-                                            itemsPrice: itemsPrice,
-                                            addOns: addOns,
-                                            order: order,
-                                            subTotal: subTotal,
-                                            discount: discount,
-                                            couponDiscount: couponDiscount,
-                                            tax: tax!,
-                                            dmTips: dmTips,
-                                            deliveryCharge:
-                                                order.couponDiscountAmount ==
-                                                            0 &&
-                                                        order.couponCode != null
-                                                    ? 0
-                                                    : totalDeliveryCharge,
-                                            total: total,
-                                            orderController: orderController,
-                                            orderId: widget.orderId,
-                                            contactNumber: widget.contactNumber,
-                                            extraPackagingAmount:
-                                                extraPackagingCharge,
-                                            referrerBonusAmount:
-                                                referrerBonusAmount,
-                                          ))
-                                    ]),
-                              )
-                            : Column(children: [
-                                OrderInfoSection(
-                                    order: order,
-                                    orderController: orderController,
-                                    schedules: schedules,
-                                    showChatPermission: showChatPermission,
-                                    contactNumber: widget.contactNumber,
-                                    totalAmount: total),
-                                OrderPricingSection(
-                                  itemsPrice: itemsPrice,
-                                  addOns: addOns,
-                                  order: order,
-                                  subTotal: subTotal,
-                                  discount: discount,
-                                  couponDiscount: couponDiscount,
-                                  tax: tax!,
-                                  dmTips: dmTips,
-                                  deliveryCharge:
-                                      order.couponDiscountAmount == 0 &&
-                                              order.couponCode != null
-                                          ? 0
-                                          : totalDeliveryCharge,
-                                  total: order.orderAmount!,
-                                  orderController: orderController,
-                                  orderId: widget.orderId,
-                                  contactNumber: widget.contactNumber,
-                                  extraPackagingAmount: extraPackagingCharge,
-                                  referrerBonusAmount: referrerBonusAmount,
-                                ),
-                              ]),
-                      )),
-                    )),
-                    !ResponsiveHelper.isDesktop(context)
-                        ? BottomViewWidget(
-                            orderController: orderController,
-                            order: order,
-                            orderId: widget.orderId,
-                            total: total,
-                            contactNumber: widget.contactNumber)
-                        : const SizedBox(),
-                  ])
+              WebScreenTitleWidget(
+                  title: subscription
+                      ? 'subscription_details'.tr
+                      : 'order_details'.tr),
+              Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: FooterViewWidget(
+                        child: SizedBox(
+                          width: Dimensions.webMaxWidth,
+                          child: ResponsiveHelper.isDesktop(context)
+                              ? Padding(
+                            padding: const EdgeInsets.only(
+                                top: Dimensions.paddingSizeLarge),
+                            child: Row(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                      flex: 6,
+                                      child: Column(
+                                        children: [
+                                          subscription
+                                              ? Text(
+                                              '${'subscription'.tr} # ${order.id.toString()}',
+                                              style: robotoBold.copyWith(
+                                                  fontSize: Dimensions
+                                                      .fontSizeLarge))
+                                              : const SizedBox(),
+                                          SizedBox(
+                                              height: subscription
+                                                  ? Dimensions
+                                                  .paddingSizeExtraSmall
+                                                  : 0),
+                                          subscription
+                                              ? Text(
+                                              '${'your_order_is'.tr} ${order.orderStatus}',
+                                              style: robotoRegular
+                                                  .copyWith(
+                                                  color: Theme.of(
+                                                      context)
+                                                      .primaryColor))
+                                              : const SizedBox(),
+                                          SizedBox(
+                                              height: subscription
+                                                  ? Dimensions
+                                                  .paddingSizeLarge
+                                                  : 0),
+                                          OrderInfoSection(
+                                              order: order,
+                                              orderController:
+                                              orderController,
+                                              schedules: schedules,
+                                              showChatPermission:
+                                              showChatPermission,
+                                              contactNumber:
+                                              widget.contactNumber,
+                                              totalAmount: total),
+                                        ],
+                                      )),
+                                  const SizedBox(
+                                      width: Dimensions.paddingSizeLarge),
+                                  Expanded(
+                                      flex: 4,
+                                      child: OrderPricingSection(
+                                        itemsPrice: itemsPrice,
+                                        addOns: addOns,
+                                        order: order,
+                                        subTotal: subTotal,
+                                        discount: discount,
+                                        couponDiscount: couponDiscount,
+                                        tax: tax!,
+                                        dmTips: dmTips,
+                                        deliveryCharge:
+                                        order.couponDiscountAmount ==
+                                            0 &&
+                                            order.couponCode != null
+                                            ? 0
+                                            : totalDeliveryCharge,
+                                        total: total,
+                                        orderController: orderController,
+                                        orderId: widget.orderId,
+                                        contactNumber: widget.contactNumber,
+                                        extraPackagingAmount:
+                                        extraPackagingCharge,
+                                        referrerBonusAmount:
+                                        referrerBonusAmount,
+                                      ))
+                                ]),
+                          )
+                              : Column(children: [
+                            OrderInfoSection(
+                                order: order,
+                                orderController: orderController,
+                                schedules: schedules,
+                                showChatPermission: showChatPermission,
+                                contactNumber: widget.contactNumber,
+                                totalAmount: total),
+                            OrderPricingSection(
+                              itemsPrice: itemsPrice,
+                              addOns: addOns,
+                              order: order,
+                              subTotal: subTotal,
+                              discount: discount,
+                              couponDiscount: couponDiscount,
+                              tax: tax!,
+                              dmTips: dmTips,
+                              deliveryCharge:
+                              order.couponDiscountAmount == 0 &&
+                                  order.couponCode != null
+                                  ? 0
+                                  : totalDeliveryCharge,
+                              total: order.orderAmount!,
+                              orderController: orderController,
+                              orderId: widget.orderId,
+                              contactNumber: widget.contactNumber,
+                              extraPackagingAmount: extraPackagingCharge,
+                              referrerBonusAmount: referrerBonusAmount,
+                            ),
+                          ]),
+                        )),
+                  )),
+              !ResponsiveHelper.isDesktop(context)
+                  ? BottomViewWidget(
+                  orderController: orderController,
+                  order: order,
+                  orderId: widget.orderId,
+                  total: total,
+                  contactNumber: widget.contactNumber)
+                  : const SizedBox(),
+            ])
                 : const Center(child: CircularProgressIndicator()),
           ),
         );

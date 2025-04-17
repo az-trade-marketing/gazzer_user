@@ -16,7 +16,10 @@ class CuisineRestaurantModel {
     if (json['restaurants'] != null) {
       restaurants = <Restaurant>[];
       json['restaurants'].forEach((v) {
-        restaurants!.add(Restaurant.fromJson(v));
+       Restaurant result =  Restaurant.fromJson(v);
+        if(!(restaurants!.any((b) => b.id ==result.id))){
+          restaurants!.add(result);
+        }
       });
     }
   }

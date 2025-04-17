@@ -44,6 +44,10 @@ class AddressBottomSheet extends StatelessWidget {
                       BorderRadius.circular(Dimensions.paddingSizeExtraSmall)),
             ),
           ),
+          const Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: CloseButton(),
+          ),
           Flexible(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(
@@ -77,34 +81,6 @@ class AddressBottomSheet extends StatelessWidget {
                             addressController.addressList!.isEmpty
                         ? const SizedBox(height: Dimensions.paddingSizeLarge)
                         : const SizedBox(),
-                    Align(
-                      alignment: addressController.addressList != null &&
-                              addressController.addressList!.isNotEmpty
-                          ? Alignment.centerLeft
-                          : Alignment.center,
-                      child: TextButton.icon(
-                        onPressed: () => _onCurrentLocationButtonPressed(),
-                        style: TextButton.styleFrom(
-                          backgroundColor:
-                              addressController.addressList != null &&
-                                      addressController.addressList!.isEmpty
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.transparent,
-                        ),
-                        icon: Icon(Icons.my_location,
-                            color: addressController.addressList != null &&
-                                    addressController.addressList!.isEmpty
-                                ? Theme.of(context).cardColor
-                                : Theme.of(context).primaryColor),
-                        label: Text('use_current_location'.tr,
-                            style: robotoMedium.copyWith(
-                                color: addressController.addressList != null &&
-                                        addressController.addressList!.isEmpty
-                                    ? Theme.of(context).cardColor
-                                    : Theme.of(context).primaryColor)),
-                      ),
-                    ),
-                    const SizedBox(height: Dimensions.paddingSizeSmall),
                     addressController.addressList != null
                         ? addressController.addressList!.isNotEmpty
                             ? Container(

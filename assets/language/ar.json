@@ -712,7 +712,7 @@
   "you_want_to_delete_this_location": "تريد حذف هذا الموقع؟",
   "delete": "مسح",
   "hey_welcome_back": "مرحباً بعودتك",
-  "which_location_do_you_want_to_select": "ما هو الموقع الذي تريد تحديده؟",
+  "which_location_do_you_want_to_select": "عنوان التوصيل يختلف عن موقعك الحالي. هل تريد المتابعة ؟",
   "use_current_location": "استخدم موقعي الحالي",
   "you_will_earn": "سوف تكسب",
   "points_after_completing_this_order": "نقاط بعد الانتهاء من هذا الطلب",

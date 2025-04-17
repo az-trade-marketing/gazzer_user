@@ -710,7 +710,7 @@
   "you_want_to_delete_this_location": "You want to delete this location?",
   "delete": "Delete",
   "hey_welcome_back": "Hey Welcome Back!",
-  "which_location_do_you_want_to_select": "Which location do you want to select?",
+  "which_location_do_you_want_to_select": "The delivery address different from your current location. Do you want to continue?",
   "use_current_location": "Use my current location",
   "you_will_earn": "You will earn",
   "points_after_completing_this_order": "points after completing this order",

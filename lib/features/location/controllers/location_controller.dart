@@ -234,7 +234,8 @@ class LocationController extends GetxController implements GetxService {
 
   void saveAddressAndNavigate(AddressModel address, bool fromSignUp,
       String? route, bool canRoute, bool isDesktop) {
-    if (Get.find<CartController>().cartList.isNotEmpty) {
+    _prepareZoneData(address, fromSignUp, route, canRoute, isDesktop);
+/*    if (Get.find<CartController>().cartList.isNotEmpty) {
       Get.dialog(ConfirmationDialogWidget(
         icon: Images.warning,
         title: 'are_you_sure_to_reset'.tr,
@@ -250,14 +251,13 @@ class LocationController extends GetxController implements GetxService {
       ));
     } else {
       _prepareZoneData(address, fromSignUp, route, canRoute, isDesktop);
-    }
+    }*/
   }
 
   void _prepareZoneData(AddressModel address, bool fromSignUp, String? route,
       bool canRoute, bool isDesktop) {
     getZone(address.latitude, address.longitude, false).then((response) async {
       if (response.isSuccess) {
-        Get.find<CartController>().clearCartList();
         address.zoneId = response.zoneIds[0];
         address.zoneIds = [];
         address.zoneIds!.addAll(response.zoneIds);

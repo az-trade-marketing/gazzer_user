@@ -305,10 +305,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               Text(
                                                                 AuthHelper
                                                                         .isLoggedIn()
-                                                                    ? AddressHelper
+                                                                    ? (AddressHelper
                                                                             .getAddressFromSharedPref()!
-                                                                        .addressType!
-                                                                        .tr
+                                                                        .label?.toString()??(AddressHelper
+                                                                    .getAddressFromSharedPref()!.addressType!.tr))
                                                                     : 'your_location'
                                                                         .tr,
                                                                 style:

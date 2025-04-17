@@ -16,6 +16,7 @@ class AddressModel {
   String? floor;
   List<ZoneData>? zoneData;
   String? email;
+  String? label;
 
   AddressModel({
     this.id,
@@ -33,11 +34,13 @@ class AddressModel {
     this.floor,
     this.zoneData,
     this.email,
+    this.label,
   });
 
   AddressModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     addressType = json['address_type'];
+    label = json['label'];
     contactPersonNumber = json['contact_person_number'];
     address = json['address'];
     latitude = json['latitude'];
@@ -64,6 +67,7 @@ class AddressModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['address_type'] = addressType;
+    data['label'] = label;
     data['contact_person_number'] = contactPersonNumber;
     data['address'] = address;
     data['latitude'] = latitude;

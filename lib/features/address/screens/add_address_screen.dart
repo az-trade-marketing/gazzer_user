@@ -521,19 +521,18 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             ),
           ),
         ),
-        SizedBox(height: _otherSelect ? Dimensions.paddingSizeOverLarge : 0),
-        _otherSelect
-            ? CustomTextFieldWidget(
-                hintText: '${'level_name'.tr}',
-                labelText: 'level_name'.tr,
-                inputType: TextInputType.text,
-                controller: _levelController,
-                focusNode: _levelNode,
-                nextFocus: _addressNode,
-                capitalization: TextCapitalization.words,
-                showBorder: true,
-              )
-            : const SizedBox(),
+        const SizedBox(height: Dimensions.paddingSizeOverLarge),
+        CustomTextFieldWidget(
+          hintText: 'level_name'.tr,
+          labelText: 'level_name'.tr,
+          inputType: TextInputType.text,
+          controller: _levelController,
+          focusNode: _levelNode,
+          nextFocus: _addressNode,
+          capitalization: TextCapitalization.words,
+          showBorder: true,
+          required: true,
+        ) /* : const SizedBox()*/,
         const SizedBox(height: Dimensions.paddingSizeOverLarge),
         CustomTextFieldWidget(
           hintText: 'delivery_address'.tr,
@@ -668,15 +667,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   void _onSaveButtonPressed(LocationController locationController) async {
-    String numberWithCountryCode = _countryDialCode! + _contactPersonNumberController.text;
-    PhoneValid phoneValid = await CustomValidator.isPhoneValid(numberWithCountryCode);
+    String numberWithCountryCode =
+        _countryDialCode! + _contactPersonNumberController.text;
+    PhoneValid phoneValid =
+        await CustomValidator.isPhoneValid(numberWithCountryCode);
     numberWithCountryCode = phoneValid.phone;
 
     AddressModel? addressModel = _prepareAddressModel(
-
-        locationController,
-        phoneValid.isValid, numberWithCountryCode
-    );
+        locationController, phoneValid.isValid, numberWithCountryCode);
     if (addressModel == null) {
       return;
     }
@@ -717,40 +715,26 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       showCustomSnackBar('house_is_required'.tr);
     } else if (_floorController.text.isEmpty) {
       showCustomSnackBar('floor_is_required'.tr);
-    } else if (_otherSelect && _levelController.text.isEmpty){
-        showCustomSnackBar('level_is_required'.tr);
-    }
-    else if (!isValid) {
+    } else if (_otherSelect && _levelController.text.isEmpty) {
+      showCustomSnackBar('level_is_required'.tr);
+    } else if (!isValid) {
       showCustomSnackBar('invalid_phone_number'.tr);
     } else {
-
-      AddressModel addressModel = _otherSelect
-          ? AddressModel(
-        id: widget.address?.id,
-        addressType: _levelController.text,
-        contactPersonName: _contactPersonNameController.text,
-        contactPersonNumber: numberWithCountryCode,
-        address: _addressController.text,
-        latitude: locationController.position.latitude.toString(),
-        longitude: locationController.position.longitude.toString(),
-        zoneId: locationController.zoneID,
-        road: _streetNumberController.text,
-        house: _houseController.text.trim(),
-        floor: _floorController.text.trim(),
-      ) : AddressModel(
-        id: widget.address?.id,
-        addressType: locationController
-            .addressTypeList[locationController.addressTypeIndex],
-        contactPersonName: _contactPersonNameController.text,
-        contactPersonNumber: numberWithCountryCode,
-        address: _addressController.text,
-        latitude: locationController.position.latitude.toString(),
-        longitude: locationController.position.longitude.toString(),
-        zoneId: locationController.zoneID,
-        road: _streetNumberController.text,
-        house: _houseController.text.trim(),
-        floor: _floorController.text.trim(),
-      );
+      AddressModel addressModel =  AddressModel(
+              id: widget.address?.id,
+              label:_levelController.text,
+              addressType: locationController
+                  .addressTypeList[locationController.addressTypeIndex],
+              contactPersonName: _contactPersonNameController.text,
+              contactPersonNumber: numberWithCountryCode,
+              address: _addressController.text,
+              latitude: locationController.position.latitude.toString(),
+              longitude: locationController.position.longitude.toString(),
+              zoneId: locationController.zoneID,
+              road: _streetNumberController.text,
+              house: _houseController.text.trim(),
+              floor: _floorController.text.trim(),
+            );
 
       return addressModel;
     }

@@ -80,7 +80,7 @@ class AddressCardWidget extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(address?.addressType?.tr ?? '',
+                              Text((address?.label?? address?.addressType)?.tr ?? '',
                                   style: robotoMedium),
                               Text(
                                 address?.address ?? '',
@@ -95,14 +95,14 @@ class AddressCardWidget extends StatelessWidget {
                     ]),
                   ]),
             ),
-            fromAddress
+       /*     fromAddress
                 ? IconButton(
                     icon: Icon(Icons.edit,
                         color: Theme.of(context).disabledColor,
                         size: ResponsiveHelper.isDesktop(context) ? 25 : 20),
                     onPressed: onEditPressed as void Function()?,
                   )
-                : const SizedBox(),
+                : const SizedBox(),*/
             fromAddress
                 ? IconButton(
                     icon: Icon(CupertinoIcons.delete,

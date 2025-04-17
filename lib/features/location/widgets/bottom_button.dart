@@ -30,6 +30,15 @@ class BottomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return CustomButtonWidget(
+      radius: Dimensions.radiusDefault,
+      buttonText: 'add_new_address'.tr,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      onPressed: () async {
+        Get.toNamed(RouteHelper.getAddAddressRoute(false, 0));
+      },
+      icon: Icons.my_location,
+    );
     return Center(
         child: SizedBox(
             width: 700,

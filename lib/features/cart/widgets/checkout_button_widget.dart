@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/widgets/custom_button_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
+import 'package:gazzer_userapp/features/checkout/widgets/address_cart_bottom_sheet.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
@@ -148,7 +149,7 @@ class CheckoutButtonWidget extends StatelessWidget {
                     !allRestaurantsOpen)
                     ? null
                     : () {
-                  _processToCheckoutButtonPressed(restaurantController);
+                  _processToCheckoutButtonPressed(context,restaurantController);
                 },
               );
             }),
@@ -159,16 +160,23 @@ class CheckoutButtonWidget extends StatelessWidget {
     );
   }
 
-  void _processToCheckoutButtonPressed(RestaurantController restaurantController) {
-    if (!cartController.cartList.first.product!.scheduleOrder! &&
-        cartController.availableList.contains(false)) {
-      showCustomSnackBar('one_or_more_product_unavailable'.tr);
-    } else if (restaurantController.restaurant!.freeDelivery == null ||
-        restaurantController.restaurant!.cutlery == null) {
-      showCustomSnackBar('restaurant_is_unavailable'.tr);
-    } else {
-      Get.find<CouponController>().removeCouponData(false);
-      Get.toNamed(RouteHelper.getCheckoutRoute('cart'));
-    }
+  void _processToCheckoutButtonPressed(BuildContext context,RestaurantController restaurantController) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (con) => const AddressCartBottomSheet(),
+    ).then((value) {
+      if (!cartController.cartList.first.product!.scheduleOrder! &&
+          cartController.availableList.contains(false)) {
+        showCustomSnackBar('one_or_more_product_unavailable'.tr);
+      } else if (restaurantController.restaurant!.freeDelivery == null ||
+          restaurantController.restaurant!.cutlery == null) {
+        showCustomSnackBar('restaurant_is_unavailable'.tr);
+      } else {
+        Get.find<CouponController>().removeCouponData(false);
+        Get.toNamed(RouteHelper.getCheckoutRoute('cart'));
+      }
+    });
   }
 }

@@ -446,9 +446,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                   callBack: () =>
                                                       initCall(),
                                                 )),
-                                            const SizedBox(
-                                                width: Dimensions
-                                                    .paddingSizeLarge),
+                                            const SizedBox(width: Dimensions.paddingSizeLarge),
                                             Expanded(
                                               flex: 4,
                                               child: BottomSectionWidget(
@@ -561,6 +559,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                             loginTooltipController,
                                             callBack: () => initCall(),
                                           ),
+                                          const SizedBox(width: Dimensions.paddingSizeLarge),
                                           BottomSectionWidget(
                                             isTapped: AppConstants
                                                 .isUseButtonTapped

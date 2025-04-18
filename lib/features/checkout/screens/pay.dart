@@ -177,6 +177,7 @@ class _PayScreenState extends State<PayScreen> {
         latitude: AddressHelper.getAddressFromSharedPref()!.latitude,
         longitude: AddressHelper.getAddressFromSharedPref()!.longitude,
         addressType: AddressHelper.getAddressFromSharedPref()!.addressType,
+        addressID:  AddressHelper.getAddressFromSharedPref()!.id!,
         contactPersonName:
             AddressHelper.getAddressFromSharedPref()!.contactPersonName ??
                 '${Get.find<ProfileController>().userInfoModel!.fName} '

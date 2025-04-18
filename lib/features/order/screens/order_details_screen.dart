@@ -199,21 +199,21 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen>
           }
         }
         // Calculate delivery charges based on grouped restaurant orders
-        double totalDeliveryCharge = 0;
-        bool isFirstRestaurant = true; // To track the first restaurant
-        restaurantDeliveryCharges.forEach((name, charge) {
-          double deliveryCharge;
-          if (isFirstRestaurant) {
-            deliveryCharge = order?.deliveryCharge??15; // Charge for the first restaurant
-            isFirstRestaurant = false; // Set to false after the first order
-          } else {
-            deliveryCharge = Get.find<SplashController>()
-                .configModel!
-                .deliveryFeeMultiVendor!
-                .toDouble(); // Charge for subsequent restaurants
-          }
-          totalDeliveryCharge += deliveryCharge;
-        });
+        double totalDeliveryCharge = order?.deliveryCharge??0;
+      //  bool isFirstRestaurant = true; // To track the first restaurant
+      //  restaurantDeliveryCharges.forEach((name, charge) {
+      //    double deliveryCharge;
+      //    if (isFirstRestaurant) {
+      //      deliveryCharge = order?.deliveryCharge??15; // Charge for the first restaurant
+      //      isFirstRestaurant = false; // Set to false after the first order
+      //    } else {
+      //      deliveryCharge = Get.find<SplashController>()
+      //          .configModel!
+      //          .deliveryFeeMultiVendor!
+      //          .toDouble(); // Charge for subsequent restaurants
+      //    }
+      //    totalDeliveryCharge += deliveryCharge;
+      //  });
         double subTotal = itemsPrice + addOns;
         // double total = itemsPrice +
         //     addOns -

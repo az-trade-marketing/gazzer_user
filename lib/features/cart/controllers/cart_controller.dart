@@ -310,8 +310,7 @@ Future<bool> removeRestaurantItemsOnline(int restaurantId) async {
         Get.back();
       }
       showCartSnackBarWidget();
-    } else if (response.statusCode == 403 &&
-        response.body['errors'][0]['code'] == 'stock_out') {
+    } else if (response.statusCode == 403) {
       showCustomSnackBar(response.body['errors'][0]['message'],
           showToaster: true);
       Get.find<ProductController>()

@@ -311,7 +311,7 @@ class OrderViewWidget extends StatelessWidget {
                                                                             .id
                                                                             .toString()));
                                                                   }else {
-                                                                    showCustomSnackBar("not available");
+                                                                    showCustomSnackBar('unable_to_launch_google_map'.tr);
                                                                   }
                                                                   /*Get.toNamed(RouteHelper.getOrderTrackingRoute(
                                                                         orderList![index]

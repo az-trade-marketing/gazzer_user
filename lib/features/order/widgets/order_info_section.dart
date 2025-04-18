@@ -999,7 +999,7 @@ class OrderInfoSection extends StatelessWidget {
               vertical: Dimensions.paddingSizeSmall),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            InkWell(
+            /*  InkWell(
               onTap: () {
                 if (order.restaurant != null &&
                     order.restaurant!.latitude != null &&
@@ -1028,7 +1028,18 @@ class OrderInfoSection extends StatelessWidget {
                     .toSet() // removes duplicates
                     .join(' \n'),
               ),
-            ),
+            ),*/
+            ...orderController.orderDetails!
+                .map((e) => Row(
+                      children: [
+                        const Icon(Icons.storefront_rounded,color: Colors.blue,),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(e.foodDetails?.restaurantName ?? "")
+                      ],
+                    ))
+                .toList(),
             const Divider(height: Dimensions.paddingSizeLarge),
             InkWell(
               onTap: () async {

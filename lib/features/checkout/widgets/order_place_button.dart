@@ -109,7 +109,8 @@ class OrderPlaceButton extends StatelessWidget {
               bool datePicked = _isDatePicked();
 
               if (checkoutController.isDmTipSave &&
-                  checkoutController.selectedTips != AppConstants.tips.length - 1) {
+                  checkoutController.selectedTips !=
+                      AppConstants.tips.length - 1) {
                 Get.find<AuthController>()
                     .saveDmTipIndex(checkoutController.selectedTips.toString());
               }
@@ -117,7 +118,8 @@ class OrderPlaceButton extends StatelessWidget {
                 Get.find<AuthController>().saveDmTipIndex('0');
               }
 
-              if (_showsWarningMessage(context, isGuestLogIn, datePicked, isAvailable)) {
+              if (_showsWarningMessage(
+                  context, isGuestLogIn, datePicked, isAvailable)) {
                 debugPrint('Warning shows');
               } else {
                 // تحديد المبلغ الذي سيتم دفعه والمبلغ الذي سيتم خصمه من المحفظة
@@ -129,11 +131,13 @@ class OrderPlaceButton extends StatelessWidget {
                   double walletBalance = Get.find<ProfileController>()
                       .userInfoModel!
                       .walletBalance!;
-                  debugPrint("walletBalance:::: $walletBalance    total:: $total");
+                  debugPrint(
+                      "walletBalance:::: $walletBalance    total:: $total");
                   if (walletBalance >= total) {
                     // الحالة الأولى: المحفظة تغطي كامل المبلغ
                     amountFromWallet = total;
-                    amountToCharge = /*total*/0.0; // المتبقى من wallet// إرسال نفس المبلغ للدفع كما طلبت
+                    amountToCharge = /*total*/
+                        0.0; // المتبقى من wallet// إرسال نفس المبلغ للدفع كما طلبت
                   } else {
                     // الحالة الثانية: المحفظة لا تغطي كامل المبلغ
                     amountFromWallet = walletBalance;
@@ -179,12 +183,19 @@ class OrderPlaceButton extends StatelessWidget {
                   ));
                 } else if (checkoutController.paymentMethodIndex == 2) {
                   checkoutController.loading();
-                  Map<String, String>? result = await Paymob()
-                      .getPaymobIntention(
+                  Map<String, String>? result =
+                      await Paymob().getPaymobIntention(
                     cartIDs: cartList.map((e) => e.id!).toList(),
-                          amount: amountToCharge); // استخدام المبلغ المعدل
+                    amount: amountToCharge,
+                  ); // استخدام المبلغ المعدل
                   String? checkoutUrl = result?['checkout_url'];
                   String? paymentId = result?['payment_id'];
+                  String? error = result?['error'];
+                  if (error != null) {
+                    checkoutController.loading();
+                    showCustomSnackBar(error);
+                    return;
+                  }
                   Get.to(() => PayScreen(
                       paymentId: paymentId!,
                       url: checkoutUrl!,
@@ -205,7 +216,8 @@ class OrderPlaceButton extends StatelessWidget {
                   checkoutController.placeOrder(
                       placeOrderBody,
                       checkoutController.restaurant!.zoneId!,
-                      amountToCharge + amountFromWallet, // استخدام المبلغ المعدل
+                      amountToCharge + amountFromWallet,
+                      // استخدام المبلغ المعدل
                       maxCodOrderAmount,
                       fromCart,
                       isCashOnDeliveryActive);
@@ -600,7 +612,10 @@ class OrderPlaceButton extends StatelessWidget {
           ? AppConstants
               .deliveryInstructionList[checkoutController.selectedInstruction]
           : '',
-      partialPayment: AppConstants.isUseButtonTapped && !(walletAmount  ==  orderAmount)? 1 : 0,
+      partialPayment:
+          AppConstants.isUseButtonTapped && !(walletAmount == orderAmount)
+              ? 1
+              : 0,
       guestId:
           isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
       isBuyNow: fromCart ? 0 : 1,

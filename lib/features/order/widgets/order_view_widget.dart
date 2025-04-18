@@ -1,5 +1,7 @@
+import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
 import 'package:gazzer_userapp/features/order/controllers/order_controller.dart';
 import 'package:gazzer_userapp/features/order/screens/order_details_screen.dart';
+import 'package:gazzer_userapp/features/order/screens/order_map_webview.dart';
 import 'package:gazzer_userapp/features/order/widgets/order_shimmer_widget.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/features/order/domain/models/order_model.dart';
@@ -230,149 +232,207 @@ class OrderViewWidget extends StatelessWidget {
                                                         MainAxisAlignment
                                                             .center,
                                                     children: [
-                                                      isRunning ||
-                                                              isSubscription
-                                                          ? Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                  Container(
-                                                                    padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal:
-                                                                            Dimensions
-                                                                                .paddingSizeSmall,
-                                                                        vertical:
-                                                                            Dimensions.paddingSizeExtraSmall),
-                                                                    margin: EdgeInsets.only(
-                                                                        bottom: ResponsiveHelper.isDesktop(context)
-                                                                            ? Dimensions.paddingSizeOverLarge
-                                                                            : Dimensions.paddingSizeDefault),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              Dimensions.radiusSmall),
+                                                      if (isRunning ||
+                                                          isSubscription)
+                                                        Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        Dimensions
+                                                                            .paddingSizeSmall,
+                                                                    vertical:
+                                                                        Dimensions
+                                                                            .paddingSizeExtraSmall),
+                                                                margin: EdgeInsets.only(
+                                                                    bottom: ResponsiveHelper.isDesktop(
+                                                                            context)
+                                                                        ? Dimensions
+                                                                            .paddingSizeOverLarge
+                                                                        : Dimensions
+                                                                            .paddingSizeDefault),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                          Dimensions
+                                                                              .radiusSmall),
+                                                                  color: orderList[index].orderStatus ==
+                                                                              'pending' ||
+                                                                          orderList[index].orderStatus ==
+                                                                              'processing'
+                                                                      ? Colors
+                                                                          .blue
+                                                                          .withOpacity(
+                                                                              0.15)
+                                                                      : orderList[index].orderStatus == 'accepted' ||
+                                                                              orderList[index].orderStatus ==
+                                                                                  'confirmed'
+                                                                          ? Colors.green.withOpacity(
+                                                                              0.15)
+                                                                          : Theme.of(context)
+                                                                              .primaryColor
+                                                                              .withOpacity(0.15),
+                                                                ),
+                                                                child: Text(
+                                                                    orderList[
+                                                                            index]
+                                                                        .orderStatus!
+                                                                        .tr,
+                                                                    style: robotoMedium
+                                                                        .copyWith(
+                                                                      fontSize:
+                                                                          Dimensions
+                                                                              .fontSizeExtraSmall,
                                                                       color: orderList[index].orderStatus == 'pending' ||
                                                                               orderList[index].orderStatus ==
                                                                                   'processing'
                                                                           ? Colors
                                                                               .blue
-                                                                              .withOpacity(0.15)
                                                                           : orderList[index].orderStatus == 'accepted' || orderList[index].orderStatus == 'confirmed'
-                                                                              ? Colors.green.withOpacity(0.15)
-                                                                              : Theme.of(context).primaryColor.withOpacity(0.15),
-                                                                    ),
-                                                                    child: Text(
-                                                                        orderList[index]
-                                                                            .orderStatus!
-                                                                            .tr,
-                                                                        style: robotoMedium
-                                                                            .copyWith(
-                                                                          fontSize:
-                                                                              Dimensions.fontSizeExtraSmall,
-                                                                          color: orderList[index].orderStatus == 'pending' || orderList[index].orderStatus == 'processing'
-                                                                              ? Colors.blue
-                                                                              : orderList[index].orderStatus == 'accepted' || orderList[index].orderStatus == 'confirmed'
-                                                                                  ? Colors.green
-                                                                                  : Theme.of(context).primaryColor,
-                                                                        )),
-                                                                  ),
-                                                                  InkWell(
-                                                                    onTap: () => Get.toNamed(RouteHelper.getOrderTrackingRoute(
+                                                                              ? Colors.green
+                                                                              : Theme.of(context).primaryColor,
+                                                                    )),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () {
+                                                                  if ((orderList![index]
+                                                                              .webViewTrackingOrder ??
+                                                                          "")
+                                                                      .isNotEmpty) {
+                                                                    Get.to(() => OrderMapWebViewScreen(
+                                                                        url: orderList![index].webViewTrackingOrder ??
+                                                                            "",
+                                                                        orderID: orderList[index]
+                                                                            .id
+                                                                            .toString()));
+                                                                  }else {
+                                                                    showCustomSnackBar("not available");
+                                                                  }
+                                                                  /*Get.toNamed(RouteHelper.getOrderTrackingRoute(
                                                                         orderList![index]
                                                                             .id,
-                                                                        null)),
-                                                                    child:
-                                                                        Container(
-                                                                      padding: const EdgeInsets
-                                                                          .symmetric(
-                                                                          horizontal: Dimensions
+                                                                        null))*/
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          Dimensions
                                                                               .paddingSizeSmall,
-                                                                          vertical:
-                                                                              7),
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(Dimensions.radiusSmall),
+                                                                      vertical:
+                                                                          7),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            Dimensions.radiusSmall),
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .primaryColor,
+                                                                    border: Border.all(
+                                                                        width:
+                                                                            1,
                                                                         color: Theme.of(context)
-                                                                            .primaryColor,
-                                                                        border: Border.all(
-                                                                            width:
-                                                                                1,
-                                                                            color:
-                                                                                Theme.of(context).primaryColor),
-                                                                      ),
-                                                                      child: Row(
-                                                                          children: [
-                                                                            Text('track_order'.tr,
-                                                                                style: robotoMedium.copyWith(
-                                                                                  fontSize: Dimensions.fontSizeSmall,
-                                                                                  color: Theme.of(context).cardColor,
-                                                                                )),
-                                                                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                                                                            Image.asset(Images.tracking,
-                                                                                height: 20,
-                                                                                width: 20,
-                                                                                color: Theme.of(context).cardColor),
-                                                                          ]),
-                                                                    ),
+                                                                            .primaryColor),
                                                                   ),
-                                                                ])
-                                                          : Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                  Container(
-                                                                    padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal:
-                                                                            Dimensions
-                                                                                .paddingSizeSmall,
-                                                                        vertical:
-                                                                            Dimensions.paddingSizeExtraSmall),
-                                                                    margin: const EdgeInsets
-                                                                        .only(
-                                                                        bottom:
-                                                                            Dimensions.paddingSizeOverLarge),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              Dimensions.radiusSmall),
+                                                                  child: Row(
+                                                                      children: [
+                                                                        Text(
+                                                                            'track_order'
+                                                                                .tr,
+                                                                            style:
+                                                                                robotoMedium.copyWith(
+                                                                              fontSize: Dimensions.fontSizeSmall,
+                                                                              color: Theme.of(context).cardColor,
+                                                                            )),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                Dimensions.paddingSizeExtraSmall),
+                                                                        Image.asset(
+                                                                            Images
+                                                                                .tracking,
+                                                                            height:
+                                                                                20,
+                                                                            width:
+                                                                                20,
+                                                                            color:
+                                                                                Theme.of(context).cardColor),
+                                                                      ]),
+                                                                ),
+                                                              ),
+                                                            ])
+                                                      else
+                                                        Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        Dimensions
+                                                                            .paddingSizeSmall,
+                                                                    vertical:
+                                                                        Dimensions
+                                                                            .paddingSizeExtraSmall),
+                                                                margin: const EdgeInsets
+                                                                    .only(
+                                                                    bottom: Dimensions
+                                                                        .paddingSizeOverLarge),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                          Dimensions
+                                                                              .radiusSmall),
+                                                                  color: orderList[index]
+                                                                              .orderStatus ==
+                                                                          'delivered'
+                                                                      ? Colors
+                                                                          .green
+                                                                          .withOpacity(
+                                                                              0.15)
+                                                                      : Colors
+                                                                          .red
+                                                                          .withOpacity(
+                                                                              0.15),
+                                                                ),
+                                                                child: Text(
+                                                                    orderList[
+                                                                            index]
+                                                                        .orderStatus!
+                                                                        .tr,
+                                                                    style: robotoMedium
+                                                                        .copyWith(
+                                                                      fontSize:
+                                                                          Dimensions
+                                                                              .fontSizeExtraSmall,
                                                                       color: orderList[index].orderStatus ==
                                                                               'delivered'
-                                                                          ? Colors.green.withOpacity(
-                                                                              0.15)
+                                                                          ? Colors
+                                                                              .green
                                                                           : Colors
-                                                                              .red
-                                                                              .withOpacity(0.15),
-                                                                    ),
-                                                                    child: Text(
-                                                                        orderList[index]
-                                                                            .orderStatus!
-                                                                            .tr,
-                                                                        style: robotoMedium
-                                                                            .copyWith(
-                                                                          fontSize:
-                                                                              Dimensions.fontSizeExtraSmall,
-                                                                          color: orderList[index].orderStatus == 'delivered'
-                                                                              ? Colors.green
-                                                                              : Colors.red,
-                                                                        )),
-                                                                  ),
-                                                                  Text(
-                                                                    '${orderList[index].detailsCount} ${orderList[index].detailsCount! > 1 ? 'items'.tr : 'item'.tr}',
-                                                                    style: robotoRegular.copyWith(
-                                                                        fontSize:
-                                                                            Dimensions
-                                                                                .fontSizeSmall,
-                                                                        color: Theme.of(context)
-                                                                            .disabledColor),
-                                                                  ),
-                                                                ]),
+                                                                              .red,
+                                                                    )),
+                                                              ),
+                                                              Text(
+                                                                '${orderList[index].detailsCount} ${orderList[index].detailsCount! > 1 ? 'items'.tr : 'item'.tr}',
+                                                                style: robotoRegular.copyWith(
+                                                                    fontSize:
+                                                                        Dimensions
+                                                                            .fontSizeSmall,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .disabledColor),
+                                                              ),
+                                                            ]),
                                                     ]),
                                               ]),
                                             ]),

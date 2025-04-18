@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
@@ -9,7 +10,7 @@ import 'package:http/http.dart' as http;
 class Paymob {
   Future<Map<String, String>?> getPaymobIntention({
     required double amount,
-    required List<int> cartIDs,
+     required List<int> cartIDs,
   }) async {
     try {
       String url = "${AppConstants.baseUrl}/api/v1/customer/paymob/intention?amount=$amount&cart_ids=${cartIDs.join(",")}";
@@ -36,10 +37,12 @@ class Paymob {
           };
         }
       } else {
-        debugPrint('Error: ${response.statusCode}');
+        debugPrint('Error: ${response.statusCode} ${response.body}');
+        return {"error": jsonDecode(response.body)['message']};
       }
-    } catch (e) {
-      debugPrint('Exception: $e');
+    } catch (e,s) {
+      log('Exception: $e',stackTrace: s);
+      return {"error":'Exception: $e'};
     }
 
     return null; // Return null if no URL is found

@@ -89,6 +89,7 @@ class OrderModel {
   double? extraPackagingAmount;
   double? referrerBonusAmount;
   String? totalDeliveryTime;
+  String? webViewTrackingOrder;
 
   OrderModel({
     this.id,
@@ -143,7 +144,9 @@ class OrderModel {
     this.offlinePayment,
     this.extraPackagingAmount,
     this.referrerBonusAmount,
-      this.totalDeliveryTime});
+    this.totalDeliveryTime,
+    this.webViewTrackingOrder,
+  });
 
   OrderModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -233,6 +236,7 @@ class OrderModel {
     extraPackagingAmount = json['extra_packaging_amount']?.toDouble();
     referrerBonusAmount = json['ref_bonus_amount']?.toDouble();
     totalDeliveryTime = json['total_delivery_time'];
+    webViewTrackingOrder = json['map_view_url'];
   }
 
   Map<String, dynamic> toJson() {
@@ -301,6 +305,7 @@ class OrderModel {
     data['extra_packaging_amount'] = extraPackagingAmount;
     data['ref_bonus_amount'] = referrerBonusAmount;
     data['total_delivery_time'] = totalDeliveryTime;
+    data['map_view_url'] = webViewTrackingOrder;
     return data;
   }
 }

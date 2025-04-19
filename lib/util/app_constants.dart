@@ -4,14 +4,14 @@ import 'package:get/get.dart';
 
 class AppConstants {
   static const String appName = 'Gazzer';
-  static const double appVersion = 8.4;
+  static const double appVersion = 8.5;
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
   // Production API URL
-  // static const String webHostedUrl = 'https://dashboard.gazzerapp.com';
+  static const String webHostedUrl = 'https://dashboard.gazzerapp.com';
   // Staging API URL
-  static const String webHostedUrl = 'https://carrot.refilex.com';
+  // static const String webHostedUrl = 'https://carrot.refilex.com';
   static const String baseUrl = webHostedUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';

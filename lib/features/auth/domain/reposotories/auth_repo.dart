@@ -49,7 +49,7 @@ class AuthRepo implements AuthRepoInterface<SignUpBodyModel> {
         FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
             alert: true, badge: true, sound: true);
         NotificationSettings settings =
-            await FirebaseMessaging.instance.requestPermission(
+        await FirebaseMessaging.instance.requestPermission(
           alert: true,
           announcement: false,
           badge: true,
@@ -60,48 +60,45 @@ class AuthRepo implements AuthRepoInterface<SignUpBodyModel> {
         );
         if (settings.authorizationStatus == AuthorizationStatus.authorized) {
           deviceToken = await _saveDeviceToken();
+          // Add a debug log here to verify token
+          debugPrint('--------iOS Device Token for API---------- $deviceToken');
         }
       } else {
         deviceToken = await _saveDeviceToken();
+        // Add a debug log here to verify token
+        debugPrint('--------Non-iOS Device Token for API---------- $deviceToken');
       }
       if (!GetPlatform.isWeb) {
         FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
       }
     }
+
+    // Use empty string instead of '@' if token is null
     return await apiClient.postData(AppConstants.tokenUri, {
       "_method": "put",
       "cm_firebase_token": notificationDeviceToken.isNotEmpty
           ? notificationDeviceToken
-          : deviceToken
+          : (deviceToken ?? '')  // Use empty string if deviceToken is null
     });
   }
 
   Future<String?> _saveDeviceToken() async {
-    // String? deviceToken = '@';
-    // if (!GetPlatform.isWeb) {
-    //   try {
-    //     deviceToken = (await FirebaseMessaging.instance.getToken())!;
-    //   } catch (_) {}
-    // }
-    // if (deviceToken != null) {
-    //   debugPrint('--------Device Token---------- $deviceToken');
-    // }
-    // return deviceToken;
-    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-    if (GetPlatform.isAndroid) {
-      return firebaseMessaging.getToken().then((String? token) {
-        return token;
-      });
-    } else {
-      String? apnsToken = await firebaseMessaging.getAPNSToken();
+    String? deviceToken;  // Remove the default '@' value
+    if (!GetPlatform.isWeb) {
       try {
-        apnsToken = await FirebaseMessaging.instance.getToken();
+        deviceToken = await FirebaseMessaging.instance.getToken();
+        if (deviceToken == null || deviceToken.isEmpty) {
+          debugPrint('--------Device Token is empty or null----------');
+          return null;  // Return null instead of '@' if token retrieval fails
+        }
+        debugPrint('--------Device Token---------- $deviceToken');
+        return deviceToken;
       } catch (e) {
-        debugPrint(e.toString());
+        debugPrint('--------Error getting Device Token---------- ${e.toString()}');
+        return null;
       }
-      debugPrint('apns - fcm token :: $apnsToken');
-      return apnsToken;
     }
+    return deviceToken;
   }
 
   @override

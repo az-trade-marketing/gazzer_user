@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/review_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_image_widget.dart';
@@ -1029,17 +1030,36 @@ class OrderInfoSection extends StatelessWidget {
                     .join(' \n'),
               ),
             ),*/
-            ...orderController.orderDetails!
-                .map((e) => Row(
+            for (int x = 0;
+                x < (orderController.orderDetails?.length ?? 0);
+                x++)
+              orderController.orderDetails![x].foodDetails?.restaurantId !=
+                          orderController
+                              .orderDetails![(x - 1).isNegative ? 0 : x - 1]
+                              .foodDetails
+                              ?.restaurantId ||
+                      x == 0
+                  ? Row(
                       children: [
-                        const Icon(Icons.storefront_rounded,color: Colors.blue,),
+                        const Icon(
+                          Icons.storefront_rounded,
+                          color: Colors.blue,
+                        ),
                         const SizedBox(
                           width: 10,
                         ),
-                        Text(e.foodDetails?.restaurantName ?? "")
+                        Text(orderController
+                                .orderDetails![x].foodDetails?.restaurantName ??
+                            ""),
+                        const Spacer(),
+                        Text(
+                          orderController.orderDetails![x].itemStatus ?? "",
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        )
                       ],
-                    ))
-                .toList(),
+                    )
+                  : const SizedBox(),
             const Divider(height: Dimensions.paddingSizeLarge),
             InkWell(
               onTap: () async {

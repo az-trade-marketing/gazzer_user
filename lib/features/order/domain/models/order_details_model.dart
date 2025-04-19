@@ -20,6 +20,8 @@ class OrderDetailsModel {
   double? totalAddOnPrice;
   int? zoneId;
 
+  String? itemStatus;
+
   OrderDetailsModel({
     this.id,
     this.foodId,
@@ -39,6 +41,7 @@ class OrderDetailsModel {
     this.itemCampaignId,
     this.totalAddOnPrice,
     this.zoneId,
+    this.itemStatus,
   });
 
   OrderDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -78,6 +81,7 @@ class OrderDetailsModel {
     itemCampaignId = json['item_campaign_id'];
     totalAddOnPrice = json['total_add_on_price'].toDouble();
     zoneId = json['zone_id'];
+    itemStatus = json['item_status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -105,6 +109,7 @@ class OrderDetailsModel {
     data['item_campaign_id'] = itemCampaignId;
     data['total_add_on_price'] = totalAddOnPrice;
     data['zone_id'] = zoneId;
+    data['item_status'] = itemStatus;
     return data;
   }
 }

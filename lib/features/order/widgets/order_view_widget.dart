@@ -164,7 +164,7 @@ class OrderViewWidget extends StatelessWidget {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Row(children: [
-                                                Container(
+                                            /*    Container(
                                                   padding:
                                                       const EdgeInsets.all(1),
                                                   decoration: BoxDecoration(
@@ -194,7 +194,7 @@ class OrderViewWidget extends StatelessWidget {
                                                 ),
                                                 const SizedBox(
                                                     width: Dimensions
-                                                        .paddingSizeSmall),
+                                                        .paddingSizeSmall),*/
                                                 Expanded(
                                                   child: Column(
                                                       crossAxisAlignment:
@@ -202,7 +202,7 @@ class OrderViewWidget extends StatelessWidget {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                            '${'order'.tr} # ${orderList[index].id}',
+                                                            '${'order'.tr} # ${orderList![index].id}',
                                                             style: robotoBold),
                                                         const SizedBox(
                                                             height: Dimensions
@@ -210,7 +210,7 @@ class OrderViewWidget extends StatelessWidget {
                                                         Text(
                                                           DateConverter
                                                               .dateTimeStringToDateTimeToLines(
-                                                                  orderList[
+                                                                  orderList![
                                                                           index]
                                                                       .createdAt!),
                                                           style: robotoRegular.copyWith(

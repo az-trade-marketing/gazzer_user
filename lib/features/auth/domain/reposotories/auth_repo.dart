@@ -77,16 +77,31 @@ class AuthRepo implements AuthRepoInterface<SignUpBodyModel> {
   }
 
   Future<String?> _saveDeviceToken() async {
-    String? deviceToken = '@';
-    if (!GetPlatform.isWeb) {
+    // String? deviceToken = '@';
+    // if (!GetPlatform.isWeb) {
+    //   try {
+    //     deviceToken = (await FirebaseMessaging.instance.getToken())!;
+    //   } catch (_) {}
+    // }
+    // if (deviceToken != null) {
+    //   debugPrint('--------Device Token---------- $deviceToken');
+    // }
+    // return deviceToken;
+    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    if (GetPlatform.isAndroid) {
+      return firebaseMessaging.getToken().then((String? token) {
+        return token;
+      });
+    } else {
+      String? apnsToken = await firebaseMessaging.getAPNSToken();
       try {
-        deviceToken = (await FirebaseMessaging.instance.getToken())!;
-      } catch (_) {}
+        apnsToken = await FirebaseMessaging.instance.getToken();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      debugPrint('apns - fcm token :: $apnsToken');
+      return apnsToken;
     }
-    if (deviceToken != null) {
-      debugPrint('--------Device Token---------- $deviceToken');
-    }
-    return deviceToken;
   }
 
   @override

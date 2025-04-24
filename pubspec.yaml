@@ -60,7 +60,7 @@ dependencies:
   fluttertoast: ^8.2.5
   marquee: ^2.2.3
   syncfusion_flutter_datepicker: ^24.1.45
-  firebase_crashlytics: #^4.3.5
+#  firebase_crashlytics: #^4.3.5
   file_picker: ^10.0.0
   path: ^1.8.2
   http_parser: ^4.0.2

@@ -1,6 +1,7 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gazzer_userapp/common/models/product_model.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_dropdown_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
@@ -9,6 +10,7 @@ import 'package:gazzer_userapp/features/address/domain/models/address_model.dart
 import 'package:gazzer_userapp/features/address/widgets/address_card_widget.dart';
 import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
+import 'package:gazzer_userapp/features/cart/domain/models/cart_model.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/offline_method_model.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/timeslote_model.dart';
@@ -17,6 +19,7 @@ import 'package:gazzer_userapp/features/checkout/widgets/order_successfull_dialo
 import 'package:gazzer_userapp/features/checkout/widgets/partial_pay_dialog.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/language/controllers/localization_controller.dart';
+import 'package:gazzer_userapp/features/location/domain/models/zone_response_model.dart';
 import 'package:gazzer_userapp/features/loyalty/controllers/loyalty_controller.dart';
 import 'package:gazzer_userapp/features/order/domain/models/order_model.dart';
 import 'package:gazzer_userapp/features/order/screens/order_screen.dart';
@@ -24,6 +27,8 @@ import 'package:gazzer_userapp/features/profile/controllers/profile_controller.d
 import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
+import 'package:gazzer_userapp/helper/date_converter.dart';
+import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
@@ -32,6 +37,8 @@ import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:universal_html/html.dart' as html;
+
+part 'checkout_controller_extra.dart';
 
 class CheckoutController extends GetxController implements GetxService {
   final CheckoutServiceInterface checkoutServiceInterface;
@@ -184,13 +191,10 @@ class CheckoutController extends GetxController implements GetxService {
 
   String? get digitalPaymentName => _digitalPaymentName;
 
-  String? countryDialCode =
-      Get.find<AuthController>().getUserCountryCode().isNotEmpty
-          ? Get.find<AuthController>().getUserCountryCode()
-          : CountryCode.fromCountryCode(
-                      Get.find<SplashController>().configModel!.country!)
-                  .dialCode ??
-              Get.find<LocalizationController>().locale.countryCode;
+  String? countryDialCode = Get.find<AuthController>().getUserCountryCode().isNotEmpty
+      ? Get.find<AuthController>().getUserCountryCode()
+      : CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).dialCode ??
+          Get.find<LocalizationController>().locale.countryCode;
 
   int _selectedInstruction = -1;
 
@@ -223,8 +227,7 @@ class CheckoutController extends GetxController implements GetxService {
   }
 
   void setInstruction(int index) {
-    _selectedInstruction =
-        checkoutServiceInterface.selectInstruction(index, _selectedInstruction);
+    _selectedInstruction = checkoutServiceInterface.selectInstruction(index, _selectedInstruction);
     update();
   }
 
@@ -290,13 +293,10 @@ class CheckoutController extends GetxController implements GetxService {
   }
 
   void changesMethod() {
-    List<MethodInformations>? methodInformation =
-        offlineMethodList![selectedOfflineBankIndex].methodInformations!;
+    List<MethodInformations>? methodInformation = offlineMethodList![selectedOfflineBankIndex].methodInformations!;
 
-    informationControllerList =
-        checkoutServiceInterface.generateTextControllerList(methodInformation);
-    informationFocusList =
-        checkoutServiceInterface.generateFocusList(methodInformation);
+    informationControllerList = checkoutServiceInterface.generateTextControllerList(methodInformation);
+    informationFocusList = checkoutServiceInterface.generateFocusList(methodInformation);
 
     update();
   }
@@ -312,8 +312,7 @@ class CheckoutController extends GetxController implements GetxService {
 
   Future<void> setRestaurantDetails({int? restaurantId}) async {
     if (Get.find<RestaurantController>().restaurant == null) {
-      await Get.find<RestaurantController>()
-          .getRestaurantDetails(Restaurant(id: restaurantId));
+      await Get.find<RestaurantController>().getRestaurantDetails(Restaurant(id: restaurantId));
     }
     _restaurant = Get.find<RestaurantController>().restaurant;
     Future.delayed(const Duration(milliseconds: 600), () => update());
@@ -322,17 +321,14 @@ class CheckoutController extends GetxController implements GetxService {
   Future<void> initCheckoutData(int? restaurantID) async {
     Get.find<CouponController>().removeCouponData(false);
     clearPrevData();
-    await Get.find<RestaurantController>()
-        .getRestaurantDetails(Restaurant(id: restaurantID));
+    await Get.find<RestaurantController>().getRestaurantDetails(Restaurant(id: restaurantID));
     initializeTimeSlot(Get.find<RestaurantController>().restaurant!);
     insertAddresses(Get.context!, null);
   }
 
-  bool isRestaurantClosed(
-      DateTime dateTime, bool active, List<Schedules>? schedules,
-      {int? customDateDuration}) {
+  bool isRestaurantClosed(DateTime dateTime, {int? customDateDuration}) {
     return Get.find<RestaurantController>()
-        .isRestaurantClosed(dateTime, active, schedules);
+        .isRestaurantClosed(dateTime, restaurant?.active == true, restaurant?.schedules);
   }
 
   Future<void> getDmTipMostTapped() async {
@@ -340,17 +336,14 @@ class CheckoutController extends GetxController implements GetxService {
     update();
   }
 
-  void setPreferenceTimeForView(String time, bool instanceOrder,
-      {bool isUpdate = true}) {
-    _preferableTime =
-        checkoutServiceInterface.setPreferenceTimeForView(time, instanceOrder);
+  void setPreferenceTimeForView(String time, bool instanceOrder, {bool isUpdate = true}) {
+    _preferableTime = checkoutServiceInterface.setPreferenceTimeForView(time, instanceOrder);
     if (isUpdate) {
       update();
     }
   }
 
-  void setCustomDate(DateTime? date, bool instanceOrder,
-      {bool canUpdate = true}) {
+  void setCustomDate(DateTime? date, bool instanceOrder, {bool canUpdate = true}) {
     _selectedCustomDate = date;
     _selectedTimeSlot = checkoutServiceInterface.selectTimeSlot(instanceOrder);
 
@@ -383,8 +376,7 @@ class CheckoutController extends GetxController implements GetxService {
     if (!instanceOrder) {
       if (index == 0) {
         if (notify) {
-          showCustomSnackBar('instance_order_is_not_active'.tr,
-              showToaster: true);
+          showCustomSnackBar('instance_order_is_not_active'.tr, showToaster: true);
         }
       } else {
         _selectedTimeSlot = index;
@@ -450,16 +442,15 @@ class CheckoutController extends GetxController implements GetxService {
 
   void addDay(int index, TimeOfDay? time) {
     if (time != null) {
-      _selectedDays[index] = DateTime(DateTime.now().year, DateTime.now().month,
-          DateTime.now().day, time.hour, time.minute);
+      _selectedDays[index] =
+          DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, time.hour, time.minute);
     } else {
       _selectedDays[index] = null;
     }
     update();
   }
 
-  Future<bool> checkBalanceStatus(double totalPrice,
-      {double discount = 0, double extraCharge = 0}) async {
+  Future<bool> checkBalanceStatus(double totalPrice, {double discount = 0, double extraCharge = 0}) async {
     totalPrice = (totalPrice - discount) + extraCharge;
     if (isPartialPay) {
       changePartialPayment();
@@ -467,8 +458,7 @@ class CheckoutController extends GetxController implements GetxService {
     setPaymentMethod(-1);
     debugPrint(
         '--total : $totalPrice , compare balance : ${Get.find<ProfileController>().userInfoModel!.walletBalance! < totalPrice}');
-    if ((Get.find<ProfileController>().userInfoModel!.walletBalance! <
-            totalPrice) &&
+    if ((Get.find<ProfileController>().userInfoModel!.walletBalance! < totalPrice) &&
         (Get.find<ProfileController>().userInfoModel!.walletBalance! != 0.0)) {
       Get.dialog(
         PartialPayDialog(isPartialPay: true, totalPrice: totalPrice),
@@ -485,29 +475,24 @@ class CheckoutController extends GetxController implements GetxService {
     return true;
   }
 
-  void insertAddresses(BuildContext context, AddressModel? addressModel,
-      {bool notify = false}) {
+  void insertAddresses(BuildContext context, AddressModel? addressModel, {bool notify = false}) {
     _addressList = [];
     _address = [];
 
     _addressList.add(DropdownItem<int>(
         value: -1,
         child: SizedBox(
-          width: context.width > Dimensions.webMaxWidth
-              ? Dimensions.webMaxWidth - 50
-              : context.width - 50,
+          width: context.width > Dimensions.webMaxWidth ? Dimensions.webMaxWidth - 50 : context.width - 50,
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(children: [
               const Expanded(child: SizedBox()),
               Text(
                 'add_new_address'.tr,
-                style: robotoMedium.copyWith(
-                    color: Theme.of(context).primaryColor),
+                style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
               ),
               const SizedBox(width: Dimensions.paddingSizeSmall),
-              Icon(Icons.add_circle_outline_sharp,
-                  size: 20, color: Theme.of(context).primaryColor)
+              Icon(Icons.add_circle_outline_sharp, size: 20, color: Theme.of(context).primaryColor)
             ]),
           ),
         )));
@@ -516,9 +501,7 @@ class CheckoutController extends GetxController implements GetxService {
     _addressList.add(DropdownItem<int>(
         value: 0,
         child: SizedBox(
-          width: context.width > Dimensions.webMaxWidth
-              ? Dimensions.webMaxWidth - 50
-              : context.width - 50,
+          width: context.width > Dimensions.webMaxWidth ? Dimensions.webMaxWidth - 50 : context.width - 50,
           child: AddressCardWidget(
             address: AddressHelper.getAddressFromSharedPref(),
             fromAddress: false,
@@ -529,9 +512,7 @@ class CheckoutController extends GetxController implements GetxService {
     if (Get.find<RestaurantController>().restaurant != null) {
       if (Get.find<AddressController>().addressList != null) {
         int i = 0;
-        for (int index = 0;
-            index < Get.find<AddressController>().addressList!.length;
-            index++) {
+        for (int index = 0; index < Get.find<AddressController>().addressList!.length; index++) {
           if (Get.find<AddressController>()
               .addressList![index]
               .zoneIds!
@@ -540,9 +521,7 @@ class CheckoutController extends GetxController implements GetxService {
             _addressList.add(DropdownItem<int>(
                 value: i + 1,
                 child: SizedBox(
-                  width: context.width > Dimensions.webMaxWidth
-                      ? Dimensions.webMaxWidth - 50
-                      : context.width - 50,
+                  width: context.width > Dimensions.webMaxWidth ? Dimensions.webMaxWidth - 50 : context.width - 50,
                   child: AddressCardWidget(
                     address: Get.find<AddressController>().addressList![index],
                     fromAddress: false,
@@ -559,9 +538,7 @@ class CheckoutController extends GetxController implements GetxService {
         _addressList.add(DropdownItem<int>(
             value: _address.length - 1,
             child: SizedBox(
-              width: context.width > Dimensions.webMaxWidth
-                  ? Dimensions.webMaxWidth - 50
-                  : context.width - 50,
+              width: context.width > Dimensions.webMaxWidth ? Dimensions.webMaxWidth - 50 : context.width - 50,
               child: AddressCardWidget(
                 address: addressModel,
                 fromAddress: false,
@@ -574,21 +551,16 @@ class CheckoutController extends GetxController implements GetxService {
       _addressList.add(DropdownItem<int>(
           value: -2,
           child: SizedBox(
-            width: context.width > Dimensions.webMaxWidth
-                ? Dimensions.webMaxWidth - 50
-                : context.width - 50,
+            width: context.width > Dimensions.webMaxWidth ? Dimensions.webMaxWidth - 50 : context.width - 50,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: Dimensions.paddingSizeSmall),
+              padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
               child: Row(children: [
                 const Expanded(child: SizedBox()),
-                Icon(Icons.my_location_sharp,
-                    size: 20, color: Theme.of(context).primaryColor),
+                Icon(Icons.my_location_sharp, size: 20, color: Theme.of(context).primaryColor),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Text(
                   'use_my_current_location'.tr,
-                  style: robotoMedium.copyWith(
-                      color: Theme.of(context).primaryColor),
+                  style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
                 ),
                 const Expanded(child: SizedBox()),
               ]),
@@ -601,17 +573,15 @@ class CheckoutController extends GetxController implements GetxService {
   }
 
   Future<void> initializeTimeSlot(Restaurant restaurant) async {
-    _timeSlots = await checkoutServiceInterface.initializeTimeSlot(restaurant,
-        Get.find<SplashController>().configModel!.scheduleOrderSlotDuration);
+    _timeSlots = await checkoutServiceInterface.initializeTimeSlot(
+        restaurant, Get.find<SplashController>().configModel!.scheduleOrderSlotDuration);
     _allTimeSlots = await checkoutServiceInterface.initializeTimeSlot(
-        restaurant,
-        Get.find<SplashController>().configModel!.scheduleOrderSlotDuration);
+        restaurant, Get.find<SplashController>().configModel!.scheduleOrderSlotDuration);
 
     _validateSlot(_allTimeSlots!, DateTime.now(), notify: false);
   }
 
-  void updateDateSlot(int index, DateTime date, bool instanceOrder,
-      {bool fromCustomDate = false}) {
+  void updateDateSlot(int index, DateTime date, bool instanceOrder, {bool fromCustomDate = false}) {
     if (!fromCustomDate) {
       _selectedDateSlot = index;
     }
@@ -626,8 +596,7 @@ class CheckoutController extends GetxController implements GetxService {
     update();
   }
 
-  void _validateSlot(List<TimeSlotModel> slots, DateTime date,
-      {bool notify = true}) {
+  void _validateSlot(List<TimeSlotModel> slots, DateTime date, {bool notify = true}) {
     _timeSlots = checkoutServiceInterface.validateTimeSlot(slots, date);
     _slotIndexList = checkoutServiceInterface.validateSlotIndexes(slots, date);
 
@@ -637,12 +606,8 @@ class CheckoutController extends GetxController implements GetxService {
   }
 
   Future<double?> getDistanceInKM(LatLng originLatLng, LatLng destinationLatLng,
-      {bool isDuration = false,
-      bool isRiding = false,
-      bool fromDashboard = false}) async {
-    _distance = await checkoutServiceInterface.getDistanceInKM(
-        originLatLng, destinationLatLng,
-        isDuration: isDuration);
+      {bool isDuration = false, bool isRiding = false, bool fromDashboard = false}) async {
+    _distance = await checkoutServiceInterface.getDistanceInKM(originLatLng, destinationLatLng, isDuration: isDuration);
 
     if (!fromDashboard) {
       await getExtraCharge(_distance);
@@ -652,38 +617,21 @@ class CheckoutController extends GetxController implements GetxService {
     return _distance;
   }
 
-  Future<String> placeOrder(
-      PlaceOrderBodyModel placeOrderBody,
-      int? zoneID,
-      double amount,
-      double? maximumCodOrderAmount,
-      bool fromCart,
-      bool isCashOnDeliveryActive,
+  Future<String> placeOrder(PlaceOrderBodyModel placeOrderBody, int? zoneID, double amount,
+      double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive,
       {bool isOfflinePay = false}) async {
     _isLoading = true;
     update();
     String orderID = '';
-    Response response =
-        await checkoutServiceInterface.placeOrder(placeOrderBody);
+    Response response = await checkoutServiceInterface.placeOrder(placeOrderBody);
     _isLoading = false;
     if (response.statusCode == 200) {
       String? message = response.body['message'];
       orderID = response.body['order_id'].toString();
       checkoutServiceInterface.sendNotificationRequest(
-          orderID,
-          Get.find<AuthController>().isLoggedIn()
-              ? null
-              : Get.find<AuthController>().getGuestId());
+          orderID, Get.find<AuthController>().isLoggedIn() ? null : Get.find<AuthController>().getGuestId());
       if (!isOfflinePay) {
-        _callback(
-            true,
-            message,
-            orderID,
-            zoneID,
-            amount,
-            maximumCodOrderAmount,
-            fromCart,
-            isCashOnDeliveryActive,
+        _callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive,
             placeOrderBody.contactPersonNumber!);
       } else {
         Get.find<CartController>().getCartDataOnline();
@@ -693,16 +641,8 @@ class CheckoutController extends GetxController implements GetxService {
       }
     } else {
       if (!isOfflinePay) {
-        _callback(
-            false,
-            response.statusText,
-            '-1',
-            zoneID,
-            amount,
-            maximumCodOrderAmount,
-            fromCart,
-            isCashOnDeliveryActive,
-            placeOrderBody.contactPersonNumber!);
+        _callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart,
+            isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
       } else {
         showCustomSnackBar(response.statusText);
       }
@@ -711,37 +651,20 @@ class CheckoutController extends GetxController implements GetxService {
     return orderID;
   }
 
-  void _callback(
-      bool isSuccess,
-      String? message,
-      String orderID,
-      int? zoneID,
-      double amount,
-      double? maximumCodOrderAmount,
-      bool fromCart,
-      bool isCashOnDeliveryActive,
-      String? contactNumber) async {
+  void _callback(bool isSuccess, String? message, String orderID, int? zoneID, double amount,
+      double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, String? contactNumber) async {
     if (isSuccess) {
       // Get.find<OrderController>().getRunningOrders(1, notify: false);
       checkoutServiceInterface.sendNotificationRequest(
-          orderID,
-          Get.find<AuthController>().isLoggedIn()
-              ? null
-              : Get.find<AuthController>().getGuestId());
+          orderID, Get.find<AuthController>().isLoggedIn() ? null : Get.find<AuthController>().getGuestId());
       if (fromCart) {
         Get.find<CartController>().clearCartList();
       }
       _setGuestAddress(null);
       stopLoader();
-      if (paymentMethodIndex == 0 ||
-          paymentMethodIndex == 1 ||
-          paymentMethodIndex == 2) {
-        double total = ((amount / 100) *
-            Get.find<SplashController>()
-                .configModel!
-                .loyaltyPointItemPurchasePoint!);
-        Get.find<LoyaltyController>()
-            .saveEarningPoint(total.toStringAsFixed(0));
+      if (paymentMethodIndex == 0 || paymentMethodIndex == 1 || paymentMethodIndex == 2) {
+        double total = ((amount / 100) * Get.find<SplashController>().configModel!.loyaltyPointItemPurchasePoint!);
+        Get.find<LoyaltyController>().saveEarningPoint(total.toStringAsFixed(0));
         if (ResponsiveHelper.isDesktop(Get.context)) {
           Get.offNamed(RouteHelper.getInitialRoute());
           Future.delayed(
@@ -750,15 +673,13 @@ class CheckoutController extends GetxController implements GetxService {
                   child: SizedBox(
                       height: 350,
                       width: 500,
-                      child: OrderSuccessfulDialogWidget(
-                          orderID: orderID, contactNumber: contactNumber)))));
+                      child: OrderSuccessfulDialogWidget(orderID: orderID, contactNumber: contactNumber)))));
         } else {
           paymentMethodIndex == 2
               ? Get.off(OrderScreen(
                   isScreen: true,
                 ))
-              : Get.offNamed(RouteHelper.getOrderSuccessRoute(
-                  orderID, 'success', amount, contactNumber));
+              : Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID, 'success', amount, contactNumber));
         }
       } else {
         if (GetPlatform.isWeb) {
@@ -791,8 +712,6 @@ class CheckoutController extends GetxController implements GetxService {
       showCustomSnackBar(message);
     }
   }
-
-
 
   void clearPrevData() {
     _addressIndex = 0;

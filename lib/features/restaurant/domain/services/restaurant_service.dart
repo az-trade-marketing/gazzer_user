@@ -24,8 +24,7 @@ class RestaurantService implements RestaurantServiceInterface {
             restaurantLatLng.latitude,
             restaurantLatLng.longitude,
             double.parse(AddressHelper.getAddressFromSharedPref()!.latitude!),
-            double.parse(
-                AddressHelper.getAddressFromSharedPref()!.longitude!)) /
+            double.parse(AddressHelper.getAddressFromSharedPref()!.longitude!)) /
         1000;
 
     return distance;
@@ -44,8 +43,8 @@ class RestaurantService implements RestaurantServiceInterface {
   }
 
   @override
-  Future<RestaurantModel?> getRestaurantList(int offset, String filterBy,
-      int topRated, int discount, int veg, int nonVeg,
+  Future<RestaurantModel?> getRestaurantList(
+      int offset, String filterBy, int topRated, int discount, int veg, int nonVeg,
       {bool fromMap = false}) async {
     return await restaurantRepositoryInterface.getList(
         offset: offset,
@@ -59,61 +58,48 @@ class RestaurantService implements RestaurantServiceInterface {
 
   @override
   Future<List<Restaurant>?> getOrderAgainRestaurantList() async {
-    return await restaurantRepositoryInterface.getRestaurantList(
-        isOrderAgain: true);
+    return await restaurantRepositoryInterface.getRestaurantList(isOrderAgain: true);
   }
 
   @override
   Future<List<Restaurant>?> getRecentlyViewedRestaurantList(String type) async {
-    return await restaurantRepositoryInterface.getRestaurantList(
-        type: type, isRecentlyViewed: true);
+    return await restaurantRepositoryInterface.getRestaurantList(type: type, isRecentlyViewed: true);
   }
 
   @override
   Future<List<Restaurant>?> getPopularRestaurantList(String type) async {
-    return await restaurantRepositoryInterface.getRestaurantList(
-        type: type, isPopular: true);
+    return await restaurantRepositoryInterface.getRestaurantList(type: type, isPopular: true);
   }
 
   @override
   Future<List<Restaurant>?> getLatestRestaurantList(String type) async {
-    return await restaurantRepositoryInterface.getRestaurantList(
-        type: type, isLatest: true);
+    return await restaurantRepositoryInterface.getRestaurantList(type: type, isLatest: true);
   }
 
   @override
-  Future<RecommendedProductModel?> getRestaurantRecommendedItemList(
-      int? restaurantId) async {
-    return await restaurantRepositoryInterface
-        .getRestaurantRecommendedItemList(restaurantId);
+  Future<RecommendedProductModel?> getRestaurantRecommendedItemList(int? restaurantId) async {
+    return await restaurantRepositoryInterface.getRestaurantRecommendedItemList(restaurantId);
   }
 
   @override
-  Future<Restaurant?> getRestaurantDetails(
-      String restaurantID, String slug, String? languageCode) async {
-    return await restaurantRepositoryInterface.get(restaurantID,
-        slug: slug, languageCode: languageCode);
+  Future<Restaurant?> getRestaurantDetails(String restaurantID, String slug, String? languageCode) async {
+    return await restaurantRepositoryInterface.get(restaurantID, slug: slug, languageCode: languageCode);
   }
 
   @override
-  Future<List<Product>?> getCartRestaurantSuggestedItemList(
-      int? restaurantID) async {
-    return await restaurantRepositoryInterface
-        .getCartRestaurantSuggestedItemList(restaurantID);
+  Future<List<Product>?> getCartRestaurantSuggestedItemList(int? restaurantID) async {
+    return await restaurantRepositoryInterface.getCartRestaurantSuggestedItemList(restaurantID);
   }
 
   @override
-  Future<ProductModel?> getRestaurantProductList(
-      int? restaurantID, int offset, int? categoryID, String type) async {
-    return await restaurantRepositoryInterface.getRestaurantProductList(
-        restaurantID, offset, categoryID, type);
+  Future<ProductModel?> getRestaurantProductList(int? restaurantID, int offset, int? categoryID, String type) async {
+    return await restaurantRepositoryInterface.getRestaurantProductList(restaurantID, offset, categoryID, type);
   }
 
   @override
   Future<ProductModel?> getRestaurantSearchProductList(
       String searchText, String? storeID, int offset, String type) async {
-    return await restaurantRepositoryInterface.getRestaurantSearchProductList(
-        searchText, storeID, offset, type);
+    return await restaurantRepositoryInterface.getRestaurantSearchProductList(searchText, storeID, offset, type);
   }
 
   @override
@@ -161,8 +147,7 @@ class RestaurantService implements RestaurantServiceInterface {
   }
 
   @override
-  List<CategoryModel>? setCategories(
-      List<CategoryModel> categoryList, Restaurant restaurant) {
+  List<CategoryModel>? setCategories(List<CategoryModel> categoryList, Restaurant restaurant) {
     List<CategoryModel>? preparedCategoryList = [];
     preparedCategoryList.add(CategoryModel(id: 0, name: 'all'.tr));
     for (var category in categoryList) {
@@ -174,8 +159,7 @@ class RestaurantService implements RestaurantServiceInterface {
   }
 
   @override
-  AddressModel prepareAddressModel(Position storePosition,
-      ZoneResponseModel responseModel, String addressFromGeocode) {
+  AddressModel prepareAddressModel(Position storePosition, ZoneResponseModel responseModel, String addressFromGeocode) {
     return AddressModel(
       latitude: storePosition.latitude.toString(),
       longitude: storePosition.longitude.toString(),
@@ -188,8 +172,7 @@ class RestaurantService implements RestaurantServiceInterface {
   }
 
   @override
-  bool isRestaurantClosed(
-      DateTime dateTime, bool active, List<Schedules>? schedules) {
+  bool isRestaurantClosed(DateTime dateTime, bool active, List<Schedules>? schedules) {
     if (!active) {
       return true;
     }
@@ -217,11 +200,12 @@ class RestaurantService implements RestaurantServiceInterface {
     }
     for (int index = 0; index < schedules!.length; index++) {
       if (weekday == schedules[index].day &&
-          DateConverter.isAvailable(
-              schedules[index].openingTime, schedules[index].closingTime)) {
+          DateConverter.isAvailable(schedules[index].openingTime, schedules[index].closingTime)) {
         return true;
       }
     }
     return false;
   }
+
+
 }

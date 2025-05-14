@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/product_model.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_snackbar_widget.dart';
@@ -15,6 +16,8 @@ import 'package:gazzer_userapp/helper/address_helper.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+part 'restaurant_controller_extra.dart';
 
 class RestaurantController extends GetxController implements GetxService {
   final RestaurantServiceInterface restaurantServiceInterface;
@@ -39,8 +42,7 @@ class RestaurantController extends GetxController implements GetxService {
 
   List<Restaurant>? _recentlyViewedRestaurantList;
 
-  List<Restaurant>? get recentlyViewedRestaurantList =>
-      _recentlyViewedRestaurantList;
+  List<Restaurant>? get recentlyViewedRestaurantList => _recentlyViewedRestaurantList;
 
   Restaurant? _restaurant;
 
@@ -56,8 +58,7 @@ class RestaurantController extends GetxController implements GetxService {
 
   ProductModel? _restaurantSearchProductModel;
 
-  ProductModel? get restaurantSearchProductModel =>
-      _restaurantSearchProductModel;
+  ProductModel? get restaurantSearchProductModel => _restaurantSearchProductModel;
 
   int _categoryIndex = 0;
 
@@ -104,8 +105,7 @@ class RestaurantController extends GetxController implements GetxService {
 
   RecommendedProductModel? _recommendedProductModel;
 
-  RecommendedProductModel? get recommendedProductModel =>
-      _recommendedProductModel;
+  RecommendedProductModel? get recommendedProductModel => _recommendedProductModel;
 
   CartSuggestItemModel? _cartSuggestItemModel;
 
@@ -155,13 +155,11 @@ class RestaurantController extends GetxController implements GetxService {
   }
 
   double getRestaurantDistance(LatLng restaurantLatLng) {
-    return restaurantServiceInterface
-        .getRestaurantDistanceFromUser(restaurantLatLng);
+    return restaurantServiceInterface.getRestaurantDistanceFromUser(restaurantLatLng);
   }
 
   String filteringUrl(String slug) {
-    return restaurantServiceInterface.filterRestaurantLinkUrl(
-        slug, _restaurant?.id);
+    return restaurantServiceInterface.filterRestaurantLinkUrl(slug, _restaurant?.id);
   }
 
   Future<void> getOrderAgainRestaurantList(bool reload) async {
@@ -169,13 +167,11 @@ class RestaurantController extends GetxController implements GetxService {
       _orderAgainRestaurantList = null;
       update();
     }
-    _orderAgainRestaurantList =
-        await restaurantServiceInterface.getOrderAgainRestaurantList();
+    _orderAgainRestaurantList = await restaurantServiceInterface.getOrderAgainRestaurantList();
     update();
   }
 
-  Future<void> getRecentlyViewedRestaurantList(
-      bool reload, String type, bool notify) async {
+  Future<void> getRecentlyViewedRestaurantList(bool reload, String type, bool notify) async {
     _type = type;
     if (reload) {
       _recentlyViewedRestaurantList = null;
@@ -184,34 +180,28 @@ class RestaurantController extends GetxController implements GetxService {
       update();
     }
     if (_recentlyViewedRestaurantList == null || reload) {
-      _recentlyViewedRestaurantList = await restaurantServiceInterface
-          .getRecentlyViewedRestaurantList(type);
+      _recentlyViewedRestaurantList = await restaurantServiceInterface.getRecentlyViewedRestaurantList(type);
       update();
     }
   }
 
-  Future<void> getRestaurantRecommendedItemList(
-      int? restaurantId, bool reload) async {
+  Future<void> getRestaurantRecommendedItemList(int? restaurantId, bool reload) async {
     _recommendedProductModel = null;
     if (reload) {
       _restaurantModel = null;
       update();
     }
-    _recommendedProductModel = await restaurantServiceInterface
-        .getRestaurantRecommendedItemList(restaurantId);
+    _recommendedProductModel = await restaurantServiceInterface.getRestaurantRecommendedItemList(restaurantId);
     update();
   }
 
-  Future<void> getRestaurantList(int offset, bool reload,
-      {bool fromMap = false}) async {
+  Future<void> getRestaurantList(int offset, bool reload, {bool fromMap = false}) async {
     if (reload) {
       _restaurantModel = null;
       update();
     }
-    RestaurantModel? restaurantModel =
-        await restaurantServiceInterface.getRestaurantList(
-            offset, _restaurantType, _topRated, _discount, _veg, _nonVeg,
-            fromMap: fromMap);
+    RestaurantModel? restaurantModel = await restaurantServiceInterface
+        .getRestaurantList(offset, _restaurantType, _topRated, _discount, _veg, _nonVeg, fromMap: fromMap);
     if (restaurantModel != null) {
       if (offset == 1) {
         _restaurantModel = restaurantModel;
@@ -249,8 +239,7 @@ class RestaurantController extends GetxController implements GetxService {
     getRestaurantList(1, true);
   }
 
-  Future<void> getPopularRestaurantList(
-      bool reload, String type, bool notify) async {
+  Future<void> getPopularRestaurantList(bool reload, String type, bool notify) async {
     _type = type;
     if (reload) {
       _popularRestaurantList = null;
@@ -259,14 +248,12 @@ class RestaurantController extends GetxController implements GetxService {
       update();
     }
     if (_popularRestaurantList == null || reload) {
-      _popularRestaurantList =
-          await restaurantServiceInterface.getPopularRestaurantList(type);
+      _popularRestaurantList = await restaurantServiceInterface.getPopularRestaurantList(type);
       update();
     }
   }
 
-  Future<void> getLatestRestaurantList(
-      bool reload, String type, bool notify) async {
+  Future<void> getLatestRestaurantList(bool reload, String type, bool notify) async {
     _type = type;
     if (reload) {
       _latestRestaurantList = null;
@@ -275,22 +262,19 @@ class RestaurantController extends GetxController implements GetxService {
       update();
     }
     if (_latestRestaurantList == null || reload) {
-      _latestRestaurantList =
-          await restaurantServiceInterface.getLatestRestaurantList(type);
+      _latestRestaurantList = await restaurantServiceInterface.getLatestRestaurantList(type);
       update();
     }
   }
 
   void setCategoryList() {
-    if (Get.find<CategoryController>().categoryList != null &&
-        _restaurant != null) {
-      _categoryList = restaurantServiceInterface.setCategories(
-          Get.find<CategoryController>().categoryList!, _restaurant!);
+    if (Get.find<CategoryController>().categoryList != null && _restaurant != null) {
+      _categoryList =
+          restaurantServiceInterface.setCategories(Get.find<CategoryController>().categoryList!, _restaurant!);
     }
   }
 
-  Future<Restaurant?> getRestaurantDetails(Restaurant restaurant,
-      {bool fromCart = false, String slug = ''}) async {
+  Future<Restaurant?> getRestaurantDetails(Restaurant restaurant, {bool fromCart = false, String slug = ''}) async {
     _categoryIndex = 0;
     if (restaurant.name != null) {
       _restaurant = restaurant;
@@ -298,9 +282,7 @@ class RestaurantController extends GetxController implements GetxService {
       _isLoading = true;
       _restaurant = null;
       _restaurant = await restaurantServiceInterface.getRestaurantDetails(
-          restaurant.id.toString(),
-          slug,
-          Get.find<LocalizationController>().locale.languageCode);
+          restaurant.id.toString(), slug, Get.find<LocalizationController>().locale.languageCode);
       if (_restaurant != null && _restaurant!.latitude != null) {
         await _setRequiredDataAfterRestaurantGet(slug, fromCart);
       }
@@ -319,8 +301,7 @@ class RestaurantController extends GetxController implements GetxService {
     return _restaurant;
   }
 
-  Future<void> _setRequiredDataAfterRestaurantGet(
-      String slug, bool fromCart) async {
+  Future<void> _setRequiredDataAfterRestaurantGet(String slug, bool fromCart) async {
     Get.find<CheckoutController>().initializeTimeSlot(_restaurant!);
     if (!fromCart && slug.isEmpty) {
       Get.find<CheckoutController>().getDistanceInKM(
@@ -328,14 +309,12 @@ class RestaurantController extends GetxController implements GetxService {
           double.parse(AddressHelper.getAddressFromSharedPref()!.latitude!),
           double.parse(AddressHelper.getAddressFromSharedPref()!.longitude!),
         ),
-        LatLng(double.parse(_restaurant!.latitude!),
-            double.parse(_restaurant!.longitude!)),
+        LatLng(double.parse(_restaurant!.latitude!), double.parse(_restaurant!.longitude!)),
       );
     }
     if (slug.isNotEmpty) {
-      await _setStoreAddressToUserAddress(LatLng(
-          double.parse(_restaurant!.latitude!),
-          double.parse(_restaurant!.longitude!)));
+      await _setStoreAddressToUserAddress(
+          LatLng(double.parse(_restaurant!.latitude!), double.parse(_restaurant!.longitude!)));
     }
   }
 
@@ -353,13 +332,11 @@ class RestaurantController extends GetxController implements GetxService {
       headingAccuracy: 1,
     );
     String addressFromGeocode = await Get.find<LocationController>()
-        .getAddressFromGeocode(
-            LatLng(restaurantAddress.latitude, restaurantAddress.longitude));
+        .getAddressFromGeocode(LatLng(restaurantAddress.latitude, restaurantAddress.longitude));
     ZoneResponseModel responseModel = await Get.find<LocationController>()
-        .getZone(storePosition.latitude.toString(),
-            storePosition.longitude.toString(), true);
-    AddressModel addressModel = restaurantServiceInterface.prepareAddressModel(
-        storePosition, responseModel, addressFromGeocode);
+        .getZone(storePosition.latitude.toString(), storePosition.longitude.toString(), true);
+    AddressModel addressModel =
+        restaurantServiceInterface.prepareAddressModel(storePosition, responseModel, addressFromGeocode);
     await AddressHelper.saveAddressInSharedPref(addressModel);
   }
 
@@ -371,13 +348,11 @@ class RestaurantController extends GetxController implements GetxService {
   }
 
   Future<void> getCartRestaurantSuggestedItemList(int? restaurantID) async {
-    _suggestedItems = await restaurantServiceInterface
-        .getCartRestaurantSuggestedItemList(restaurantID);
+    _suggestedItems = await restaurantServiceInterface.getCartRestaurantSuggestedItemList(restaurantID);
     update();
   }
 
-  Future<void> getRestaurantProductList(
-      int? restaurantID, int offset, String type, bool notify) async {
+  Future<void> getRestaurantProductList(int? restaurantID, int offset, String type, bool notify) async {
     _foodOffset = offset;
     if (offset == 1 || _restaurantProducts == null) {
       _type = type;
@@ -396,12 +371,11 @@ class RestaurantController extends GetxController implements GetxService {
       // Determine the category ID for the API call
       int categoryId = _categoryIndex; // Use the category ID directly
 
-      ProductModel? productModel =
-          await restaurantServiceInterface.getRestaurantProductList(
-              restaurantID,
-              offset,
-              categoryId, // Use the correct category ID
-              type);
+      ProductModel? productModel = await restaurantServiceInterface.getRestaurantProductList(
+          restaurantID,
+          offset,
+          categoryId, // Use the correct category ID
+          type);
 
       if (productModel != null) {
         if (offset == 1) {
@@ -435,8 +409,7 @@ class RestaurantController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> getRestaurantSearchProductList(
-      String searchText, String? storeID, int offset, String type) async {
+  Future<void> getRestaurantSearchProductList(String searchText, String? storeID, int offset, String type) async {
     if (searchText.isEmpty) {
       showCustomSnackBar('write_item_name'.tr);
     } else {
@@ -447,14 +420,13 @@ class RestaurantController extends GetxController implements GetxService {
         _restaurantSearchProductModel = null;
         update();
       }
-      ProductModel? productModel = await restaurantServiceInterface
-          .getRestaurantSearchProductList(searchText, storeID, offset, type);
+      ProductModel? productModel =
+          await restaurantServiceInterface.getRestaurantSearchProductList(searchText, storeID, offset, type);
       if (productModel != null) {
         if (offset == 1) {
           _restaurantSearchProductModel = productModel;
         } else {
-          _restaurantSearchProductModel!.products!
-              .addAll(productModel.products!);
+          _restaurantSearchProductModel!.products!.addAll(productModel.products!);
           _restaurantSearchProductModel!.totalSize = productModel.totalSize;
           _restaurantSearchProductModel!.offset = productModel.offset;
         }
@@ -484,29 +456,22 @@ class RestaurantController extends GetxController implements GetxService {
     _categoryIndex = categoryId; // Set to the category ID directly
 
     _restaurantProducts = null;
-    getRestaurantProductList(
-        _restaurant!.id, 1, Get.find<RestaurantController>().type, false);
+    getRestaurantProductList(_restaurant!.id, 1, Get.find<RestaurantController>().type, false);
     update();
   }
 
-  bool isRestaurantClosed(
-      DateTime dateTime, bool active, List<Schedules>? schedules,
-      {int? customDateDuration}) {
-    return restaurantServiceInterface.isRestaurantClosed(
-        dateTime, active, schedules);
+  bool isRestaurantClosed(DateTime dateTime, bool active, List<Schedules>? schedules, {int? customDateDuration}) {
+    return restaurantServiceInterface.isRestaurantClosed(dateTime, active, schedules);
   }
 
   bool isRestaurantOpenNow(bool active, List<Schedules>? schedules) {
     return restaurantServiceInterface.isRestaurantOpenNow(active, schedules);
   }
 
-  bool isOpenNow(Restaurant restaurant) =>
-      restaurant.open == 1 && restaurant.active!;
+  bool isOpenNow(Restaurant restaurant) => restaurant.open == 1 && restaurant.active!;
 
-  double? getDiscount(Restaurant restaurant) =>
-      restaurant.discount != null ? restaurant.discount!.discount : 0;
+  double? getDiscount(Restaurant restaurant) => restaurant.discount != null ? restaurant.discount!.discount : 0;
 
-  String? getDiscountType(Restaurant restaurant) => restaurant.discount != null
-      ? restaurant.discount!.discountType
-      : 'percent';
+  String? getDiscountType(Restaurant restaurant) =>
+      restaurant.discount != null ? restaurant.discount!.discountType : 'percent';
 }

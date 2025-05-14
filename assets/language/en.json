@@ -1130,5 +1130,9 @@
   "street_number_is_required": "Street number is required",
   "house_is_required": "House is required",
   "floor_is_required": "Floor is required",
-  "level_is_required" : "Label is required"
+  "level_is_required": "Label is required",
+  "#######################################": "###########################################################################",
+  "opens_at": "Opens at",
+  "closes_at": "Closes at",
+  "this_restaurant_is_closing_in": "This restaurant is closing in @time minutes"
 }

@@ -58,25 +58,17 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     if (Get.find<RestaurantController>().isSearching) {
       Get.find<RestaurantController>().changeSearchStatus(isUpdate: false);
     }
-    await Get.find<RestaurantController>().getRestaurantDetails(
-        Restaurant(id: widget.restaurant!.id),
-        slug: widget.slug);
+    await Get.find<RestaurantController>()
+        .getRestaurantDetails(Restaurant(id: widget.restaurant!.id), slug: widget.slug);
     if (Get.find<CategoryController>().categoryList == null) {
       Get.find<CategoryController>().getCategoryList(true);
     }
     Get.find<CouponController>().getRestaurantCouponList(
-        restaurantId: widget.restaurant!.id ??
-            Get.find<RestaurantController>().restaurant!.id!);
+        restaurantId: widget.restaurant!.id ?? Get.find<RestaurantController>().restaurant!.id!);
     Get.find<RestaurantController>().getRestaurantRecommendedItemList(
-        widget.restaurant!.id ??
-            Get.find<RestaurantController>().restaurant!.id!,
-        false);
+        widget.restaurant!.id ?? Get.find<RestaurantController>().restaurant!.id!, false);
     Get.find<RestaurantController>().getRestaurantProductList(
-        widget.restaurant!.id ??
-            Get.find<RestaurantController>().restaurant!.id!,
-        1,
-        'all',
-        false);
+        widget.restaurant!.id ?? Get.find<RestaurantController>().restaurant!.id!, 1, 'all', false);
   }
 
   List<String> extractUniqueCategories(List<Product> products) {
@@ -96,8 +88,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     List<Category> uniqueCategories = [];
 
     for (var product in products) {
-      if (product.category != null &&
-          !seenCategoryIds.contains(product.category!.id)) {
+      if (product.category != null && !seenCategoryIds.contains(product.category!.id)) {
         seenCategoryIds.add(product.category!.id!);
         uniqueCategories.add(product.category!);
       }
@@ -115,8 +106,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
         backgroundColor: Theme.of(context).cardColor,
         body: GetBuilder<RestaurantController>(builder: (restController) {
           return GetBuilder<CouponController>(builder: (couponController) {
-            return GetBuilder<CategoryController>(
-                builder: (categoryController) {
+            return GetBuilder<CategoryController>(builder: (categoryController) {
               Restaurant? restaurant;
               if (restController.restaurant != null &&
                   restController.restaurant!.name != null &&
@@ -124,8 +114,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                 restaurant = restController.restaurant;
               }
               restController.setCategoryList();
-              bool hasCoupon = (couponController.couponList != null &&
-                  couponController.couponList!.isNotEmpty);
+              bool hasCoupon = (couponController.couponList != null && couponController.couponList!.isNotEmpty);
 
               return (restController.restaurant != null &&
                       restController.restaurant!.name != null &&
@@ -135,9 +124,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       controller: scrollController,
                       slivers: [
                         RestaurantInfoSectionWidget(
-                            restaurant: restaurant!,
-                            restController: restController,
-                            hasCoupon: hasCoupon),
+                            restaurant: restaurant!, restController: restController, hasCoupon: hasCoupon),
                         SliverToBoxAdapter(
                             child: Center(
                                 child: Container(
@@ -149,118 +136,79 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                 ? Container(
                                     width: context.width,
                                     margin: const EdgeInsets.symmetric(
-                                        vertical: Dimensions.paddingSizeSmall,
-                                        horizontal:
-                                            Dimensions.paddingSizeLarge),
+                                        vertical: Dimensions.paddingSizeSmall, horizontal: Dimensions.paddingSizeLarge),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                            Dimensions.radiusSmall),
+                                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                                         color: Theme.of(context).primaryColor),
-                                    padding: const EdgeInsets.all(
-                                        Dimensions.paddingSizeSmall),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            restaurant.discount!.discountType ==
-                                                    'percent'
-                                                ? '${restaurant.discount!.discount}% ${'off'.tr}'
-                                                : '${PriceConverter.convertPrice(restaurant.discount!.discount)} ${'off'.tr}',
-                                            style: robotoMedium.copyWith(
-                                                fontSize:
-                                                    Dimensions.fontSizeLarge,
-                                                color: Theme.of(context)
-                                                    .cardColor),
-                                          ),
-                                          Text(
-                                            restaurant.discount!.discountType ==
-                                                    'percent'
-                                                ? '${'enjoy'.tr} ${restaurant.discount!.discount}% ${'off_on_all_categories'.tr}'
-                                                : '${'enjoy'.tr} ${PriceConverter.convertPrice(restaurant.discount!.discount)}'
-                                                    ' ${'off_on_all_categories'.tr}',
-                                            style: robotoMedium.copyWith(
-                                                fontSize:
-                                                    Dimensions.fontSizeSmall,
-                                                color: Theme.of(context)
-                                                    .cardColor),
-                                          ),
-                                          SizedBox(
-                                              height: (restaurant.discount!
-                                                              .minPurchase !=
-                                                          0 ||
-                                                      restaurant.discount!
-                                                              .maxDiscount !=
-                                                          0)
-                                                  ? 5
-                                                  : 0),
-                                          restaurant.discount!.minPurchase != 0
-                                              ? Text(
-                                                  '[ ${'minimum_purchase'.tr}: ${PriceConverter.convertPrice(restaurant.discount!.minPurchase)} ]',
-                                                  style: robotoRegular.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeExtraSmall,
-                                                      color: Theme.of(context)
-                                                          .cardColor),
-                                                )
-                                              : const SizedBox(),
-                                          restaurant.discount!.maxDiscount != 0
-                                              ? Text(
-                                                  '[ ${'maximum_discount'.tr}: ${PriceConverter.convertPrice(restaurant.discount!.maxDiscount)} ]',
-                                                  style: robotoRegular.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeExtraSmall,
-                                                      color: Theme.of(context)
-                                                          .cardColor),
-                                                )
-                                              : const SizedBox(),
-                                          Text(
-                                            '[ ${'daily_time'.tr}: ${DateConverter.convertTimeToTime(restaurant.discount!.startTime!)} '
-                                            '- ${DateConverter.convertTimeToTime(restaurant.discount!.endTime!)} ]',
-                                            style: robotoRegular.copyWith(
-                                                fontSize: Dimensions
-                                                    .fontSizeExtraSmall,
-                                                color: Theme.of(context)
-                                                    .cardColor),
-                                          ),
-                                        ]),
+                                    padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                      Text(
+                                        restaurant.discount!.discountType == 'percent'
+                                            ? '${restaurant.discount!.discount}% ${'off'.tr}'
+                                            : '${PriceConverter.convertPrice(restaurant.discount!.discount)} ${'off'.tr}',
+                                        style: robotoMedium.copyWith(
+                                            fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).cardColor),
+                                      ),
+                                      Text(
+                                        restaurant.discount!.discountType == 'percent'
+                                            ? '${'enjoy'.tr} ${restaurant.discount!.discount}% ${'off_on_all_categories'.tr}'
+                                            : '${'enjoy'.tr} ${PriceConverter.convertPrice(restaurant.discount!.discount)}'
+                                                ' ${'off_on_all_categories'.tr}',
+                                        style: robotoMedium.copyWith(
+                                            fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
+                                      ),
+                                      SizedBox(
+                                          height: (restaurant.discount!.minPurchase != 0 ||
+                                                  restaurant.discount!.maxDiscount != 0)
+                                              ? 5
+                                              : 0),
+                                      restaurant.discount!.minPurchase != 0
+                                          ? Text(
+                                              '[ ${'minimum_purchase'.tr}: ${PriceConverter.convertPrice(restaurant.discount!.minPurchase)} ]',
+                                              style: robotoRegular.copyWith(
+                                                  fontSize: Dimensions.fontSizeExtraSmall,
+                                                  color: Theme.of(context).cardColor),
+                                            )
+                                          : const SizedBox(),
+                                      restaurant.discount!.maxDiscount != 0
+                                          ? Text(
+                                              '[ ${'maximum_discount'.tr}: ${PriceConverter.convertPrice(restaurant.discount!.maxDiscount)} ]',
+                                              style: robotoRegular.copyWith(
+                                                  fontSize: Dimensions.fontSizeExtraSmall,
+                                                  color: Theme.of(context).cardColor),
+                                            )
+                                          : const SizedBox(),
+                                      Text(
+                                        '[ ${'daily_time'.tr}: ${DateConverter.convertTimeToTime(restaurant.discount!.startTime!)} '
+                                        '- ${DateConverter.convertTimeToTime(restaurant.discount!.endTime!)} ]',
+                                        style: robotoRegular.copyWith(
+                                            fontSize: Dimensions.fontSizeExtraSmall,
+                                            color: Theme.of(context).cardColor),
+                                      ),
+                                    ]),
                                   )
                                 : const SizedBox(),
                             SizedBox(
-                                height: (restaurant.announcementActive! &&
-                                        restaurant.announcementMessage != null)
+                                height: (restaurant.announcementActive! && restaurant.announcementMessage != null)
                                     ? 0
                                     : Dimensions.paddingSizeSmall),
 
                             ResponsiveHelper.isMobile(context)
-                                ? (restaurant.announcementActive! &&
-                                        restaurant.announcementMessage != null)
+                                ? (restaurant.announcementActive! && restaurant.announcementMessage != null)
                                     ? Container(
-                                        decoration: const BoxDecoration(
-                                            color: Colors.green),
+                                        decoration: const BoxDecoration(color: Colors.green),
                                         padding: const EdgeInsets.symmetric(
-                                            vertical:
-                                                Dimensions.paddingSizeSmall,
-                                            horizontal:
-                                                Dimensions.paddingSizeLarge),
-                                        margin: const EdgeInsets.only(
-                                            bottom:
-                                                Dimensions.paddingSizeSmall),
+                                            vertical: Dimensions.paddingSizeSmall,
+                                            horizontal: Dimensions.paddingSizeLarge),
+                                        margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                                         child: Row(children: [
-                                          Image.asset(Images.announcement,
-                                              height: 26, width: 26),
-                                          const SizedBox(
-                                              width:
-                                                  Dimensions.paddingSizeSmall),
+                                          Image.asset(Images.announcement, height: 26, width: 26),
+                                          const SizedBox(width: Dimensions.paddingSizeSmall),
                                           Flexible(
                                               child: Text(
-                                            restaurant.announcementMessage ??
-                                                '',
+                                            restaurant.announcementMessage ?? '',
                                             style: robotoMedium.copyWith(
-                                                fontSize:
-                                                    Dimensions.fontSizeSmall,
-                                                color: Theme.of(context)
-                                                    .cardColor),
+                                                fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
                                           )),
                                         ]),
                                       )
@@ -268,121 +216,67 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                 : const SizedBox(),
 
                             restController.recommendedProductModel != null &&
-                                    restController.recommendedProductModel!
-                                        .products!.isNotEmpty
+                                    restController.recommendedProductModel!.products!.isNotEmpty
                                 ? Container(
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.10),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: Dimensions.paddingSizeLarge,
-                                              left: Dimensions.paddingSizeLarge,
-                                              bottom:
-                                                  Dimensions.paddingSizeSmall,
-                                              right:
-                                                  Dimensions.paddingSizeLarge,
-                                            ),
-                                            child: Row(children: [
-                                              Expanded(
-                                                child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                          'recommend_for_you'
-                                                              .tr,
-                                                          style: robotoMedium.copyWith(
-                                                              fontSize: Dimensions
-                                                                  .fontSizeLarge,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700)),
-                                                      const SizedBox(
-                                                          height: Dimensions
-                                                              .paddingSizeExtraSmall),
-                                                      Text(
-                                                          'here_is_what_you_might_like_to_test'
-                                                              .tr,
-                                                          style: robotoRegular.copyWith(
-                                                              fontSize: Dimensions
-                                                                  .fontSizeSmall,
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .disabledColor)),
-                                                    ]),
-                                              ),
-                                              ArrowIconButtonWidget(
-                                                onTap: () => Get.toNamed(
-                                                    RouteHelper.getPopularFoodRoute(
-                                                        false,
-                                                        fromIsRestaurantFood:
-                                                            true,
-                                                        restaurantId: widget
-                                                                .restaurant!
-                                                                .id ??
-                                                            Get.find<
-                                                                    RestaurantController>()
-                                                                .restaurant!
-                                                                .id!)),
-                                              ),
+                                    color: Theme.of(context).primaryColor.withOpacity(0.10),
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: Dimensions.paddingSizeLarge,
+                                          left: Dimensions.paddingSizeLarge,
+                                          bottom: Dimensions.paddingSizeSmall,
+                                          right: Dimensions.paddingSizeLarge,
+                                        ),
+                                        child: Row(children: [
+                                          Expanded(
+                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                              Text('recommend_for_you'.tr,
+                                                  style: robotoMedium.copyWith(
+                                                      fontSize: Dimensions.fontSizeLarge, fontWeight: FontWeight.w700)),
+                                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                              Text('here_is_what_you_might_like_to_test'.tr,
+                                                  style: robotoRegular.copyWith(
+                                                      fontSize: Dimensions.fontSizeSmall,
+                                                      color: Theme.of(context).disabledColor)),
                                             ]),
                                           ),
-                                          SizedBox(
-                                            height: ResponsiveHelper.isDesktop(
-                                                    context)
-                                                ? 307
-                                                : 305,
-                                            width: context.width,
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: restController
-                                                  .recommendedProductModel!
-                                                  .products!
-                                                  .length,
-                                              physics:
-                                                  const BouncingScrollPhysics(),
-                                              padding: const EdgeInsets.only(
-                                                  top: Dimensions
-                                                      .paddingSizeExtraSmall,
-                                                  bottom: Dimensions
-                                                      .paddingSizeExtraSmall,
-                                                  right: Dimensions
-                                                      .paddingSizeDefault),
-                                              itemBuilder: (context, index) {
-                                                return Padding(
-                                                  padding: const EdgeInsets
-                                                      .only(
-                                                      left: Dimensions
-                                                          .paddingSizeDefault),
-                                                  child: ItemCardWidget(
-                                                    product: restController
-                                                        .recommendedProductModel!
-                                                        .products![index],
-                                                    isBestItem: false,
-                                                    isPopularNearbyItem: false,
-                                                    width: ResponsiveHelper
-                                                            .isDesktop(context)
-                                                        ? 200
-                                                        : MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.53,
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                          ArrowIconButtonWidget(
+                                            onTap: () => Get.toNamed(RouteHelper.getPopularFoodRoute(false,
+                                                fromIsRestaurantFood: true,
+                                                restaurantId: widget.restaurant!.id ??
+                                                    Get.find<RestaurantController>().restaurant!.id!)),
                                           ),
-                                          const SizedBox(
-                                              height:
-                                                  Dimensions.paddingSizeSmall),
                                         ]),
+                                      ),
+                                      SizedBox(
+                                        height: ResponsiveHelper.isDesktop(context) ? 307 : 305,
+                                        width: context.width,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: restController.recommendedProductModel!.products!.length,
+                                          physics: const BouncingScrollPhysics(),
+                                          padding: const EdgeInsets.only(
+                                              top: Dimensions.paddingSizeExtraSmall,
+                                              bottom: Dimensions.paddingSizeExtraSmall,
+                                              right: Dimensions.paddingSizeDefault),
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault),
+                                              child: ItemCardWidget(
+                                                product: restController.recommendedProductModel!.products![index],
+                                                isBestItem: false,
+                                                isPopularNearbyItem: false,
+                                                width: ResponsiveHelper.isDesktop(context)
+                                                    ? 200
+                                                    : MediaQuery.of(context).size.width * 0.53,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                                    ]),
                                   )
                                 : const SizedBox(),
                           ]),
@@ -401,202 +295,124 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                             ? []
                                             : [
                                                 BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.1),
+                                                    color: Colors.grey.withOpacity(0.1),
                                                     spreadRadius: 1,
                                                     blurRadius: 10,
                                                     offset: const Offset(0, 1))
                                               ],
                                       ),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical:
-                                              Dimensions.paddingSizeExtraSmall),
+                                      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
                                       child: Column(children: [
                                         Padding(
                                           padding: const EdgeInsets.only(
                                               left: Dimensions.paddingSizeLarge,
-                                              right:
-                                                  Dimensions.paddingSizeLarge,
+                                              right: Dimensions.paddingSizeLarge,
                                               top: Dimensions.paddingSizeSmall),
                                           child: Row(
                                             children: [
                                               Text('all_food_items'.tr,
-                                                  style: robotoBold.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeDefault)),
+                                                  style: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault)),
                                               const Expanded(child: SizedBox()),
                                               isDesktop
                                                   ? Container(
-                                                      padding: const EdgeInsets
-                                                          .all(Dimensions
-                                                              .paddingSizeExtraSmall),
+                                                      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                                                       height: 35,
                                                       width: 320,
                                                       decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(25),
-                                                        color: Theme.of(context)
-                                                            .cardColor,
+                                                        borderRadius: BorderRadius.circular(25),
+                                                        color: Theme.of(context).cardColor,
                                                         border: Border.all(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor
-                                                                .withOpacity(
-                                                                    0.40)),
+                                                            color: Theme.of(context).primaryColor.withOpacity(0.40)),
                                                       ),
                                                       child: Row(
                                                         children: [
                                                           Expanded(
                                                             child: TextField(
-                                                              controller:
-                                                                  _searchController,
-                                                              textInputAction:
-                                                                  TextInputAction
-                                                                      .search,
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                contentPadding:
-                                                                    const EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal:
-                                                                            0,
-                                                                        vertical:
-                                                                            0),
-                                                                hintText:
-                                                                    'search_for_products'
-                                                                        .tr,
+                                                              controller: _searchController,
+                                                              textInputAction: TextInputAction.search,
+                                                              decoration: InputDecoration(
+                                                                contentPadding: const EdgeInsets.symmetric(
+                                                                    horizontal: 0, vertical: 0),
+                                                                hintText: 'search_for_products'.tr,
                                                                 hintStyle: robotoRegular.copyWith(
-                                                                    fontSize:
-                                                                        Dimensions
-                                                                            .fontSizeSmall,
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .disabledColor),
-                                                                border:
-                                                                    OutlineInputBorder(
+                                                                    fontSize: Dimensions.fontSizeSmall,
+                                                                    color: Theme.of(context).disabledColor),
+                                                                border: OutlineInputBorder(
                                                                   borderRadius:
-                                                                      BorderRadius.circular(
-                                                                          Dimensions
-                                                                              .radiusSmall),
-                                                                  borderSide:
-                                                                      BorderSide
-                                                                          .none,
+                                                                      BorderRadius.circular(Dimensions.radiusSmall),
+                                                                  borderSide: BorderSide.none,
                                                                 ),
                                                                 filled: true,
-                                                                fillColor: Theme.of(
-                                                                        context)
-                                                                    .cardColor,
+                                                                fillColor: Theme.of(context).cardColor,
                                                                 isDense: true,
-                                                                prefixIcon:
-                                                                    InkWell(
+                                                                prefixIcon: InkWell(
                                                                   onTap: () {
-                                                                    if (!restController
-                                                                        .isSearching) {
-                                                                      Get.find<
-                                                                              RestaurantController>()
+                                                                    if (!restController.isSearching) {
+                                                                      Get.find<RestaurantController>()
                                                                           .getRestaurantSearchProductList(
-                                                                        _searchController
-                                                                            .text
-                                                                            .trim(),
+                                                                        _searchController.text.trim(),
                                                                         Get.find<RestaurantController>()
                                                                             .restaurant!
                                                                             .id
                                                                             .toString(),
                                                                         1,
-                                                                        restController
-                                                                            .type,
+                                                                        restController.type,
                                                                       );
                                                                     } else {
-                                                                      _searchController
-                                                                          .text = '';
-                                                                      restController
-                                                                          .initSearchData();
-                                                                      restController
-                                                                          .changeSearchStatus();
+                                                                      _searchController.text = '';
+                                                                      restController.initSearchData();
+                                                                      restController.changeSearchStatus();
                                                                     }
                                                                   },
                                                                   child: Icon(
-                                                                    restController
-                                                                            .isSearching
-                                                                        ? Icons
-                                                                            .clear
-                                                                        : CupertinoIcons
-                                                                            .search,
-                                                                    color: Theme.of(
-                                                                            context)
+                                                                    restController.isSearching
+                                                                        ? Icons.clear
+                                                                        : CupertinoIcons.search,
+                                                                    color: Theme.of(context)
                                                                         .primaryColor
-                                                                        .withOpacity(
-                                                                            0.50),
+                                                                        .withOpacity(0.50),
                                                                   ),
                                                                 ),
                                                               ),
-                                                              onSubmitted:
-                                                                  (String?
-                                                                      value) {
-                                                                if (value!
-                                                                    .isNotEmpty) {
-                                                                  restController
-                                                                      .getRestaurantSearchProductList(
-                                                                    _searchController
-                                                                        .text
-                                                                        .trim(),
-                                                                    Get.find<
-                                                                            RestaurantController>()
+                                                              onSubmitted: (String? value) {
+                                                                if (value!.isNotEmpty) {
+                                                                  restController.getRestaurantSearchProductList(
+                                                                    _searchController.text.trim(),
+                                                                    Get.find<RestaurantController>()
                                                                         .restaurant!
                                                                         .id
                                                                         .toString(),
                                                                     1,
-                                                                    restController
-                                                                        .type,
+                                                                    restController.type,
                                                                   );
                                                                 }
                                                               },
-                                                              onChanged:
-                                                                  (String?
-                                                                      value) {},
+                                                              onChanged: (String? value) {},
                                                             ),
                                                           ),
-                                                          const SizedBox(
-                                                              width: Dimensions
-                                                                  .paddingSizeSmall),
+                                                          const SizedBox(width: Dimensions.paddingSizeSmall),
                                                         ],
                                                       ),
                                                     )
                                                   : InkWell(
                                                       onTap: () async {
-                                                        await Get.toNamed(
-                                                            RouteHelper
-                                                                .getSearchRestaurantProductRoute(
-                                                                    restaurant!
-                                                                        .id));
-                                                        if (restController
-                                                            .isSearching) {
-                                                          restController
-                                                              .changeSearchStatus();
+                                                        await Get.toNamed(RouteHelper.getSearchRestaurantProductRoute(
+                                                            restaurant!.id));
+                                                        if (restController.isSearching) {
+                                                          restController.changeSearchStatus();
                                                         }
                                                       },
                                                       child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius: BorderRadius
-                                                              .circular(Dimensions
-                                                                  .radiusDefault),
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColor
-                                                              .withOpacity(0.1),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                          color: Theme.of(context).primaryColor.withOpacity(0.1),
                                                         ),
-                                                        padding: const EdgeInsets
-                                                            .all(Dimensions
-                                                                .paddingSizeExtraSmall),
+                                                        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                                                         child: Image.asset(
                                                           Images.search,
                                                           height: 25,
                                                           width: 25,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .primaryColor,
+                                                          color: Theme.of(context).primaryColor,
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
@@ -604,197 +420,109 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                               restController.type.isNotEmpty
                                                   ? VegFilterWidget(
                                                       type: restController.type,
-                                                      onSelected:
-                                                          (String type) {
-                                                        restController
-                                                            .getRestaurantProductList(
-                                                                restController
-                                                                    .restaurant!
-                                                                    .id,
-                                                                1,
-                                                                type,
-                                                                true);
+                                                      onSelected: (String type) {
+                                                        restController.getRestaurantProductList(
+                                                            restController.restaurant!.id, 1, type, true);
                                                       },
                                                     )
                                                   : const SizedBox(),
                                             ],
                                           ),
                                         ),
-                                        const Divider(
-                                            thickness: 0.2, height: 10),
+                                        const Divider(thickness: 0.2, height: 10),
                                         SizedBox(
                                           height: 30,
-                                          child: restController
-                                                      .restaurant!.categories !=
-                                                  null
+                                          child: restController.restaurant!.categories != null
                                               ? ListView.builder(
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  itemCount: restController
-                                                          .restaurant!
-                                                          .categories!
-                                                          .length +
-                                                      1,
-                                                  padding: const EdgeInsets
-                                                      .only(
-                                                      left: Dimensions
-                                                          .paddingSizeLarge),
-                                                  physics:
-                                                      const BouncingScrollPhysics(),
-                                                  itemBuilder:
-                                                      (context, index) {
+                                                  scrollDirection: Axis.horizontal,
+                                                  itemCount: restController.restaurant!.categories!.length + 1,
+                                                  padding: const EdgeInsets.only(left: Dimensions.paddingSizeLarge),
+                                                  physics: const BouncingScrollPhysics(),
+                                                  itemBuilder: (context, index) {
                                                     if (index == 0) {
                                                       return InkWell(
                                                         onTap: () {
-                                                          restController
-                                                              .setCategoryIndex(
-                                                                  0); // Use 0 for "All"
-                                                          Get.find<
-                                                                  RestaurantController>()
-                                                              .getRestaurantProductList(
-                                                            widget.restaurant
-                                                                    ?.id ??
-                                                                Get.find<
-                                                                        RestaurantController>()
-                                                                    .restaurant!
-                                                                    .id!,
+                                                          restController.setCategoryIndex(0); // Use 0 for "All"
+                                                          Get.find<RestaurantController>().getRestaurantProductList(
+                                                            widget.restaurant?.id ??
+                                                                Get.find<RestaurantController>().restaurant!.id!,
                                                             1,
                                                             'all',
                                                             true,
                                                           );
                                                         },
                                                         child: Container(
-                                                          padding: const EdgeInsets
-                                                              .symmetric(
-                                                              horizontal: Dimensions
-                                                                  .paddingSizeSmall,
-                                                              vertical: Dimensions
-                                                                  .paddingSizeExtraSmall),
-                                                          margin: const EdgeInsets
-                                                              .only(
-                                                              right: Dimensions
-                                                                  .paddingSizeSmall),
-                                                          decoration:
-                                                              BoxDecoration(
+                                                          padding: const EdgeInsets.symmetric(
+                                                              horizontal: Dimensions.paddingSizeSmall,
+                                                              vertical: Dimensions.paddingSizeExtraSmall),
+                                                          margin:
+                                                              const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+                                                          decoration: BoxDecoration(
                                                             borderRadius:
-                                                                BorderRadius.circular(
-                                                                    Dimensions
-                                                                        .radiusDefault),
-                                                            color: restController
-                                                                        .categoryIndex ==
-                                                                    0
-                                                                ? Theme.of(
-                                                                        context)
-                                                                    .primaryColor
-                                                                    .withOpacity(
-                                                                        0.1)
-                                                                : Colors
-                                                                    .transparent,
+                                                                BorderRadius.circular(Dimensions.radiusDefault),
+                                                            color: restController.categoryIndex == 0
+                                                                ? Theme.of(context).primaryColor.withOpacity(0.1)
+                                                                : Colors.transparent,
                                                           ),
                                                           child: Center(
                                                             child: Text(
                                                               'all'.tr,
                                                               style: restController.categoryIndex == 0
                                                                   ? robotoMedium.copyWith(
-                                                                      fontSize:
-                                                                          Dimensions
-                                                                              .fontSizeSmall,
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .primaryColor)
-                                                                  : robotoRegular
-                                                                      .copyWith(
-                                                                          fontSize:
-                                                                              Dimensions.fontSizeSmall),
+                                                                      fontSize: Dimensions.fontSizeSmall,
+                                                                      color: Theme.of(context).primaryColor)
+                                                                  : robotoRegular.copyWith(
+                                                                      fontSize: Dimensions.fontSizeSmall),
                                                             ),
                                                           ),
                                                         ),
                                                       );
                                                     } else {
                                                       // Handle category labels
-                                                      int uniqueCategoryIndex =
-                                                          index - 1;
-                                                      List<CategoryData>
-                                                          uniqueCategories =
-                                                          restController
-                                                              .restaurant!
-                                                              .categories!;
+                                                      int uniqueCategoryIndex = index - 1;
+                                                      List<CategoryData> uniqueCategories =
+                                                          restController.restaurant!.categories!;
 
-                                                      if (uniqueCategoryIndex <
-                                                              0 ||
-                                                          uniqueCategoryIndex >=
-                                                              uniqueCategories
-                                                                  .length) {
+                                                      if (uniqueCategoryIndex < 0 ||
+                                                          uniqueCategoryIndex >= uniqueCategories.length) {
                                                         return const SizedBox();
                                                       }
 
-                                                      CategoryData category =
-                                                          uniqueCategories[
-                                                              uniqueCategoryIndex];
+                                                      CategoryData category = uniqueCategories[uniqueCategoryIndex];
 
                                                       return InkWell(
                                                         onTap: () {
-                                                          restController
-                                                              .setCategoryIndex(
-                                                                  category.id!);
-                                                          Get.find<
-                                                                  RestaurantController>()
-                                                              .getRestaurantProductList(
-                                                            widget.restaurant
-                                                                    ?.id ??
-                                                                Get.find<
-                                                                        RestaurantController>()
-                                                                    .restaurant!
-                                                                    .id!,
+                                                          restController.setCategoryIndex(category.id!);
+                                                          Get.find<RestaurantController>().getRestaurantProductList(
+                                                            widget.restaurant?.id ??
+                                                                Get.find<RestaurantController>().restaurant!.id!,
                                                             1,
                                                             'all',
                                                             false,
                                                           );
                                                         },
                                                         child: Container(
-                                                          padding: const EdgeInsets
-                                                              .symmetric(
-                                                              horizontal: Dimensions
-                                                                  .paddingSizeSmall,
-                                                              vertical: Dimensions
-                                                                  .paddingSizeExtraSmall),
-                                                          margin: const EdgeInsets
-                                                              .only(
-                                                              right: Dimensions
-                                                                  .paddingSizeSmall),
-                                                          decoration:
-                                                              BoxDecoration(
+                                                          padding: const EdgeInsets.symmetric(
+                                                              horizontal: Dimensions.paddingSizeSmall,
+                                                              vertical: Dimensions.paddingSizeExtraSmall),
+                                                          margin:
+                                                              const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+                                                          decoration: BoxDecoration(
                                                             borderRadius:
-                                                                BorderRadius.circular(
-                                                                    Dimensions
-                                                                        .radiusDefault),
-                                                            color: restController
-                                                                        .categoryIndex ==
-                                                                    category.id
-                                                                ? Theme.of(
-                                                                        context)
-                                                                    .dialogBackgroundColor
-                                                                : Colors
-                                                                    .transparent,
+                                                                BorderRadius.circular(Dimensions.radiusDefault),
+                                                            color: restController.categoryIndex == category.id
+                                                                ? Theme.of(context).dialogBackgroundColor
+                                                                : Colors.transparent,
                                                           ),
                                                           child: Center(
                                                             child: Text(
                                                               category.name!,
-                                                              style: restController
-                                                                          .categoryIndex ==
-                                                                      category
-                                                                          .id
+                                                              style: restController.categoryIndex == category.id
                                                                   ? robotoMedium.copyWith(
-                                                                      fontSize:
-                                                                          Dimensions
-                                                                              .fontSizeSmall,
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .primaryColor)
-                                                                  : robotoRegular
-                                                                      .copyWith(
-                                                                          fontSize:
-                                                                              Dimensions.fontSizeSmall),
+                                                                      fontSize: Dimensions.fontSizeSmall,
+                                                                      color: Theme.of(context).primaryColor)
+                                                                  : robotoRegular.copyWith(
+                                                                      fontSize: Dimensions.fontSizeSmall),
                                                             ),
                                                           ),
                                                         ),
@@ -822,32 +550,25 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                 if (restController.isSearching) {
                                   restController.getRestaurantSearchProductList(
                                     restController.searchText,
-                                    Get.find<RestaurantController>()
-                                        .restaurant!
-                                        .id
-                                        .toString(),
+                                    Get.find<RestaurantController>().restaurant!.id.toString(),
                                     offset!,
                                     restController.type,
                                   );
                                 } else {
                                   restController.getRestaurantProductList(
-                                      Get.find<RestaurantController>()
-                                          .restaurant!
-                                          .id,
+                                      Get.find<RestaurantController>().restaurant!.id,
                                       offset!,
                                       restController.type,
                                       false);
                                 }
                               },
                               totalSize: restController.isSearching
-                                  ? restController
-                                      .restaurantSearchProductModel?.totalSize
+                                  ? restController.restaurantSearchProductModel?.totalSize
                                   : restController.restaurantProducts != null
                                       ? restController.foodPageSize
                                       : null,
                               offset: restController.isSearching
-                                  ? restController
-                                      .restaurantSearchProductModel?.offset
+                                  ? restController.restaurantSearchProductModel?.offset
                                   : restController.restaurantProducts != null
                                       ? restController.foodPageOffset
                                       : null,
@@ -855,8 +576,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                                 isRestaurant: false,
                                 restaurants: null,
                                 products: restController.isSearching
-                                    ? restController
-                                        .restaurantSearchProductModel?.products
+                                    ? restController.restaurantSearchProductModel?.products
                                     : restController.categoryList!.isNotEmpty
                                         ? restController.restaurantProducts
                                         : null,
@@ -875,12 +595,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             });
           });
         }),
-        bottomNavigationBar:
-            GetBuilder<CartController>(builder: (cartController) {
+        bottomNavigationBar: GetBuilder<CartController>(builder: (cartController) {
           return cartController.cartList.isNotEmpty && !isDesktop
-              ? BottomCartWidget(
-                  restaurantId:
-                      cartController.cartList[0].product!.restaurantId!)
+              ? BottomCartWidget(restaurantId: cartController.cartList[0].product!.restaurantId!)
               : const SizedBox();
         }));
   }
@@ -893,8 +610,7 @@ class SliverDelegate extends SliverPersistentHeaderDelegate {
   SliverDelegate({required this.child, this.height = 100});
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return child;
   }
 
@@ -906,8 +622,6 @@ class SliverDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(SliverDelegate oldDelegate) {
-    return oldDelegate.maxExtent != height ||
-        oldDelegate.minExtent != height ||
-        child != oldDelegate.child;
+    return oldDelegate.maxExtent != height || oldDelegate.minExtent != height || child != oldDelegate.child;
   }
 }

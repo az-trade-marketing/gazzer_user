@@ -241,41 +241,30 @@ class CheckoutScreenState extends State<CheckoutScreen> {
 
                   deliveryCharge = PriceConverter.toFixed(deliveryCharge);
 
-                  // Group the cartList by restaurant
-                  Map<String, List<CartModel>> restaurantGroupedCartList = {};
-                  for (var cartItem in _cartList!) {
-                    String restaurantName = cartItem.product!.restaurantName!;
-                    if (!restaurantGroupedCartList.containsKey(restaurantName)) {
-                      restaurantGroupedCartList[restaurantName] = [];
-                    }
-                    restaurantGroupedCartList[restaurantName]!.add(cartItem);
-                  }
-                  // Calculate delivery charge for grouped orders
-                  double groupedDeliveryCharge = restaurantGroupedCartList.length > 1
-                      ? deliveryCharge +
-                          (restaurantGroupedCartList.length - 1) *
-                              Get.find<SplashController>().configModel!.deliveryFeeMultiVendor!
-                      : deliveryCharge;
+                  double groupedDeliveryCharge = checkoutController.calculateDeliveryFees(
+                      Get.find<SplashController>().configModel!, _cartList, deliveryCharge, orderAmount);
 
                   calcTotal() {
                     if (couponController.coupon?.couponType == "free_delivery") {
                       deliveryCharge = 0;
+                      groupedDeliveryCharge = 0;
                     }
 
                     double totalAmount = orderAmount + groupedDeliveryCharge;
 
                     if (AppConstants.isUseButtonTapped) {
                       double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;
-
                       if (walletBalance >= totalAmount) {
-                        // الحالة الأولى: المحفظة تغطي كامل المبلغ
-                        return totalAmount; // إظهار نفس المبلغ الإجمالي
+                        /// الحالة الأولى: المحفظة تغطي كامل المبلغ
+                        /// إظهار نفس المبلغ الإجمالي
+                        return totalAmount;
                       } else {
-                        // الحالة الثانية: المحفظة لا تغطي كامل المبلغ
-                        return totalAmount - walletBalance; // المبلغ المتبقي للدفع بالفيزا
+                        /// الحالة الثانية: المحفظة لا تغطي كامل المبلغ
+                        /// المبلغ المتبقي للدفع بالفيزا
+                        return totalAmount - walletBalance;
                       }
                     } else {
-                      // لم يتم اختيار استخدام المحفظة
+                      /// لم يتم اختيار استخدام المحفظة
                       return totalAmount;
                     }
                   }

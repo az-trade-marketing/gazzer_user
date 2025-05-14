@@ -230,8 +230,7 @@ extension CheckoutControllerExtra on CheckoutController {
     return PriceConverter.toFixed(tax);
   }
 
-  int getSubscriptionQty(
-      {required CheckoutController checkoutController, required bool restaurantSubscriptionActive}) {
+  int getSubscriptionQty({required CheckoutController checkoutController, required bool restaurantSubscriptionActive}) {
     int subscriptionQty = checkoutController.subscriptionOrder ? 0 : 1;
     if (restaurantSubscriptionActive) {
       if (checkoutController.subscriptionOrder && checkoutController.subscriptionRange != null) {
@@ -278,9 +277,7 @@ extension CheckoutControllerExtra on CheckoutController {
             restaurant!.isExtraPackagingActive! &&
             !restaurant!.extraPackagingStatusIsMandatory! &&
             Get.find<CartController>().needExtraPackage) ||
-        (restaurant != null &&
-            restaurant!.isExtraPackagingActive! &&
-            restaurant!.extraPackagingStatusIsMandatory!)) {
+        (restaurant != null && restaurant!.isExtraPackagingActive! && restaurant!.extraPackagingStatusIsMandatory!)) {
       return restaurant?.extraPackagingAmount ?? 0;
     }
     return 0;
@@ -302,5 +299,28 @@ extension CheckoutControllerExtra on CheckoutController {
       }
     }
     return PriceConverter.toFixed(referralDiscount);
+  }
+
+  double calculateDeliveryFees(
+      ConfigModel config, List<CartModel>? cartList, double deliveryCharge, double orderAmount) {
+    if ((config.freeDeliveryOver ?? 0) < orderAmount) {
+      return 0;
+    }
+    // Group the cartList by restaurant
+    Map<String, List<CartModel>> restaurantGroupedCartList = {};
+    for (var cartItem in cartList ?? <CartModel>[]) {
+      String restaurantName = cartItem.product!.restaurantName!;
+      if (!restaurantGroupedCartList.containsKey(restaurantName)) {
+        restaurantGroupedCartList[restaurantName] = [];
+      }
+      restaurantGroupedCartList[restaurantName]!.add(cartItem);
+    }
+    // Calculate delivery charge for grouped orders
+    double groupedDeliveryCharge = restaurantGroupedCartList.length > 1
+        ? deliveryCharge +
+            (restaurantGroupedCartList.length - 1) * Get.find<SplashController>().configModel!.deliveryFeeMultiVendor!
+        : deliveryCharge;
+
+    return groupedDeliveryCharge;
   }
 }

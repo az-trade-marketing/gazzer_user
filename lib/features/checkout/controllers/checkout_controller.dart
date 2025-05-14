@@ -26,6 +26,7 @@ import 'package:gazzer_userapp/features/order/screens/order_screen.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
+import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
 import 'package:gazzer_userapp/helper/date_converter.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';

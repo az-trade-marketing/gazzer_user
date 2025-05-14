@@ -127,24 +127,24 @@ class OrderPlaceButton extends StatelessWidget {
                 double amountFromWallet = 0; // المبلغ الذي سيخصم من المحفظة
 
                 // إذا تم اختيار استخدام المحفظة
-                if (AppConstants.isUseButtonTapped) {
-                  double walletBalance = Get.find<ProfileController>()
-                      .userInfoModel!
-                      .walletBalance!;
-                  debugPrint(
-                      "walletBalance:::: $walletBalance    total:: $total");
-                  if (walletBalance >= total) {
-                    // الحالة الأولى: المحفظة تغطي كامل المبلغ
-                    amountFromWallet = total;
-                    amountToCharge = /*total*/
-                        0.0; // المتبقى من wallet// إرسال نفس المبلغ للدفع كما طلبت
-                  } else {
-                    // الحالة الثانية: المحفظة لا تغطي كامل المبلغ
-                    amountFromWallet = walletBalance;
-                    amountToCharge =
-                        total /*- walletBalance*/; // المبلغ المتبقي للدفع بالفيزا
-                  }
-                }
+                // if (AppConstants.isUseButtonTapped) {
+                //   double walletBalance = Get.find<ProfileController>()
+                //       .userInfoModel!
+                //       .walletBalance!;
+                //   debugPrint(
+                //       "walletBalance:::: $walletBalance    total:: $total");
+                //   if (walletBalance >= total) {
+                //     // الحالة الأولى: المحفظة تغطي كامل المبلغ
+                //     amountFromWallet = total;
+                //     amountToCharge = /*total*/
+                //         0.0; // المتبقى من wallet// إرسال نفس المبلغ للدفع كما طلبت
+                //   } else {
+                //     // الحالة الثانية: المحفظة لا تغطي كامل المبلغ
+                //     amountFromWallet = walletBalance;
+                //     amountToCharge =
+                //         total /*- walletBalance*/; // المبلغ المتبقي للدفع بالفيزا
+                //   }
+                // }
 
                 AddressModel? finalAddress = _processFinalAddress(isGuestLogIn);
                 List<place_order_model.OnlineCart> carts =

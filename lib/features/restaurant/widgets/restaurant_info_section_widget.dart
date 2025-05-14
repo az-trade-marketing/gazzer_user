@@ -73,7 +73,7 @@ class RestaurantInfoSectionWidget extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.bottomLeft,
                           child: Container(
-                            height: (hasCoupon ? 290 : 190) - (scrollingRate * 25),
+                            // height: (hasCoupon ? 290 : 190) - (scrollingRate * 25),
                             decoration: BoxDecoration(
                                 color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -108,70 +108,69 @@ class RestaurantInfoSectionWidget extends StatelessWidget {
                                       if (openCloseHours != null) {
                                         final closingAfter = restController.closingAfter(openCloseHours.$2!);
                                         print(closingAfter);
-                                        return Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text("${"opens_at".tr}: ",
-                                                          style: robotoRegular.copyWith(
-                                                            color: Colors.black38,
-                                                          )),
-                                                      Text(
-                                                        ' ${openCloseHours.$1?.format(context)}',
-                                                        style: robotoMedium.copyWith(
-                                                          color: Colors.black54,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text("${"closes_at".tr}: ",
-                                                          style: robotoRegular.copyWith(
-                                                            color: Colors.black38,
-                                                          )),
-                                                      Text(
-                                                        ' ${openCloseHours.$2?.format(context)}',
-                                                        style: robotoMedium.copyWith(
-                                                          color: Colors.black54,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox.shrink(),
-                                                ],
-                                              ),
-                                              if (closingAfter < 30 && closingAfter > 0)
-                                                DecoratedBox(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.red.withAlpha(180),
-                                                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                        horizontal: Dimensions.paddingSizeDefault,
-                                                        vertical: Dimensions.paddingSizeExtraSmall),
-                                                    child: Text(
-                                                      "this_restaurant_is_closing_in"
-                                                          .trParams({"time": closingAfter.toString()}),
-                                                      style: robotoBold.copyWith(
-                                                        color: Theme.of(context).cardColor,
-                                                        fontSize: Dimensions.fontSizeDefault,
-                                                        fontWeight: FontWeight.bold,
+                                        return Column(
+                                          spacing: 12,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text("${"opens_at".tr}: ",
+                                                        style: robotoRegular.copyWith(
+                                                          color: Colors.black38,
+                                                        )),
+                                                    Text(
+                                                      ' ${openCloseHours.$1?.format(context)}',
+                                                      style: robotoMedium.copyWith(
+                                                        color: Colors.black54,
                                                       ),
                                                     ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text("${"closes_at".tr}: ",
+                                                        style: robotoRegular.copyWith(
+                                                          color: Colors.black38,
+                                                        )),
+                                                    Text(
+                                                      ' ${openCloseHours.$2?.format(context)}',
+                                                      style: robotoMedium.copyWith(
+                                                        color: Colors.black54,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox.shrink(),
+                                              ],
+                                            ),
+                                            if (closingAfter < 30 && closingAfter > 0)
+                                              DecoratedBox(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red.withAlpha(180),
+                                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      horizontal: Dimensions.paddingSizeDefault,
+                                                      vertical: Dimensions.paddingSizeExtraSmall),
+                                                  child: Text(
+                                                    "this_restaurant_is_closing_in"
+                                                        .trParams({"time": closingAfter.toString()}),
+                                                    style: robotoBold.copyWith(
+                                                      color: Theme.of(context).cardColor,
+                                                      fontSize: Dimensions.fontSizeDefault,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
                                                   ),
-                                                )
-                                            ],
-                                          ),
+                                                ),
+                                              )
+                                          ],
                                         );
                                       }
                                       return const SizedBox();

@@ -9,7 +9,7 @@ class AppConstants {
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
   // Production API URL
-  static const String webHostedUrl = 'https://dashboard.gazzerapp.com';
+  static const String webHostedUrl = 'https://gazzertest.cloud';
   // Staging API URL
   // static const String webHostedUrl = 'https://carrot.refilex.com';
   static const String baseUrl = webHostedUrl;

@@ -71,6 +71,8 @@ dependencies:
   pretty_http_logger: ^1.0.4
   # Newly added
   in_app_review: ^2.0.10
+  shorebird_code_push: ^2.0.3
+  package_info_plus: ^8.3.0
 
 
 dev_dependencies:
@@ -86,6 +88,7 @@ flutter:
     - assets/image/
     - assets/language/
     - assets/map/
+    - shorebird.yaml
 
   fonts:
     - family: Roboto

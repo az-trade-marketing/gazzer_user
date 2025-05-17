@@ -19,18 +19,4 @@ extension RestaurantControllerExtra on RestaurantController {
     return null;
   }
 
-  int closingAfter(TimeOfDay close) {
-    final now = DateTime.now();
-    final closinDate = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      close.hour,
-      close.minute,
-    );
-
-    
-    final difference = closinDate.difference(now);
-    return difference.inMinutes;
-  }
 }

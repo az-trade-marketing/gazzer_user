@@ -12,8 +12,8 @@ import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 
-class DeskTopInfoWidget extends StatelessWidget {
-  const DeskTopInfoWidget({
+class RestInfoExLarge extends StatelessWidget {
+  const RestInfoExLarge({
     super.key,
     required this.restaurant,
     required this.restController,

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 
 class ResponsiveHelper {
   static bool isMobilePhone() {
@@ -33,7 +33,7 @@ class ResponsiveHelper {
   }
 
   static bool isDesktop(context) {
-    final size = MediaQuery.of(context).size.width;
+    final size = MediaQuery.sizeOf(context).width;
     if (size >= 1300) {
       return true;
     } else {

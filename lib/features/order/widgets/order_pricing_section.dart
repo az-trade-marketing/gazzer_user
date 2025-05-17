@@ -1,25 +1,14 @@
 import 'package:dotted_border/dotted_border.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:gazzer_userapp/features/order/controllers/order_controller.dart';
-
 import 'package:gazzer_userapp/features/order/domain/models/order_model.dart';
-
 import 'package:gazzer_userapp/features/order/widgets/bottom_view_widget.dart';
-
 import 'package:gazzer_userapp/features/order/widgets/order_product_widget.dart';
-
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
-
 import 'package:gazzer_userapp/helper/price_converter.dart';
-
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
-
 import 'package:gazzer_userapp/util/dimensions.dart';
-
 import 'package:gazzer_userapp/util/styles.dart';
-
 import 'package:get/get.dart';
 
 class OrderPricingSection extends StatelessWidget {
@@ -82,18 +71,14 @@ class OrderPricingSection extends StatelessWidget {
           ? BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-              boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.05), blurRadius: 10)
-                ])
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)])
           : null,
       child: Column(children: [
         ResponsiveHelper.isDesktop(context)
             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeLarge,
-                      vertical: Dimensions.paddingSizeSmall),
+                      horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeSmall),
                   child: Text('item_info'.tr, style: robotoMedium),
                 ),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -102,24 +87,20 @@ class OrderPricingSection extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: orderController.orderDetails!.length,
                   itemBuilder: (context, index) {
-                    return OrderProductWidget(
-                        order: order,
-                        orderDetails: orderController.orderDetails![index]);
+                    return OrderProductWidget(order: order, orderDetails: orderController.orderDetails![index]);
                   },
                 ),
               ])
             : const SizedBox(),
         const SizedBox(height: Dimensions.paddingSizeSmall),
         Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: Dimensions.paddingSizeLarge),
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
           child: Column(children: [
             // Total
 
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text('item_price'.tr, style: robotoRegular),
-              Text(PriceConverter.convertPrice(itemsPrice),
-                  style: robotoRegular, textDirection: TextDirection.ltr),
+              Text(PriceConverter.convertPrice(itemsPrice), style: robotoRegular, textDirection: TextDirection.ltr),
             ]),
 
             const SizedBox(height: 10),
@@ -130,21 +111,13 @@ class OrderPricingSection extends StatelessWidget {
                   style: robotoRegular, textDirection: TextDirection.ltr),
             ]),
 
-            Divider(
-                thickness: 1,
-                color: Theme.of(context).hintColor.withOpacity(0.5)),
+            Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5)),
 
             !subscription
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Text(
-                            '${'subtotal'.tr} ${taxIncluded ? 'tax_included'.tr : ''}',
-                            style: robotoMedium),
-                        Text(PriceConverter.convertPrice(subTotal),
-                            style: robotoMedium,
-                            textDirection: TextDirection.ltr),
-                      ])
+                ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('${'subtotal'.tr} ${taxIncluded ? 'tax_included'.tr : ''}', style: robotoMedium),
+                    Text(PriceConverter.convertPrice(subTotal), style: robotoMedium, textDirection: TextDirection.ltr),
+                  ])
                 : const SizedBox(),
 
             SizedBox(height: !subscription ? Dimensions.paddingSizeSmall : 0),
@@ -158,30 +131,25 @@ class OrderPricingSection extends StatelessWidget {
             const SizedBox(height: Dimensions.paddingSizeSmall),
 
             couponDiscount > 0
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Text('coupon_discount'.tr, style: robotoRegular),
-                        Text(
-                          '(-) ${PriceConverter.convertPrice(couponDiscount)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr,
-                        ),
-                      ])
+                ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('coupon_discount'.tr, style: robotoRegular),
+                    Text(
+                      '(-) ${PriceConverter.convertPrice(couponDiscount)}',
+                      style: robotoRegular,
+                      textDirection: TextDirection.ltr,
+                    ),
+                  ])
                 : const SizedBox(),
 
-            SizedBox(
-                height: couponDiscount > 0 ? Dimensions.paddingSizeSmall : 0),
+            SizedBox(height: couponDiscount > 0 ? Dimensions.paddingSizeSmall : 0),
 
             (referrerBonusAmount > 0)
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('referral_discount'.tr, style: robotoRegular),
-                      Text(
-                          '(-) ${PriceConverter.convertPrice(referrerBonusAmount)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr),
+                      Text('(-) ${PriceConverter.convertPrice(referrerBonusAmount)}',
+                          style: robotoRegular, textDirection: TextDirection.ltr),
                     ],
                   )
                 : const SizedBox(),
@@ -189,15 +157,13 @@ class OrderPricingSection extends StatelessWidget {
             SizedBox(height: referrerBonusAmount > 0 ? 10 : 0),
 
             !taxIncluded
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Text('vat_tax'.tr, style: robotoRegular),
-                        Text('(+) ${PriceConverter.convertPrice(tax)}',
-                            style: robotoRegular,
-                            textDirection: TextDirection.ltr),
-                      ])
+                ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('vat_tax'.tr, style: robotoRegular),
+                    Text('(+) ${PriceConverter.convertPrice(tax)}',
+                        style: robotoRegular, textDirection: TextDirection.ltr),
+                  ])
                 : const SizedBox(),
+            SizedBox(height: referrerBonusAmount > 0 ? 10 : 0),
 
             SizedBox(height: taxIncluded ? 0 : Dimensions.paddingSizeSmall),
 
@@ -209,18 +175,13 @@ class OrderPricingSection extends StatelessWidget {
                     children: [
                       Text('delivery_man_tips'.tr, style: robotoRegular),
                       Text('(+) ${PriceConverter.convertPrice(dmTips)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr),
+                          style: robotoRegular, textDirection: TextDirection.ltr),
                     ],
                   )
                 : const SizedBox(),
 
             SizedBox(
-                height: (order.orderType != 'take_away' &&
-                        Get.find<SplashController>()
-                                .configModel!
-                                .dmTipsStatus ==
-                            1)
+                height: (order.orderType != 'take_away' && Get.find<SplashController>().configModel!.dmTipsStatus == 1)
                     ? 10
                     : 0),
 
@@ -229,10 +190,8 @@ class OrderPricingSection extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('extra_packaging'.tr, style: robotoRegular),
-                      Text(
-                          '(+) ${PriceConverter.convertPrice(extraPackagingAmount)}',
-                          style: robotoRegular,
-                          textDirection: TextDirection.ltr),
+                      Text('(+) ${PriceConverter.convertPrice(extraPackagingAmount)}',
+                          style: robotoRegular, textDirection: TextDirection.ltr),
                     ],
                   )
                 : const SizedBox(),
@@ -247,25 +206,19 @@ class OrderPricingSection extends StatelessWidget {
                       style: robotoRegular,
                       textDirection: TextDirection.ltr,
                     )
-                  : Text('free'.tr,
-                      style: robotoRegular.copyWith(
-                          color: Theme.of(context).primaryColor)),
+                  : Text('free'.tr, style: robotoRegular.copyWith(color: Theme.of(context).primaryColor)),
             ]),
 
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: Dimensions.paddingSizeSmall),
-              child: Divider(
-                  thickness: 1,
-                  color: Theme.of(context).hintColor.withOpacity(0.5)),
+              padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+              child: Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5)),
             ),
 
             order.paymentMethod == 'partial_payment'
                 ? Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor.withOpacity(0.05),
-                      borderRadius:
-                          BorderRadius.circular(Dimensions.radiusDefault),
+                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                     ),
                     child: DottedBorder(
                       color: Theme.of(context).primaryColor,
@@ -276,109 +229,83 @@ class OrderPricingSection extends StatelessWidget {
                       borderType: BorderType.RRect,
                       radius: const Radius.circular(Dimensions.radiusDefault),
                       child: Column(children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('total_amount'.tr,
-                                  style: robotoMedium.copyWith(
-                                    fontSize:
-                                        ResponsiveHelper.isDesktop(context)
-                                            ? Dimensions.fontSizeSmall
-                                            : Dimensions.fontSizeDefault,
-                                    color: Theme.of(context).primaryColor,
-                                  )),
-                              Text(
-                                PriceConverter.convertPrice(
-                                    total/* + (order.payments?[0].amount ?? 0)*/),
-                                textDirection: TextDirection.ltr,
-                                style: robotoMedium.copyWith(
-                                    fontSize:
-                                        ResponsiveHelper.isDesktop(context)
-                                            ? Dimensions.fontSizeSmall
-                                            : Dimensions.fontSizeDefault,
-                                    color: Theme.of(context).primaryColor),
-                              ),
-                            ]),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text('total_amount'.tr,
+                              style: robotoMedium.copyWith(
+                                fontSize: ResponsiveHelper.isDesktop(context)
+                                    ? Dimensions.fontSizeSmall
+                                    : Dimensions.fontSizeDefault,
+                                color: Theme.of(context).primaryColor,
+                              )),
+                          Text(
+                            PriceConverter.convertPrice(total /* + (order.payments?[0].amount ?? 0)*/),
+                            textDirection: TextDirection.ltr,
+                            style: robotoMedium.copyWith(
+                                fontSize: ResponsiveHelper.isDesktop(context)
+                                    ? Dimensions.fontSizeSmall
+                                    : Dimensions.fontSizeDefault,
+                                color: Theme.of(context).primaryColor),
+                          ),
+                        ]),
                         const SizedBox(height: 10),
                         ...order.payments?.map((e) {
-                          String type = e.paymentMethod == "wallet"?'paid_by_wallet'.tr:'${e.paymentStatus == 'paid' ? 'paid_by'.tr : 'due_amount'.tr} (${e.paymentMethod?.toString().replaceAll('_', ' ')})';
-                          return  Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(type,
-                                      style: robotoMedium.copyWith(
-                                          fontSize: Dimensions.fontSizeSmall)),
+                              String type = e.paymentMethod == "wallet"
+                                  ? 'paid_by_wallet'.tr
+                                  : '${e.paymentStatus == 'paid' ? 'paid_by'.tr : 'due_amount'.tr} (${e.paymentMethod?.toString().replaceAll('_', ' ')})';
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                  Text(type, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall)),
                                   Text(
-                                    PriceConverter.convertPrice(
-                                        e.amount ?? 0),
-                                    style: robotoMedium.copyWith(
-                                        fontSize: Dimensions.fontSizeSmall),
+                                    PriceConverter.convertPrice(e.amount ?? 0),
+                                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
                                   ),
                                 ]),
-                          );
-                        }).toList()??[],
+                              );
+                            }).toList() ??
+                            [],
                       ]),
                     ),
                   )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Text(subscription ? 'subtotal'.tr : 'total_amount'.tr,
-                            style: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeLarge,
-                              color: Theme.of(context).primaryColor,
-                            )),
-                        Text(
-                          PriceConverter.convertPrice(
-                              order.couponCode != null &&
-                                      order.couponDiscountAmount == 0
-                                  ? subTotal
-                                  : total),
-                          textDirection: TextDirection.ltr,
-                          style: robotoMedium.copyWith(
-                              fontSize: Dimensions.fontSizeLarge,
-                              color: Theme.of(context).primaryColor),
-                        ),
-                      ]),
+                : Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(subscription ? 'subtotal'.tr : 'total_amount'.tr,
+                        style: robotoMedium.copyWith(
+                          fontSize: Dimensions.fontSizeLarge,
+                          color: Theme.of(context).primaryColor,
+                        )),
+                    Text(
+                      PriceConverter.convertPrice(
+                          order.couponCode != null && order.couponDiscountAmount == 0 ? subTotal : total),
+                      textDirection: TextDirection.ltr,
+                      style: robotoMedium.copyWith(
+                          fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
+                    ),
+                  ]),
 
             subscription
                 ? Column(children: [
                     const SizedBox(height: Dimensions.paddingSizeSmall),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('subscription_order_count'.tr,
-                              style: robotoMedium),
-                          Text(order.subscription!.quantity.toString(),
-                              style: robotoMedium),
-                        ]),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text('subscription_order_count'.tr, style: robotoMedium),
+                      Text(order.subscription!.quantity.toString(), style: robotoMedium),
+                    ]),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: Dimensions.paddingSizeSmall),
-                      child: Divider(
-                          thickness: 1,
-                          color: Theme.of(context).hintColor.withOpacity(0.5)),
+                      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+                      child: Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5)),
                     ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'total_amount'.tr,
-                            style: robotoMedium.copyWith(
-                                fontSize: Dimensions.fontSizeLarge,
-                                color: Theme.of(context).primaryColor),
-                          ),
-                          Text(
-                            PriceConverter.convertPrice(
-                                total * order.subscription!.quantity!),
-                            textDirection: TextDirection.ltr,
-                            style: robotoMedium.copyWith(
-                                fontSize: Dimensions.fontSizeLarge,
-                                color: Theme.of(context).primaryColor),
-                          ),
-                        ]),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text(
+                        'total_amount'.tr,
+                        style: robotoMedium.copyWith(
+                            fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
+                      ),
+                      Text(
+                        PriceConverter.convertPrice(total * order.subscription!.quantity!),
+                        textDirection: TextDirection.ltr,
+                        style: robotoMedium.copyWith(
+                            fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
+                      ),
+                    ]),
                   ])
                 : const SizedBox(),
           ]),

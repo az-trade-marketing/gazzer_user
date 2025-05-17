@@ -21,6 +21,7 @@ import 'package:gazzer_userapp/features/home/controllers/home_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
+import 'package:gazzer_userapp/features/splash/domain/models/config_model.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
 import 'package:gazzer_userapp/helper/auth_helper.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
@@ -53,7 +54,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   bool _isWalletActive = false;
   List<CartModel>? _cartList;
   double? _payableAmount = 0;
-
+  late final ConfigModel? config;
+  double additionalCharge = 0.0;
   List<AddressModel> address = [];
   bool firstTime = true;
   final tooltipController1 = JustTheController();
@@ -75,6 +77,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
+    config = Get.find<SplashController>().configModel;
+    additionalCharge = config?.additionalChargeStatus == true ? (config?.additionCharge ?? 0) : 0.0;
     totalMoney = 0.0;
     totalMoneyVisa = 0.0;
     totalMoneyWalete = 0.0;
@@ -250,7 +254,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       groupedDeliveryCharge = 0;
                     }
 
-                    double totalAmount = orderAmount + groupedDeliveryCharge;
+                    double totalAmount = orderAmount + groupedDeliveryCharge + additionalCharge;
 
                     if (AppConstants.isUseButtonTapped) {
                       double walletBalance = Get.find<ProfileController>().userInfoModel!.walletBalance!;
@@ -393,6 +397,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                                       serviceFeeTooltipController: serviceFeeTooltipController,
                                                       referralDiscount: referralDiscount,
                                                       extraPackagingAmount: extraPackagingCharge,
+                                                      showAdditionalCharge: additionalCharge > 0,
+                                                      calcTotal: calcTotal,
                                                     ),
                                                   )
                                                 ]),
@@ -462,6 +468,8 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                               serviceFeeTooltipController: serviceFeeTooltipController,
                                               referralDiscount: referralDiscount,
                                               extraPackagingAmount: extraPackagingCharge,
+                                              showAdditionalCharge: additionalCharge > 0,
+                                              calcTotal: calcTotal,
                                             ),
                                           ]),
                                   ),

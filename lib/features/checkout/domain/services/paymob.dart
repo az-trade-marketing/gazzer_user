@@ -10,22 +10,22 @@ import 'package:http/http.dart' as http;
 class Paymob {
   Future<Map<String, String>?> getPaymobIntention({
     required double amount,
-     required List<int> cartIDs,
+    required List<int> cartIDs,
   }) async {
     try {
-      String url = "${AppConstants.baseUrl}/api/v1/customer/paymob/intention?amount=$amount&cart_ids=${cartIDs.join(",")}";
+      String url =
+          "${AppConstants.baseUrl}/api/v1/customer/paymob/intention?amount=${amount.toStringAsFixed(2)}&cart_ids=${cartIDs.join(",")}";
       debugPrint("url:::: $url");
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          "Authorization":
-              "Bearer ${Get.find<AuthController>().getUserToken()}",
+          "Authorization": "Bearer ${Get.find<AuthController>().getUserToken()}",
           "Content-Type": "application/json",
         },
       );
 
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
+      final List<dynamic> data = jsonDecode(response.body);
+      if (data[0] is Map && data[0].containsKey('checkout_url')) {
         if (data.isNotEmpty) {
           String checkoutUrl = data[0]['checkout_url'];
           String paymentId = data[0]['payment_id'];
@@ -36,13 +36,13 @@ class Paymob {
             'payment_id': paymentId,
           };
         }
-      } else {
+      } else  if (data[0] is Map && data[0].containsKey('original')) {
         debugPrint('Error: ${response.statusCode} ${response.body}');
-        return {"error": jsonDecode(response.body)['message']};
+        return {"error": data[0]['original']['error']};
       }
-    } catch (e,s) {
-      log('Exception: $e',stackTrace: s);
-      return {"error":'Exception: $e'};
+    } catch (e, s) {
+      log('Exception: $e', stackTrace: s);
+      return {"error": 'Exception: $e'};
     }
 
     return null; // Return null if no URL is found
@@ -53,11 +53,9 @@ class Paymob {
   }) async {
     try {
       final response = await http.get(
-        Uri.parse(
-            "${AppConstants.baseUrl}/api/v1/customer/check-payment/$paymentId"),
+        Uri.parse("${AppConstants.baseUrl}/api/v1/customer/check-payment/$paymentId"),
         headers: {
-          "Authorization":
-              "Bearer ${Get.find<AuthController>().getUserToken()}",
+          "Authorization": "Bearer ${Get.find<AuthController>().getUserToken()}",
           "Content-Type": "application/json",
         },
       );

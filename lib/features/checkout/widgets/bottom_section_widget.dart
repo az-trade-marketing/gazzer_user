@@ -6,11 +6,9 @@ import 'package:gazzer_userapp/features/checkout/widgets/partial_pay_view.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_section.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/location/controllers/location_controller.dart';
-import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
-import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/styles.dart';
 import 'package:get/get.dart';
@@ -52,6 +50,8 @@ class BottomSectionWidget extends StatelessWidget {
   final double referralDiscount;
   final double extraPackagingAmount;
   final bool isTapped;
+  final bool showAdditionalCharge;
+  final double Function() calcTotal;
 
   BottomSectionWidget({
     super.key,
@@ -90,6 +90,8 @@ class BottomSectionWidget extends StatelessWidget {
     required this.referralDiscount,
     required this.extraPackagingAmount,
     required this.isTapped,
+    required this.showAdditionalCharge,
+    required this.calcTotal,
   });
 
   @override
@@ -110,28 +112,24 @@ class BottomSectionWidget extends StatelessWidget {
     // Calculate delivery charge for grouped orders
     double groupedDeliveryCharge = restaurantGroupedCartList.length > 1
         ? deliveryCharge +
-            (restaurantGroupedCartList.length - 1) *
-                Get.find<SplashController>()
-                    .configModel!
-                    .deliveryFeeMultiVendor!
+            (restaurantGroupedCartList.length - 1) * Get.find<SplashController>().configModel!.deliveryFeeMultiVendor!
         : deliveryCharge;
-    calcTotal() {
-      debugPrint("delivery charge button section:: $deliveryCharge");
-      if (couponController.coupon?.couponType == "free_delivery") {
-        deliveryCharge = 0;
-        return orderAmount + deliveryCharge;
-      } else if (AppConstants.isUseButtonTapped == true) {
-        return Get.find<ProfileController>().userInfoModel!.walletBalance! >= (orderAmount + deliveryCharge)
-            ? 0.0
-            : (orderAmount + deliveryCharge) - Get.find<ProfileController>().userInfoModel!.walletBalance!;
-      } else {
-        return orderAmount + deliveryCharge;
-      }
-    }
+    // calcTotal() {
+    //   debugPrint("delivery charge button section:: $deliveryCharge");
+    //   if (couponController.coupon?.couponType == "free_delivery") {
+    //     deliveryCharge = 0;
+    //     return orderAmount + deliveryCharge;
+    //   } else if (AppConstants.isUseButtonTapped == true) {
+    //     return Get.find<ProfileController>().userInfoModel!.walletBalance! >= (orderAmount + deliveryCharge)
+    //         ? 0.0
+    //         : (orderAmount + deliveryCharge) - Get.find<ProfileController>().userInfoModel!.walletBalance!;
+    //   } else {
+    //     return orderAmount + deliveryCharge;
+    //   }
+    // }
 
     return Container(
-      padding:
-          const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         isDesktop && !isGuestLoggedIn
             ? PartialPayView(
@@ -142,31 +140,23 @@ class BottomSectionWidget extends StatelessWidget {
         !isDesktop
             ? Padding(
                 padding: const EdgeInsets.symmetric(
-                    vertical: Dimensions.paddingSizeDefault,
-                    horizontal: Dimensions.paddingSizeDefault),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      orderDetailsView(
-                          context, isDesktop, restaurantGroupedCartList),
-                    ]),
+                    vertical: Dimensions.paddingSizeDefault, horizontal: Dimensions.paddingSizeDefault),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  orderDetailsView(context, isDesktop, restaurantGroupedCartList),
+                ]),
               )
             : const SizedBox(),
         !isDesktop
             ? Padding(
                 padding: const EdgeInsets.symmetric(
-                    vertical: Dimensions.paddingSizeDefault,
-                    horizontal: Dimensions.paddingSizeDefault),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      pricingView(context, isDesktop, groupedDeliveryCharge),
-                    ]),
+                    vertical: Dimensions.paddingSizeDefault, horizontal: Dimensions.paddingSizeDefault),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  pricingView(context, isDesktop, groupedDeliveryCharge),
+                ]),
               )
             : const SizedBox(),
         Padding(
-          padding: const EdgeInsetsDirectional.only(
-              start: 20.0, end: 20.0, bottom: 20.0),
+          padding: const EdgeInsetsDirectional.only(start: 20.0, end: 20.0, bottom: 20.0),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(10.0),
@@ -178,15 +168,13 @@ class BottomSectionWidget extends StatelessWidget {
                   'payment_amount'.tr,
                   textDirection: TextDirection.ltr,
                   style: robotoMedium.copyWith(
-                      fontSize: Dimensions.fontSizeExtraLarge,
-                      color: Theme.of(context).primaryColor),
+                      fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).primaryColor),
                 ),
                 Text(
                   PriceConverter.convertPrice(calcTotal()),
                   textDirection: TextDirection.ltr,
                   style: robotoMedium.copyWith(
-                      fontSize: Dimensions.fontSizeExtraLarge,
-                      color: Theme.of(context).primaryColor),
+                      fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).primaryColor),
                 ),
               ],
             ),
@@ -208,17 +196,13 @@ class BottomSectionWidget extends StatelessWidget {
                 subscriptionQty: subscriptionQty,
                 tax: tax,
                 cartList: cartList,
-          backBottomSheetCalc: (){
-
-          }
-              )
+                backBottomSheetCalc: () {})
             : const SizedBox(),
       ]),
     );
   }
 
-  Widget pricingView(
-      BuildContext context, bool isDesktop, double groupedDeliveryCharge) {
+  Widget pricingView(BuildContext context, bool isDesktop, double groupedDeliveryCharge) {
     return Container(
       decoration: !isDesktop
           ? BoxDecoration(
@@ -226,44 +210,30 @@ class BottomSectionWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 10,
-                    offset: const Offset(0, 1))
+                    color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 10, offset: const Offset(0, 1))
               ],
             )
           : null,
-      padding: !isDesktop
-          ? const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall)
-          : EdgeInsets.zero,
+      padding: !isDesktop ? const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall) : EdgeInsets.zero,
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           controller: expansionTileController,
           title: Text('pay'.tr, style: !isDesktop ? robotoBold : robotoBold),
-          trailing: Icon(Icons.arrow_forward_ios_outlined,
-              size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
+          trailing:
+              Icon(Icons.arrow_forward_ios_outlined, size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
           tilePadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-          onExpansionChanged: (value) =>
-              checkoutController.expandedUpdate(value),
+          onExpansionChanged: (value) => checkoutController.expandedUpdate(value),
           initiallyExpanded: !isDesktop ? false : true,
           children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Divider(
-                  thickness: 0.5,
-                  color: Theme.of(context).hintColor.withOpacity(0.5)),
+              Divider(thickness: 0.5, color: Theme.of(context).hintColor.withOpacity(0.5)),
               SizedBox(height: !isDesktop ? Dimensions.paddingSizeSmall : 0),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(!checkoutController.subscriptionOrder ? 'subtotal'.tr : 'item_price'.tr, style: robotoRegular),
                 Text(
-                    !checkoutController.subscriptionOrder
-                        ? 'subtotal'.tr
-                        : 'item_price'.tr,
-                    style: robotoRegular),
-                Text(
-                    PriceConverter.convertPrice(cartList.fold(
-                        0,
-                        (total, item) =>
-                            total! + (item.price! * item.quantity!))),
+                    PriceConverter.convertPrice(
+                        cartList.fold(0, (total, item) => total! + (item.price! * item.quantity!))),
                     style: robotoRegular,
                     textDirection: TextDirection.ltr),
               ]),
@@ -280,43 +250,48 @@ class BottomSectionWidget extends StatelessWidget {
                 Text('discount'.tr, style: robotoRegular),
                 Row(children: [
                   Text('(-) ', style: robotoRegular),
-                  PriceConverter.convertAnimationPrice(discount,
-                      textStyle: robotoRegular)
+                  PriceConverter.convertAnimationPrice(discount, textStyle: robotoRegular)
                 ]),
               ]),
               const SizedBox(height: Dimensions.paddingSizeSmall),
               (couponController.discount! > 0 || couponController.freeDelivery)
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('coupon_discount'.tr,
-                                    style: robotoRegular),
-                                Row(children: [
-                                  Text('(-) ', style: robotoRegular),
-                                  PriceConverter.convertAnimationPrice(
-                                      couponController.discount,
-                                      textStyle: robotoRegular)
-                                ]),
-                              ]),
-                          const SizedBox(height: Dimensions.paddingSizeSmall),
-                        ])
+                  ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Text('coupon_discount'.tr, style: robotoRegular),
+                        Row(children: [
+                          Text('(-) ', style: robotoRegular),
+                          PriceConverter.convertAnimationPrice(couponController.discount, textStyle: robotoRegular)
+                        ]),
+                      ]),
+                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                    ])
                   : const SizedBox(),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('vat_tax'.tr, style: robotoRegular),
-                Text(PriceConverter.convertPrice(tax),
-                    style: robotoRegular, textDirection: TextDirection.ltr),
+                Text(PriceConverter.convertPrice(tax), style: robotoRegular, textDirection: TextDirection.ltr),
               ]),
+              if (showAdditionalCharge)
+                Builder(builder: (context) {
+                  final config = Get.find<SplashController>().configModel;
+                  if (config?.additionalChargeStatus == true && (config?.additionCharge ?? 0) > 0) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Text(config?.additionalChargeName ?? '', style: robotoRegular),
+                        Text(PriceConverter.convertPrice(config!.additionCharge!),
+                            style: robotoRegular, textDirection: TextDirection.ltr),
+                      ]),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
               const SizedBox(height: Dimensions.paddingSizeSmall),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('delivery_charge'.tr, style: robotoRegular),
                 Text(
                     PriceConverter.convertPrice(
-                        couponController.coupon?.couponType == "free_delivery"
-                            ? 0
-                            : deliveryCharge),
+                        couponController.coupon?.couponType == "free_delivery" ? 0 : deliveryCharge),
                     style: robotoRegular,
                     textDirection: TextDirection.ltr),
               ]),
@@ -328,8 +303,8 @@ class BottomSectionWidget extends StatelessWidget {
     );
   }
 
-  Widget orderDetailsView(BuildContext context, bool isDesktop,
-      Map<String, List<CartModel>> restaurantGroupedCartList) {
+  Widget orderDetailsView(
+      BuildContext context, bool isDesktop, Map<String, List<CartModel>> restaurantGroupedCartList) {
     return Container(
       decoration: !isDesktop
           ? BoxDecoration(
@@ -337,23 +312,17 @@ class BottomSectionWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 10,
-                    offset: const Offset(0, 1))
+                    color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 10, offset: const Offset(0, 1))
               ],
             )
           : null,
-      padding: !isDesktop
-          ? const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall)
-          : EdgeInsets.zero,
+      padding: !isDesktop ? const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall) : EdgeInsets.zero,
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          title: Text('order_details'.tr,
-              style: !isDesktop ? robotoBold : robotoBold),
-          trailing: Icon(Icons.arrow_forward_ios_outlined,
-              size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
+          title: Text('order_details'.tr, style: !isDesktop ? robotoBold : robotoBold),
+          trailing:
+              Icon(Icons.arrow_forward_ios_outlined, size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
           tilePadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           onExpansionChanged: (value) {
             // Handle expansion change if needed
@@ -361,17 +330,14 @@ class BottomSectionWidget extends StatelessWidget {
           initiallyExpanded: !isDesktop ? false : true,
           children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Divider(
-                  thickness: 0.5,
-                  color: Theme.of(context).hintColor.withOpacity(0.5)),
+              Divider(thickness: 0.5, color: Theme.of(context).hintColor.withOpacity(0.5)),
               SizedBox(height: !isDesktop ? Dimensions.paddingSizeSmall : 0),
               ...restaurantGroupedCartList.entries.map((entry) {
                 String restaurantName = entry.key;
                 List<CartModel> groupedItems = entry.value;
                 double restaurantTotal = groupedItems.fold(
                   0.0,
-                  (total, item) =>
-                      total + (item.price! * item.quantity!.toDouble()),
+                  (total, item) => total + (item.price! * item.quantity!.toDouble()),
                 );
 
                 return Column(
@@ -379,9 +345,7 @@ class BottomSectionWidget extends StatelessWidget {
                   children: [
                     Text(
                       restaurantName,
-                      style: robotoMedium.copyWith(
-                          fontSize: Dimensions.fontSizeLarge,
-                          fontWeight: FontWeight.bold),
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: Dimensions.paddingSizeSmall),
                     ...groupedItems.map((cartItem) {
@@ -393,8 +357,7 @@ class BottomSectionWidget extends StatelessWidget {
                             style: robotoRegular,
                           ),
                           Text(
-                            PriceConverter.convertPrice(cartItem.price! *
-                                cartItem.quantity!.toDouble()),
+                            PriceConverter.convertPrice(cartItem.price! * cartItem.quantity!.toDouble()),
                             style: robotoRegular,
                           ),
                         ],

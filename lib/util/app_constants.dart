@@ -15,6 +15,8 @@ class AppConstants {
   static const String baseUrl = webHostedUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
+  static const String paymobCheckout = '/api/v1/customer/paymob/intention';
+  static const String checkPaymentStatus = '/api/v1/customer/check-payment/';
   static const String restaurantProductUri = '/api/v1/products/latest';
   static const String popularProductUri = '/api/v1/products/popular';
   static const String reviewedProductUri = '/api/v1/products/most-reviewed';

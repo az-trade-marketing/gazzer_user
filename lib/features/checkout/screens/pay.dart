@@ -7,7 +7,7 @@ import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
 import 'package:gazzer_userapp/features/checkout/controllers/checkout_controller.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart';
-import 'package:gazzer_userapp/features/checkout/domain/services/paymob.dart';
+import 'package:gazzer_userapp/features/checkout/domain/services/paymob_service.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
 import 'package:gazzer_userapp/features/profile/controllers/profile_controller.dart';
 import 'package:gazzer_userapp/helper/address_helper.dart';
@@ -46,7 +46,8 @@ class PayScreen extends StatefulWidget {
     required this.subscriptionQty,
     required this.fromCart,
     required this.deliveryCharge,
-    required this.days,required this.wallet,
+    required this.days,
+    required this.wallet,
   });
 
   @override
@@ -55,8 +56,6 @@ class PayScreen extends StatefulWidget {
 
 class _PayScreenState extends State<PayScreen> {
   late final WebViewController _controller;
-  String? paymentStatus;
-  String? paymentMessage;
 
   @override
   initState() {
@@ -68,22 +67,18 @@ class _PayScreenState extends State<PayScreen> {
           debugPrint('PAYMENT FINISHED');
 
           debugPrint("Your payment id is: $widget.paymentId");
-          Paymob()
-              .checkPaymentStatus(paymentId: widget.paymentId)
-              .then((result) {
-            paymentStatus = result?['payment_status'];
-            paymentMessage = result?['message'];
-            if (paymentStatus == "success") {
+          Get.find<PaymobRepo>().checkPaymentStatus(widget.paymentId).then((result) {
+            if (result.status == "success") {
               //todo need to check to call on success one time only it getting on line 93
-           //   startPaymentProcess(widget.paymentId);
+              //   startPaymentProcess(widget.paymentId);
+              showCustomSnackBar(result.message ?? "failed".tr, isError: false, showToaster: true);
             } else {
               backToApp();
-              showCustomSnackBar(paymentMessage ?? "failed".tr);
+              showCustomSnackBar(result.message ?? "failed".tr);
             }
           });
         } else {
-          debugPrint(
-              'PAYMENT NOT FINISHED OR MAY BE WINDOW CLOSED OR URL CHAINED');
+          debugPrint('PAYMENT NOT FINISHED OR MAY BE WINDOW CLOSED OR URL CHAINED');
         }
       })
       ..setNavigationDelegate(
@@ -153,23 +148,20 @@ class _PayScreenState extends State<PayScreen> {
         cart: widget.carts,
         couponDiscountAmount: Get.find<CouponController>().discount,
         distance: widget.checkoutController.distance,
-        couponDiscountTitle: Get.find<CouponController>().discount! > 0
-            ? Get.find<CouponController>().coupon!.title
-            : null,
+        couponDiscountTitle:
+            Get.find<CouponController>().discount! > 0 ? Get.find<CouponController>().coupon!.title : null,
         scheduleAt: !widget.checkoutController.restaurant!.scheduleOrder!
             ? null
-            : (widget.checkoutController.selectedDateSlot == 0 &&
-                    widget.checkoutController.selectedTimeSlot == 0)
+            : (widget.checkoutController.selectedDateSlot == 0 && widget.checkoutController.selectedTimeSlot == 0)
                 ? null
                 : DateConverter.dateToDateAndTime(widget.scheduleStartDate),
-        wallet: widget.wallet??0.0,
+        wallet: widget.wallet ?? 0.0,
         orderAmount: widget.totalPrice,
         orderNote: widget.checkoutController.noteController.text,
         orderType: widget.checkoutController.orderType,
         paymentMethod: 'digital_payment',
         couponCode: (Get.find<CouponController>().discount! > 0 ||
-                (Get.find<CouponController>().coupon != null &&
-                    Get.find<CouponController>().freeDelivery))
+                (Get.find<CouponController>().coupon != null && Get.find<CouponController>().freeDelivery))
             ? Get.find<CouponController>().coupon!.code
             : null,
         restaurantId: widget.checkoutController.restaurant!.id,
@@ -177,14 +169,12 @@ class _PayScreenState extends State<PayScreen> {
         latitude: AddressHelper.getAddressFromSharedPref()!.latitude,
         longitude: AddressHelper.getAddressFromSharedPref()!.longitude,
         addressType: AddressHelper.getAddressFromSharedPref()!.addressType,
-        addressID:  AddressHelper.getAddressFromSharedPref()!.id!,
-        contactPersonName:
-            AddressHelper.getAddressFromSharedPref()!.contactPersonName ??
-                '${Get.find<ProfileController>().userInfoModel!.fName} '
-                    '${Get.find<ProfileController>().userInfoModel!.lName}',
-        contactPersonNumber:
-            AddressHelper.getAddressFromSharedPref()!.contactPersonNumber ??
-                Get.find<ProfileController>().userInfoModel!.phone,
+        addressID: AddressHelper.getAddressFromSharedPref()!.id!,
+        contactPersonName: AddressHelper.getAddressFromSharedPref()!.contactPersonName ??
+            '${Get.find<ProfileController>().userInfoModel!.fName} '
+                '${Get.find<ProfileController>().userInfoModel!.lName}',
+        contactPersonNumber: AddressHelper.getAddressFromSharedPref()!.contactPersonNumber ??
+            Get.find<ProfileController>().userInfoModel!.phone,
         discountAmount: widget.discount,
         taxAmount: widget.tax,
         cutlery: Get.find<CartController>().addCutlery ? 1 : 0,
@@ -196,35 +186,27 @@ class _PayScreenState extends State<PayScreen> {
                 widget.checkoutController.selectedTips == 0)
             ? ''
             : widget.checkoutController.tips.toString(),
-        subscriptionOrder:
-            widget.checkoutController.subscriptionOrder ? '1' : '0',
+        subscriptionOrder: widget.checkoutController.subscriptionOrder ? '1' : '0',
         subscriptionType: widget.checkoutController.subscriptionType,
         subscriptionQuantity: widget.subscriptionQty.toString(),
         subscriptionDays: widget.days,
         subscriptionStartAt: widget.checkoutController.subscriptionOrder
-            ? DateConverter.dateToDateAndTime(
-                widget.checkoutController.subscriptionRange!.start)
+            ? DateConverter.dateToDateAndTime(widget.checkoutController.subscriptionRange!.start)
             : '',
         subscriptionEndAt: widget.checkoutController.subscriptionOrder
-            ? DateConverter.dateToDateAndTime(
-                widget.checkoutController.subscriptionRange!.end)
+            ? DateConverter.dateToDateAndTime(widget.checkoutController.subscriptionRange!.end)
             : '',
         unavailableItemNote: Get.find<CartController>().notAvailableIndex != -1
-            ? Get.find<CartController>()
-                .notAvailableList[Get.find<CartController>().notAvailableIndex]
+            ? Get.find<CartController>().notAvailableList[Get.find<CartController>().notAvailableIndex]
             : '',
         deliveryInstruction: widget.checkoutController.selectedInstruction != -1
-            ? AppConstants.deliveryInstructionList[
-                widget.checkoutController.selectedInstruction]
+            ? AppConstants.deliveryInstructionList[widget.checkoutController.selectedInstruction]
             : '',
         partialPayment: widget.checkoutController.isPartialPay ? 1 : 0,
-        guestId: Get.find<AuthController>().isGuestLoggedIn()
-            ? int.parse(Get.find<AuthController>().getGuestId())
-            : 0,
+        guestId: Get.find<AuthController>().isGuestLoggedIn() ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
         isBuyNow: widget.fromCart ? 0 : 1,
-        guestEmail: Get.find<AuthController>().isGuestLoggedIn()
-            ? AddressHelper.getAddressFromSharedPref()!.email
-            : null,
+        guestEmail:
+            Get.find<AuthController>().isGuestLoggedIn() ? AddressHelper.getAddressFromSharedPref()!.email : null,
         extraPackagingAmount: widget.extraPackagingAmount,
         deliveryCharge: widget.deliveryCharge,
         paymentId: paymentId,

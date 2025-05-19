@@ -8,11 +8,11 @@ import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
 import 'package:gazzer_userapp/features/cart/domain/models/cart_model.dart';
 import 'package:gazzer_userapp/features/checkout/controllers/checkout_controller.dart';
-import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart'
-    as place_order_model;
+import 'package:gazzer_userapp/features/checkout/domain/models/paymob_models.dart';
+import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart' as place_order_model;
 import 'package:gazzer_userapp/features/checkout/domain/models/place_order_body_model.dart';
 import 'package:gazzer_userapp/features/checkout/domain/models/pricing_view_model.dart';
-import 'package:gazzer_userapp/features/checkout/domain/services/paymob.dart';
+import 'package:gazzer_userapp/features/checkout/domain/services/paymob_service.dart';
 import 'package:gazzer_userapp/features/checkout/screens/pay.dart';
 import 'package:gazzer_userapp/features/checkout/widgets/payment_method_bottom_sheet.dart';
 import 'package:gazzer_userapp/features/coupon/controllers/coupon_controller.dart';
@@ -95,31 +95,24 @@ class OrderPlaceButton extends StatelessWidget {
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       child: SafeArea(
         child: CustomButtonWidget(
-            buttonText: checkoutController.isPartialPay
-                ? 'place_order'.tr
-                : 'confirm_order'.tr,
+            buttonText: checkoutController.isPartialPay ? 'place_order'.tr : 'confirm_order'.tr,
             radius: Dimensions.radiusDefault,
             isLoading: checkoutController.isLoading,
             onPressed: () async {
               DateTime scheduleStartDate = _processScheduleStartDate();
               DateTime scheduleEndDate = _processScheduleEndDate();
-              bool isAvailable =
-                  _checkAvailability(scheduleStartDate, scheduleEndDate);
+              bool isAvailable = _checkAvailability(scheduleStartDate, scheduleEndDate);
               bool isGuestLogIn = Get.find<AuthController>().isGuestLoggedIn();
               bool datePicked = _isDatePicked();
 
-              if (checkoutController.isDmTipSave &&
-                  checkoutController.selectedTips !=
-                      AppConstants.tips.length - 1) {
-                Get.find<AuthController>()
-                    .saveDmTipIndex(checkoutController.selectedTips.toString());
+              if (checkoutController.isDmTipSave && checkoutController.selectedTips != AppConstants.tips.length - 1) {
+                Get.find<AuthController>().saveDmTipIndex(checkoutController.selectedTips.toString());
               }
               if (!checkoutController.isDmTipSave) {
                 Get.find<AuthController>().saveDmTipIndex('0');
               }
 
-              if (_showsWarningMessage(
-                  context, isGuestLogIn, datePicked, isAvailable)) {
+              if (_showsWarningMessage(context, isGuestLogIn, datePicked, isAvailable)) {
                 debugPrint('Warning shows');
               } else {
                 // تحديد المبلغ الذي سيتم دفعه والمبلغ الذي سيتم خصمه من المحفظة
@@ -147,18 +140,11 @@ class OrderPlaceButton extends StatelessWidget {
                 // }
 
                 AddressModel? finalAddress = _processFinalAddress(isGuestLogIn);
-                List<place_order_model.OnlineCart> carts =
-                    _generateOnlineCartList();
-                List<place_order_model.SubscriptionDays> days =
-                    _generateSubscriptionDays();
+                List<place_order_model.OnlineCart> carts = _generateOnlineCartList();
+                List<place_order_model.SubscriptionDays> days = _generateSubscriptionDays();
 
                 PlaceOrderBodyModel placeOrderBody = _preparePlaceOrderModel(
-                    carts,
-                    scheduleStartDate,
-                    finalAddress,
-                    isGuestLogIn,
-                    days,
-                    amountFromWallet);
+                    carts, scheduleStartDate, finalAddress, isGuestLogIn, days, amountFromWallet);
 
                 if (checkoutController.paymentMethodIndex == 3) {
                   Get.toNamed(RouteHelper.getOfflinePaymentScreen(
@@ -182,23 +168,37 @@ class OrderPlaceButton extends StatelessWidget {
                     ),
                   ));
                 } else if (checkoutController.paymentMethodIndex == 2) {
+                  // 0=> cash on delivery
+                  // 1=> wallet_payment
+                  // 2=> pay_visa
+                  // 3=> offline_payment
+                  //  checkoutController.paymentMethodIndex == 0
+                  //               ? 'cash_on_delivery'.tr
+                  //               : checkoutController.paymentMethodIndex == 1
+                  //                   ? 'wallet_payment'.tr
+                  //                   : checkoutController.paymentMethodIndex == 2
+                  //                       ? 'pay_visa'.tr
+                  //                       : checkoutController.paymentMethodIndex == 3
+                  //                           ? '${'offline_payment'.tr} (${checkoutController.offlineMethodList![checkoutController.selectedOfflineBankIndex].methodName})'
+                  //                           : 'select_payment_method'.tr,
                   checkoutController.loading();
-                  Map<String, String>? result =
-                      await Paymob().getPaymobIntention(
-                    cartIDs: cartList.map((e) => e.id!).toList(),
-                    amount: amountToCharge,
+
+                  final resp = await Get.find<PaymobRepo>().checkout(
+                    PaymobCheckoutRequest(
+                      amount: amountToCharge,
+                      cartIDs: cartList.map((e) => e.id!).toList(),
+                      integrationType: IntegrationType.onlineCard,
+                    ),
                   ); // استخدام المبلغ المعدل
-                  String? checkoutUrl = result?['checkout_url'];
-                  String? paymentId = result?['payment_id'];
-                  String? error = result?['error'];
-                  if (error != null) {
+
+                  if (resp.$1?.id == null) {
                     checkoutController.loading();
-                    showCustomSnackBar(error);
+                    showCustomSnackBar(resp.$2?.details ?? resp.$2?.error);
                     return;
                   }
                   Get.to(() => PayScreen(
-                      paymentId: paymentId!,
-                      url: checkoutUrl!,
+                      paymentId: resp.$1!.id!,
+                      url: resp.$1!.url!,
                       checkoutController: checkoutController,
                       carts: carts,
                       totalPrice: amountToCharge,
@@ -241,59 +241,47 @@ class OrderPlaceButton extends StatelessWidget {
 
   DateTime _processScheduleStartDate() {
     DateTime scheduleStartDate = DateTime.now();
-    if (checkoutController.timeSlots != null ||
-        checkoutController.timeSlots!.isNotEmpty) {
+    if (checkoutController.timeSlots != null || checkoutController.timeSlots!.isNotEmpty) {
       DateTime date = checkoutController.selectedDateSlot == 0
           ? DateTime.now()
           : checkoutController.selectedDateSlot == 1
               ? DateTime.now().add(const Duration(days: 1))
               : checkoutController.selectedCustomDate ?? DateTime.now();
-      DateTime startTime = checkoutController
-          .timeSlots![checkoutController.selectedTimeSlot!].startTime!;
-      scheduleStartDate = DateTime(date.year, date.month, date.day,
-          startTime.hour, startTime.minute + 1);
+      DateTime startTime = checkoutController.timeSlots![checkoutController.selectedTimeSlot!].startTime!;
+      scheduleStartDate = DateTime(date.year, date.month, date.day, startTime.hour, startTime.minute + 1);
     }
     return scheduleStartDate;
   }
 
   DateTime _processScheduleEndDate() {
     DateTime scheduleEndDate = DateTime.now();
-    if (checkoutController.timeSlots != null ||
-        checkoutController.timeSlots!.isNotEmpty) {
+    if (checkoutController.timeSlots != null || checkoutController.timeSlots!.isNotEmpty) {
       DateTime date = checkoutController.selectedDateSlot == 0
           ? DateTime.now()
           : checkoutController.selectedDateSlot == 1
               ? DateTime.now().add(const Duration(days: 1))
               : checkoutController.selectedCustomDate ?? DateTime.now();
-      DateTime endTime = checkoutController
-          .timeSlots![checkoutController.selectedTimeSlot!].endTime!;
-      scheduleEndDate = DateTime(
-          date.year, date.month, date.day, endTime.hour, endTime.minute + 1);
+      DateTime endTime = checkoutController.timeSlots![checkoutController.selectedTimeSlot!].endTime!;
+      scheduleEndDate = DateTime(date.year, date.month, date.day, endTime.hour, endTime.minute + 1);
     }
     return scheduleEndDate;
   }
 
-  bool _checkAvailability(
-      DateTime scheduleStartDate, DateTime scheduleEndDate) {
+  bool _checkAvailability(DateTime scheduleStartDate, DateTime scheduleEndDate) {
     bool isAvailable = true;
-    if (checkoutController.timeSlots == null ||
-        checkoutController.timeSlots!.isEmpty) {
+    if (checkoutController.timeSlots == null || checkoutController.timeSlots!.isEmpty) {
       isAvailable = false;
     } else {
       for (CartModel cart in cartList) {
         if (!DateConverter.isAvailable(
               cart.product!.availableTimeStarts,
               cart.product!.availableTimeEnds,
-              time: checkoutController.restaurant!.scheduleOrder!
-                  ? scheduleStartDate
-                  : null,
+              time: checkoutController.restaurant!.scheduleOrder! ? scheduleStartDate : null,
             ) &&
             !DateConverter.isAvailable(
               cart.product!.availableTimeStarts,
               cart.product!.availableTimeEnds,
-              time: checkoutController.restaurant!.scheduleOrder!
-                  ? scheduleEndDate
-                  : null,
+              time: checkoutController.restaurant!.scheduleOrder! ? scheduleEndDate : null,
             )) {
           isAvailable = false;
           break;
@@ -303,11 +291,8 @@ class OrderPlaceButton extends StatelessWidget {
     return isAvailable;
   }
 
-  bool _showsWarningMessage(BuildContext context, bool isGuestLogIn,
-      bool datePicked, bool isAvailable) {
-    if (isGuestLogIn &&
-            checkoutController.guestAddress == null &&
-            checkoutController.orderType != 'take_away' ||
+  bool _showsWarningMessage(BuildContext context, bool isGuestLogIn, bool datePicked, bool isAvailable) {
+    if (isGuestLogIn && checkoutController.guestAddress == null && checkoutController.orderType != 'take_away' ||
         Get.find<AddressController>().addressList!.isEmpty) {
       showCustomSnackBar('please_setup_your_delivery_address_first'.tr);
       Get.to(const AddressScreen());
@@ -322,16 +307,13 @@ class OrderPlaceButton extends StatelessWidget {
         guestNumberTextEditingController.text.isEmpty) {
       showCustomSnackBar('please_enter_contact_person_number'.tr);
       return true;
-    } else if (!isCashOnDeliveryActive &&
-        !isDigitalPaymentActive &&
-        !isWalletActive) {
+    } else if (!isCashOnDeliveryActive && !isDigitalPaymentActive && !isWalletActive) {
       showCustomSnackBar('no_payment_method_is_enabled'.tr);
       return true;
     } else if (!Get.find<SplashController>().configModel!.instantOrder! &&
         !checkoutController.restaurant!.instantOrder! &&
         checkoutController.restaurant!.scheduleOrder! &&
-        (checkoutController.preferableTime.isEmpty ||
-            checkoutController.preferableTime == 'Not Available')) {
+        (checkoutController.preferableTime.isEmpty || checkoutController.preferableTime == 'Not Available')) {
       showCustomSnackBar('please_select_order_preference_time'.tr);
       return true;
     } else if (orderAmount < checkoutController.restaurant!.minimumOrder!) {
@@ -375,16 +357,12 @@ class OrderPlaceButton extends StatelessWidget {
       }
       return true;
     } else if (orderAmount < checkoutController.restaurant!.minimumOrder!) {
-      showCustomSnackBar(
-          '${'minimum_order_amount_is'.tr} ${checkoutController.restaurant!.minimumOrder}');
+      showCustomSnackBar('${'minimum_order_amount_is'.tr} ${checkoutController.restaurant!.minimumOrder}');
       return true;
-    } else if (checkoutController.subscriptionOrder &&
-        checkoutController.subscriptionRange == null) {
+    } else if (checkoutController.subscriptionOrder && checkoutController.subscriptionRange == null) {
       showCustomSnackBar('select_a_date_range_for_subscription'.tr);
       return true;
-    } else if (checkoutController.subscriptionOrder &&
-        !datePicked &&
-        checkoutController.subscriptionType == 'daily') {
+    } else if (checkoutController.subscriptionOrder && !datePicked && checkoutController.subscriptionType == 'daily') {
       showCustomSnackBar('choose_time'.tr);
       return true;
     } else if (checkoutController.subscriptionOrder && !datePicked) {
@@ -392,8 +370,7 @@ class OrderPlaceButton extends StatelessWidget {
       return true;
     } else if ((checkoutController.selectedDateSlot == 0 && todayClosed) ||
         (checkoutController.selectedDateSlot == 1 && tomorrowClosed) ||
-        (checkoutController.selectedDateSlot == 2 &&
-            checkoutController.customDateRestaurantClose)) {
+        (checkoutController.selectedDateSlot == 2 && checkoutController.customDateRestaurantClose)) {
       showCustomSnackBar('restaurant_is_closed'.tr);
       return true;
     } else if (checkoutController.paymentMethodIndex == 0 &&
@@ -403,18 +380,15 @@ class OrderPlaceButton extends StatelessWidget {
       showCustomSnackBar(
           '${'you_cant_order_more_then'.tr} ${PriceConverter.convertPrice(maxCodOrderAmount)} ${'in_cash_on_delivery'.tr}');
       return true;
-    } else if (checkoutController.timeSlots == null ||
-        checkoutController.timeSlots!.isEmpty) {
-      if (checkoutController.restaurant!.scheduleOrder! &&
-          !checkoutController.subscriptionOrder) {
+    } else if (checkoutController.timeSlots == null || checkoutController.timeSlots!.isEmpty) {
+      if (checkoutController.restaurant!.scheduleOrder! && !checkoutController.subscriptionOrder) {
         showCustomSnackBar('select_a_time'.tr);
       } else {
         showCustomSnackBar('restaurant_is_closed'.tr);
       }
       return true;
     } else if (!isAvailable && !checkoutController.subscriptionOrder) {
-      showCustomSnackBar(
-          'one_or_more_products_are_not_available_for_this_selected_time'.tr);
+      showCustomSnackBar('one_or_more_products_are_not_available_for_this_selected_time'.tr);
       return true;
     } else if (checkoutController.orderType != 'take_away' &&
         checkoutController.distance == -1 &&
@@ -432,13 +406,11 @@ class OrderPlaceButton extends StatelessWidget {
   }
 
   AddressModel? _processFinalAddress(bool isGuestLogIn) {
-    AddressModel? finalAddress = isGuestLogIn
-        ? checkoutController.guestAddress
-        : checkoutController.address[checkoutController.addressIndex];
+    AddressModel? finalAddress =
+        isGuestLogIn ? checkoutController.guestAddress : checkoutController.address[checkoutController.addressIndex];
 
     if (isGuestLogIn && checkoutController.orderType == 'take_away') {
-      String number = checkoutController.countryDialCode! +
-          guestNumberTextEditingController.text;
+      String number = checkoutController.countryDialCode! + guestNumberTextEditingController.text;
       finalAddress = AddressModel(
           contactPersonName: guestNameTextEditingController.text,
           contactPersonNumber: number,
@@ -453,8 +425,7 @@ class OrderPlaceButton extends StatelessWidget {
     }
 
     if (!isGuestLogIn && finalAddress!.contactPersonNumber == 'null') {
-      finalAddress.contactPersonNumber =
-          Get.find<ProfileController>().userInfoModel!.phone;
+      finalAddress.contactPersonNumber = Get.find<ProfileController>().userInfoModel!.phone;
     }
     return finalAddress;
   }
@@ -475,21 +446,18 @@ class OrderPlaceButton extends StatelessWidget {
         for (int i = 0; i < cart.product!.variations!.length; i++) {
           if (cart.variations![i].contains(true)) {
             variations.add(place_order_model.OrderVariation(
-                name: cart.product!.variations![i].name,
-                values: place_order_model.OrderVariationValue(label: [])));
+                name: cart.product!.variations![i].name, values: place_order_model.OrderVariationValue(label: [])));
             // ,qty: 0
-            for (int j = 0;
-                j < cart.product!.variations![i].variationValues!.length;
-                j++) {
+            for (int j = 0; j < cart.product!.variations![i].variationValues!.length; j++) {
               if (cart.variations![i][j]!) {
-                variations[variations.length - 1].values!.label!.add(
-                    cart.product!.variations![i].variationValues![j].level);
+                variations[variations.length - 1]
+                    .values!
+                    .label!
+                    .add(cart.product!.variations![i].variationValues![j].level);
                 //I will try it later
                 // variations[variations.length - 1].values!.qty = cart.price!.toInt();
-                if (cart.product!.variations![i].variationValues![j].optionId !=
-                    null) {
-                  optionIds.add(cart
-                      .product!.variations![i].variationValues![j].optionId);
+                if (cart.product!.variations![i].variationValues![j].optionId != null) {
+                  optionIds.add(cart.product!.variations![i].variationValues![j].optionId);
                 }
               }
             }
@@ -516,9 +484,7 @@ class OrderPlaceButton extends StatelessWidget {
 
   List<place_order_model.SubscriptionDays> _generateSubscriptionDays() {
     List<place_order_model.SubscriptionDays> days = [];
-    for (int index = 0;
-        index < checkoutController.selectedDays.length;
-        index++) {
+    for (int index = 0; index < checkoutController.selectedDays.length; index++) {
       if (checkoutController.selectedDays[index] != null) {
         days.add(place_order_model.SubscriptionDays(
           day: checkoutController.subscriptionType == 'weekly'
@@ -526,33 +492,26 @@ class OrderPlaceButton extends StatelessWidget {
               : checkoutController.subscriptionType == 'monthly'
                   ? (index + 1).toString()
                   : index.toString(),
-          time:
-              DateConverter.dateToTime(checkoutController.selectedDays[index]!),
+          time: DateConverter.dateToTime(checkoutController.selectedDays[index]!),
         ));
       }
     }
     return days;
   }
 
-  PlaceOrderBodyModel _preparePlaceOrderModel(
-      List<place_order_model.OnlineCart> carts,
-      DateTime scheduleStartDate,
-      AddressModel? finalAddress,
-      bool isGuestLogIn,
-      List<place_order_model.SubscriptionDays> days,
+  PlaceOrderBodyModel _preparePlaceOrderModel(List<place_order_model.OnlineCart> carts, DateTime scheduleStartDate,
+      AddressModel? finalAddress, bool isGuestLogIn, List<place_order_model.SubscriptionDays> days,
       [double walletAmount = 0]) {
     return PlaceOrderBodyModel(
       cart: carts,
       couponDiscountAmount: Get.find<CouponController>().discount,
       distance: checkoutController.distance,
       wallet: walletAmount,
-      couponDiscountTitle: Get.find<CouponController>().discount! > 0
-          ? Get.find<CouponController>().coupon!.title
-          : null,
+      couponDiscountTitle:
+          Get.find<CouponController>().discount! > 0 ? Get.find<CouponController>().coupon!.title : null,
       scheduleAt: !checkoutController.restaurant!.scheduleOrder!
           ? null
-          : (checkoutController.selectedDateSlot == 0 &&
-                  checkoutController.selectedTimeSlot == 0)
+          : (checkoutController.selectedDateSlot == 0 && checkoutController.selectedTimeSlot == 0)
               ? null
               : DateConverter.dateToDateAndTime(scheduleStartDate),
       orderAmount: orderAmount,
@@ -566,8 +525,7 @@ class OrderPlaceButton extends StatelessWidget {
                   ? 'digital_payment'
                   : 'offline_payment',
       couponCode: (Get.find<CouponController>().discount! > 0 ||
-              (Get.find<CouponController>().coupon != null &&
-                  Get.find<CouponController>().freeDelivery))
+              (Get.find<CouponController>().coupon != null && Get.find<CouponController>().freeDelivery))
           ? Get.find<CouponController>().coupon!.code
           : null,
       restaurantId: cartList[0].product!.restaurantId,
@@ -579,8 +537,7 @@ class OrderPlaceButton extends StatelessWidget {
       contactPersonName: finalAddress.contactPersonName ??
           '${Get.find<ProfileController>().userInfoModel!.fName} '
               '${Get.find<ProfileController>().userInfoModel!.lName}',
-      contactPersonNumber: finalAddress.contactPersonNumber ??
-          Get.find<ProfileController>().userInfoModel!.phone,
+      contactPersonNumber: finalAddress.contactPersonNumber ?? Get.find<ProfileController>().userInfoModel!.phone,
       discountAmount: discount,
       taxAmount: tax,
       cutlery: Get.find<CartController>().addCutlery ? 1 : 0,
@@ -597,27 +554,19 @@ class OrderPlaceButton extends StatelessWidget {
       subscriptionQuantity: subscriptionQty.toString(),
       subscriptionDays: days,
       subscriptionStartAt: checkoutController.subscriptionOrder
-          ? DateConverter.dateToDateAndTime(
-              checkoutController.subscriptionRange!.start)
+          ? DateConverter.dateToDateAndTime(checkoutController.subscriptionRange!.start)
           : '',
       subscriptionEndAt: checkoutController.subscriptionOrder
-          ? DateConverter.dateToDateAndTime(
-              checkoutController.subscriptionRange!.end)
+          ? DateConverter.dateToDateAndTime(checkoutController.subscriptionRange!.end)
           : '',
       unavailableItemNote: Get.find<CartController>().notAvailableIndex != -1
-          ? Get.find<CartController>()
-              .notAvailableList[Get.find<CartController>().notAvailableIndex]
+          ? Get.find<CartController>().notAvailableList[Get.find<CartController>().notAvailableIndex]
           : '',
       deliveryInstruction: checkoutController.selectedInstruction != -1
-          ? AppConstants
-              .deliveryInstructionList[checkoutController.selectedInstruction]
+          ? AppConstants.deliveryInstructionList[checkoutController.selectedInstruction]
           : '',
-      partialPayment:
-          AppConstants.isUseButtonTapped && !(walletAmount == orderAmount)
-              ? 1
-              : 0,
-      guestId:
-          isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
+      partialPayment: AppConstants.isUseButtonTapped && !(walletAmount == orderAmount) ? 1 : 0,
+      guestId: isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
       isBuyNow: fromCart ? 0 : 1,
       guestEmail: isGuestLogIn ? finalAddress.email : null,
       extraPackagingAmount: extraPackagingAmount,

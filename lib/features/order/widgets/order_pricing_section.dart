@@ -185,18 +185,29 @@ class OrderPricingSection extends StatelessWidget {
                     ? 10
                     : 0),
 
-            (extraPackagingAmount > 0)
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('extra_packaging'.tr, style: robotoRegular),
-                      Text('(+) ${PriceConverter.convertPrice(extraPackagingAmount)}',
-                          style: robotoRegular, textDirection: TextDirection.ltr),
-                    ],
-                  )
-                : const SizedBox(),
+            if (extraPackagingAmount > 0)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('extra_packaging'.tr, style: robotoRegular),
+                  Text('(+) ${PriceConverter.convertPrice(extraPackagingAmount)}',
+                      style: robotoRegular, textDirection: TextDirection.ltr),
+                ],
+              ),
 
             SizedBox(height: extraPackagingAmount > 0 ? 10 : 0),
+            if ((order.additionalCharge ?? 0) > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('service_charge'.tr, style: robotoRegular),
+                    Text('${PriceConverter.convertPrice(order.additionalCharge)}',
+                        style: robotoRegular, textDirection: TextDirection.ltr),
+                  ],
+                ),
+              ),
 
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text('delivery_fee'.tr, style: robotoRegular),

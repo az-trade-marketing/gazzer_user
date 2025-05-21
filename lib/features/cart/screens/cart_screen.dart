@@ -1,5 +1,4 @@
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_app_bar_widget.dart';
@@ -122,7 +121,7 @@ class _CartScreenState extends State<CartScreen> {
         Restaurant? restaurant = Get.find<RestaurantController>().restaurant;
         if (restaurant != null) {
           bool isOpen = Get.find<RestaurantController>().isRestaurantOpenNow(
-            restaurant.active!,
+            restaurant.active == true,
             restaurant.schedules
           );
           

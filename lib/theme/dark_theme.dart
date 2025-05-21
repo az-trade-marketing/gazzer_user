@@ -1,5 +1,5 @@
-import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 
 ThemeData dark = ThemeData(
   fontFamily: AppConstants.fontFamily,
@@ -23,7 +23,7 @@ ThemeData dark = ThemeData(
       ),
   popupMenuTheme: const PopupMenuThemeData(
       color: Color(0xFF29292D), surfaceTintColor: Color(0xFF29292D)),
-  dialogTheme: const DialogTheme(surfaceTintColor: Colors.white10),
+  dialogTheme: const DialogThemeData(surfaceTintColor: Colors.white10),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(500))),
   bottomAppBarTheme: const BottomAppBarTheme(

@@ -56,21 +56,20 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw',
-    appId: '1:671839887516:ios:bcc4b83bd99284ed798d59',
-    messagingSenderId: '671839887516',
-    projectId: 'gazzer-app',
-    storageBucket: 'gazzer-app.appspot.com',
+    apiKey: 'AIzaSyBDpdtQvG39wJ3v7aMzVu8-WxrFswyDZpU',
+    appId: '1:954201619327:android:a8540c087219108480784a',
+    messagingSenderId: '954201619327',
+    projectId: 'gazzerprod',
+    storageBucket: 'gazzerprod.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAeUvxAgSWFBS5186lnImZC5YP6AHWLeF4',
-    appId: '1:671839887516:ios:bcc4b83bd99284ed798d59',
-    messagingSenderId: '671839887516',
-    projectId: 'gazzer-app',
-    storageBucket: 'gazzer-app.appspot.com',
-    androidClientId:  '671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com',
-    iosClientId:  '671839887516-mdar4q19ic4lo5kq756cs25tllmaavs1.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDXoiXvrQrySeCEcLTmy5VaTGMo4j4Shck',
+    appId: '1:954201619327:ios:fb79e2cb51c63c5f80784a',
+    messagingSenderId: '954201619327',
+    projectId: 'gazzerprod',
+    storageBucket: 'gazzerprod.firebasestorage.app',
     iosBundleId: 'com.refilex.gazzer.user',
   );
+
 }

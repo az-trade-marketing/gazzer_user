@@ -1,13 +1,21 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gazzer_userapp/common/widgets/cookies_view_widget.dart';
 import 'package:gazzer_userapp/features/auth/controllers/auth_controller.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
 import 'package:gazzer_userapp/features/language/controllers/localization_controller.dart';
 import 'package:gazzer_userapp/features/notification/domain/models/notification_body_model.dart';
 import 'package:gazzer_userapp/features/splash/controllers/splash_controller.dart';
 import 'package:gazzer_userapp/features/splash/controllers/theme_controller.dart';
-import 'package:gazzer_userapp/features/favourite/controllers/favourite_controller.dart';
 import 'package:gazzer_userapp/features/splash/domain/models/deep_link_body.dart';
+import 'package:gazzer_userapp/firebase_options.dart';
 import 'package:gazzer_userapp/helper/notification_helper.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
@@ -15,20 +23,13 @@ import 'package:gazzer_userapp/theme/dark_theme.dart';
 import 'package:gazzer_userapp/theme/light_theme.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/messages.dart';
-import 'package:gazzer_userapp/common/widgets/cookies_view_widget.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:meta_seo/meta_seo.dart';
-import 'package:url_strategy/url_strategy.dart';
-import 'helper/get_di.dart' as di;
 import 'package:hive_flutter/hive_flutter.dart';
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+import 'package:url_strategy/url_strategy.dart';
+
+import 'helper/get_di.dart' as di;
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   if (ResponsiveHelper.isMobilePhone()) {
@@ -36,12 +37,21 @@ Future<void> main() async {
   }
   setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
-
-  // // Pass all uncaught "fatal" errors from the framework to Crashlytics
+  // if (GetPlatform.isWeb) {
+  //   await Firebase.initializeApp(
+  //       options: const FirebaseOptions(
+  //     apiKey: 'AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw',
+  //     appId: '1:671839887516:web:e833f8876cf34767798d59',
+  //     messagingSenderId: '671839887516',
+  //     projectId: 'gazzer-app',
+  //   ));
+  //   MetaSEO().config();
+  // } else {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // }
   // FlutterError.onError = (errorDetails) {
   //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   // };
-  // // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
   // PlatformDispatcher.instance.onError = (error, stack) {
   //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
   //   return true;
@@ -49,43 +59,12 @@ Future<void> main() async {
   await Hive.initFlutter();
   DeepLinkBody? linkBody;
 
-  if (GetPlatform.isWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-      apiKey: 'AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw',
-      appId: '1:671839887516:web:e833f8876cf34767798d59',
-      messagingSenderId: '671839887516',
-      projectId: 'gazzer-app',
-    ));
-    MetaSEO().config();
-  } else if (GetPlatform.isAndroid) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: 'AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw',
-        appId: '1:671839887516:android:1f9fd48dbf2401c4798d59',
-        messagingSenderId: '671839887516',
-        projectId: 'gazzer-app',
-      ),
-    );
-
-    // try {
-    //   String initialLink = await getInitialLink();
-    //   print('======initial link ===>  $initialLink');
-    //   if(initialLink != null) {
-    //     _linkBody = LinkConverter.convertDeepLink(initialLink);
-    //   }
-    // } on PlatformException {}
-  } else {
-    await Firebase.initializeApp();
-  }
-
   Map<String, Map<String, String>> languages = await di.init();
 
   NotificationBodyModel? body;
   try {
     if (GetPlatform.isMobile) {
-      final RemoteMessage? remoteMessage =
-          await FirebaseMessaging.instance.getInitialMessage();
+      final RemoteMessage? remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
       if (remoteMessage != null) {
         body = NotificationHelper.convertNotification(remoteMessage.data);
       }
@@ -110,11 +89,7 @@ class MyApp extends StatefulWidget {
   final NotificationBodyModel? body;
   final DeepLinkBody? linkBody;
 
-  const MyApp(
-      {super.key,
-      required this.languages,
-      required this.body,
-      required this.linkBody});
+  const MyApp({super.key, required this.languages, required this.body, required this.linkBody});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -132,12 +107,10 @@ class _MyAppState extends State<MyApp> {
     if (GetPlatform.isWeb) {
       Get.find<SplashController>().initSharedData();
       if (!Get.find<AuthController>().isLoggedIn() &&
-          !Get.find<AuthController>()
-              .isGuestLoggedIn() /*&& !ResponsiveHelper.isDesktop(Get.context!)*/) {
+          !Get.find<AuthController>().isGuestLoggedIn() /*&& !ResponsiveHelper.isDesktop(Get.context!)*/) {
         await Get.find<AuthController>().guestLogin();
       }
-      if (Get.find<AuthController>().isLoggedIn() ||
-          Get.find<AuthController>().isGuestLoggedIn()) {
+      if (Get.find<AuthController>().isLoggedIn() || Get.find<AuthController>().isGuestLoggedIn()) {
         Get.find<CartController>().getCartDataOnline();
       }
     }
@@ -163,41 +136,31 @@ class _MyAppState extends State<MyApp> {
                   debugShowCheckedModeBanner: false,
                   navigatorKey: Get.key,
                   scrollBehavior: const MaterialScrollBehavior().copyWith(
-                    dragDevices: {
-                      PointerDeviceKind.mouse,
-                      PointerDeviceKind.touch
-                    },
+                    dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
                   ),
                   theme: themeController.darkTheme ? dark : light,
                   locale: localizeController.locale,
                   translations: Messages(languages: widget.languages),
-                  fallbackLocale: Locale(
-                      AppConstants.languages[0].languageCode!,
-                      AppConstants.languages[0].countryCode),
+                  fallbackLocale:
+                      Locale(AppConstants.languages[0].languageCode!, AppConstants.languages[0].countryCode),
                   initialRoute: GetPlatform.isWeb
                       ? RouteHelper.getInitialRoute()
-                      : RouteHelper.getSplashRoute(
-                          widget.body, widget.linkBody),
+                      : RouteHelper.getSplashRoute(widget.body, widget.linkBody),
                   getPages: RouteHelper.routes,
                   defaultTransition: Transition.topLevel,
                   transitionDuration: const Duration(milliseconds: 500),
                   builder: (BuildContext context, widget) {
                     return MediaQuery(
-                      data: MediaQuery.of(context)
-                          .copyWith(textScaler: const TextScaler.linear(1)),
+                      data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1)),
                       child: Material(
                           child: Stack(children: [
                         widget!,
-                        GetBuilder<SplashController>(
-                            builder: (splashController) {
+                        GetBuilder<SplashController>(builder: (splashController) {
                           if (!splashController.savedCookiesData ||
-                              !splashController.getAcceptCookiesStatus(
-                                  splashController.configModel?.cookiesText ??
-                                      "")) {
+                              !splashController
+                                  .getAcceptCookiesStatus(splashController.configModel?.cookiesText ?? "")) {
                             return ResponsiveHelper.isWeb()
-                                ? const Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: CookiesViewWidget())
+                                ? const Align(alignment: Alignment.bottomCenter, child: CookiesViewWidget())
                                 : const SizedBox();
                           } else {
                             return const SizedBox();
@@ -216,7 +179,6 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }

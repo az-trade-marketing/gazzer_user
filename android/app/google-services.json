@@ -1,115 +1,26 @@
 {
   "project_info": {
-    "project_number": "671839887516",
-    "project_id": "gazzer-app",
-    "storage_bucket": "gazzer-app.appspot.com"
+    "project_number": "954201619327",
+    "project_id": "gazzerprod",
+    "storage_bucket": "gazzerprod.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:671839887516:android:d49c9933f86e73f8798d59",
-        "android_client_info": {
-          "package_name": "com.refilex.gazzer.delivery"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "671839887516-76hqbc7u2ndb4hkeh62v8u1euurf5824.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.refilex.gazzer.user"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:671839887516:android:1f9fd48dbf2401c4798d59",
+        "mobilesdk_app_id": "1:954201619327:android:a8540c087219108480784a",
         "android_client_info": {
           "package_name": "com.refilex.gazzer.user"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw"
+          "current_key": "AIzaSyBDpdtQvG39wJ3v7aMzVu8-WxrFswyDZpU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "671839887516-76hqbc7u2ndb4hkeh62v8u1euurf5824.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.refilex.gazzer.user"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:671839887516:android:fb2795da83180a82798d59",
-        "android_client_info": {
-          "package_name": "com.refilex.gazzer.vendor"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCfxGdnL_KhgbNDY7mFQh-tHHBqIaxisYw"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "671839887516-4l42p8bd1b3inrmsc2qcb7h22hub47jk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "671839887516-76hqbc7u2ndb4hkeh62v8u1euurf5824.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.refilex.gazzer.user"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

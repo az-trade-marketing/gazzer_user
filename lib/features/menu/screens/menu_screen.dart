@@ -17,6 +17,7 @@ import 'package:gazzer_userapp/helper/date_converter.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/responsive_helper.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
+import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
@@ -338,17 +339,17 @@ class _MenuScreenState extends State<MenuScreen> {
                     ]),
                   ),
                 ),
-                FutureBuilder(
-                  future: () async {
-                    final info = await PackageInfo.fromPlatform();
-                    final patch = await ShorebirdUpdater().readCurrentPatch();
-                    return (info, patch);
-                  }(),
-                  builder: (context, snapshot) => Text(
-                    "V ${snapshot.data?.$1.version}+${snapshot.data?.$1.buildNumber}#${snapshot.data?.$2?.number ?? ''} ",
+                FutureBuilder(future: () async {
+                  final info = await PackageInfo.fromPlatform();
+                  final patch = await ShorebirdUpdater().readCurrentPatch();
+                  return (info, patch);
+                }(), builder: (context, snapshot) {
+                  bool isProduction = AppConstants.webHostedUrl == AppConstants.productionBaseUrl;
+                  return Text(
+                    "V ${snapshot.data?.$1.version}+${snapshot.data?.$1.buildNumber}#${snapshot.data?.$2?.number ?? '0'}${!isProduction ? "T" : ""}",
                     style: robotoRegular.copyWith(fontStyle: FontStyle.italic),
-                  ),
-                ),
+                  );
+                }),
                 const SizedBox(height: Dimensions.paddingSizeOverLarge)
               ]),
             ),

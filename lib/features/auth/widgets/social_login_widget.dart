@@ -69,8 +69,10 @@ class SocialLoginWidget extends StatelessWidget {
                             Map userData = await FacebookAuth.instance.getUserData();
                             Get.find<AuthController>().loginWithSocialMedia(SocialLogInBodyModel(
                               email: userData['email'],
-                              token: result.accessToken!.token,
-                              uniqueId: result.accessToken!.userId,
+                              token: result.accessToken!.tokenString,
+                              uniqueId: (result.accessToken is LimitedToken || result.accessToken is ClassicToken)
+                                  ? (result.accessToken as ClassicToken).userId
+                                  : null,
                               medium: 'facebook',
                             ));
                           }

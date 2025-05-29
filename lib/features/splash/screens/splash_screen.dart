@@ -19,8 +19,7 @@ class SplashScreen extends StatefulWidget {
   final NotificationBodyModel? notificationBody;
   final DeepLinkBody? linkBody;
 
-  const SplashScreen(
-      {super.key, required this.notificationBody, required this.linkBody});
+  const SplashScreen({super.key, required this.notificationBody, required this.linkBody});
 
   @override
   SplashScreenState createState() => SplashScreenState();
@@ -28,30 +27,27 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
-  late StreamSubscription<ConnectivityResult> _onConnectivityChanged;
+  late StreamSubscription<List<ConnectivityResult>> _onConnectivityChanged;
 
   @override
   void initState() {
     super.initState();
 
     bool firstTime = true;
-    _onConnectivityChanged = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+    _onConnectivityChanged = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       if (!firstTime) {
-        bool isNotConnected = result != ConnectivityResult.wifi &&
-            result != ConnectivityResult.mobile;
-        isNotConnected
-            ? const SizedBox()
-            : ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: isNotConnected ? Colors.red : Colors.green,
-          duration: Duration(seconds: isNotConnected ? 6000 : 3),
-          content: Text(
-            isNotConnected ? 'no_connection'.tr : 'connected'.tr,
-            textAlign: TextAlign.center,
-          ),
-        ));
+        bool isNotConnected = !result.contains(ConnectivityResult.wifi) && !result.contains(ConnectivityResult.mobile);
+        if (mounted) {
+          isNotConnected ? const SizedBox() : ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: isNotConnected ? Colors.red : Colors.green,
+            duration: Duration(seconds: isNotConnected ? 6000 : 3),
+            content: Text(
+              isNotConnected ? 'no_connection'.tr : 'connected'.tr,
+              textAlign: TextAlign.center,
+            ),
+          ));
+        }
         if (!isNotConnected) {
           _route();
         }
@@ -65,8 +61,7 @@ class SplashScreenState extends State<SplashScreen> {
             AddressHelper.getAddressFromSharedPref()!.zoneData == null)) {
       AddressHelper.clearAddressFromSharedPref();
     }
-    if (Get.find<AuthController>().isGuestLoggedIn() ||
-        Get.find<AuthController>().isLoggedIn()) {
+    if (Get.find<AuthController>().isGuestLoggedIn() || Get.find<AuthController>().isLoggedIn()) {
       Get.find<CartController>().getCartDataOnline();
     }
     _route();
@@ -85,17 +80,12 @@ class SplashScreenState extends State<SplashScreen> {
         Timer(const Duration(seconds: 1), () async {
           double? minimumVersion = 0;
           if (GetPlatform.isAndroid) {
-            minimumVersion = Get.find<SplashController>()
-                .configModel!
-                .appMinimumVersionAndroid;
+            minimumVersion = Get.find<SplashController>().configModel!.appMinimumVersionAndroid;
           } else if (GetPlatform.isIOS) {
-            minimumVersion =
-                Get.find<SplashController>().configModel!.appMinimumVersionIos;
+            minimumVersion = Get.find<SplashController>().configModel!.appMinimumVersionIos;
           }
-          if (AppConstants.appVersion < minimumVersion! ||
-              Get.find<SplashController>().configModel!.maintenanceMode!) {
-            Get.offNamed(RouteHelper.getUpdateRoute(
-                AppConstants.appVersion < minimumVersion));
+          if (AppConstants.appVersion < minimumVersion! || Get.find<SplashController>().configModel!.maintenanceMode!) {
+            Get.offNamed(RouteHelper.getUpdateRoute(AppConstants.appVersion < minimumVersion));
           } else {
             if (widget.notificationBody != null && widget.linkBody == null) {
               _forNotificationRouteProcess();
@@ -124,15 +114,12 @@ class SplashScreenState extends State<SplashScreen> {
 
   void _forNotificationRouteProcess() {
     if (widget.notificationBody!.notificationType == NotificationType.order) {
-      Get.offNamed(
-          RouteHelper.getOrderDetailsRoute(widget.notificationBody!.orderId));
-    } else if (widget.notificationBody!.notificationType ==
-        NotificationType.general) {
+      Get.offNamed(RouteHelper.getOrderDetailsRoute(widget.notificationBody!.orderId));
+    } else if (widget.notificationBody!.notificationType == NotificationType.general) {
       Get.offNamed(RouteHelper.getNotificationRoute(fromNotification: true));
     } else {
       Get.offNamed(RouteHelper.getChatRoute(
-          notificationBody: widget.notificationBody,
-          conversationID: widget.notificationBody!.conversationId));
+          notificationBody: widget.notificationBody, conversationID: widget.notificationBody!.conversationId));
     }
   }
 
@@ -158,8 +145,7 @@ class SplashScreenState extends State<SplashScreen> {
     if (AddressHelper.getAddressFromSharedPref() != null) {
       Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
     } else {
-      Get.find<SplashController>()
-          .navigateToLocationScreen('splash', offNamed: true);
+      Get.find<SplashController>().navigateToLocationScreen('splash', offNamed: true);
     }
   }
 
@@ -178,9 +164,7 @@ class SplashScreenState extends State<SplashScreen> {
                 ),
               )
             : NoInternetScreen(
-                child: SplashScreen(
-                    notificationBody: widget.notificationBody,
-                    linkBody: widget.linkBody));
+                child: SplashScreen(notificationBody: widget.notificationBody, linkBody: widget.linkBody));
       }),
     );
   }

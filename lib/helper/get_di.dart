@@ -163,11 +163,13 @@ import 'package:gazzer_userapp/features/wallet/domain/services/wallet_service.da
 import 'package:gazzer_userapp/features/wallet/domain/services/wallet_service_interface.dart';
 import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Map<String, Map<String, String>>> init() async {
   /// Core
   final sharedPreferences = await SharedPreferences.getInstance();
+  await Get.putAsync(() async => PackageInfo.fromPlatform());
   Get.lazyPut(() => sharedPreferences);
   Get.lazyPut(() => ApiClient(appBaseUrl: AppConstants.baseUrl, sharedPreferences: Get.find()));
 

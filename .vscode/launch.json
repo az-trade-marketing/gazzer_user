@@ -10,9 +10,26 @@
             "type": "dart",
         },
         {
-            "name": "gazzer-user-app",
+            "name": "gazzer-st",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+             "args": [
+                "--flavor",
+                "staging",
+                "--target",
+                "lib/main.dart"
+            ]
+        },
+        {
+            "name": "gazzer-prod",
+            "request": "launch",
+            "type": "dart",
+             "args": [
+                "--flavor",
+                "production",
+                "--target",
+                "lib/main.dart"
+            ]
         },
         {
             "name": "gazzer-user-app (profile mode)",

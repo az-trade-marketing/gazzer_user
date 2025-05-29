@@ -1,6 +1,7 @@
 import 'package:gazzer_userapp/features/language/domain/models/language_model.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class AppConstants {
   static const String appName = 'Gazzer';
@@ -9,13 +10,14 @@ class AppConstants {
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
   // Production API URL
-  static const String webHostedUrl = 'https://gazzertest.cloud'; // Staging API URL
   // static const String webHostedUrl = 'https://dashboard.gazzerapp.com'; //Old Production API URL
-  // static const String webHostedUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
+  static const String _stagUrl = 'https://gazzertest.cloud'; // Staging API URL
+  static const String _pordUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
   static const String productionBaseUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
+  static final String webHostedUrl = Get.find<PackageInfo>().appName.toLowerCase().endsWith('st'.toLowerCase()) ? _stagUrl : _pordUrl;
   // Staging API URL
   // static const String webHostedUrl = 'https://carrot.refilex.com';
-  static const String baseUrl = webHostedUrl;
+  static final String baseUrl = webHostedUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String paymobCheckout = '/api/v1/customer/paymob/intention';

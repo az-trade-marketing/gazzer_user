@@ -22,7 +22,7 @@
     </queries>
 
     <application
-        android:label="Gazzer"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"

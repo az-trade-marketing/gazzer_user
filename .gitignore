@@ -30,9 +30,9 @@
 .pub-cache/
 .pub/
 /build/
-.firebaserc
-firebase.json
-.firebase
+# .firebaserc
+# firebase.json
+# .firebase
 changes.tar
 changes.zip
 get_changed_files.sh

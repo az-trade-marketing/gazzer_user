@@ -47,12 +47,13 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCeaw_gVN0iQwFHyuF8pQ6PbVDmSVQw8AY',
-    appId: '1:1049699819506:web:a4b5e3bedc729aab89956b',
-    messagingSenderId: '671839887516',
-    projectId: 'gazzer-app',
-    authDomain: 'gazzer-app.firebaseapp.com',
-    storageBucket: 'gazzer-app.appspot.com',
+    apiKey: 'AIzaSyAfzft5QEcFcG4mq1hKfsmBegzE9I1dA2w',
+    appId: '1:954201619327:web:015efc4db6cf613380784a',
+    messagingSenderId: '954201619327',
+    projectId: 'gazzerprod',
+    authDomain: 'gazzerprod.firebaseapp.com',
+    storageBucket: 'gazzerprod.firebasestorage.app',
+    measurementId: 'G-7GL2KVPX70',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

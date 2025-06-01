@@ -5,23 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "gazzer-ios",
-            "request": "launch",
-            "type": "dart",
-        },
-        {
-            "name": "gazzer-user-app",
+            "name": "gazzer",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "gazzer-user-app (profile mode)",
+            "name": "gazzer (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "gazzer-user-app (release mode)",
+            "name": "gazzer (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

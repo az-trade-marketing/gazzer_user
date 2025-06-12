@@ -9,13 +9,12 @@ class AppConstants {
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
   // Production API URL
-  static const String webHostedUrl = 'https://gazzertest.cloud'; // Staging API URL
-  // static const String webHostedUrl = 'https://dashboard.gazzerapp.com'; //Old Production API URL
-  // static const String webHostedUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
+  static const String stagingUrl = 'https://gazzertest.cloud'; // Staging API URL
+  // static const String stagingUrl = 'https://dashboard.gazzerapp.com'; //Old Production API URL
   static const String productionBaseUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
   // Staging API URL
   // static const String webHostedUrl = 'https://carrot.refilex.com';
-  static const String baseUrl = webHostedUrl;
+  static const String baseUrl = stagingUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String paymobCheckout = '/api/v1/customer/paymob/intention';

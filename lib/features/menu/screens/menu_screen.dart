@@ -344,7 +344,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   final patch = await ShorebirdUpdater().readCurrentPatch();
                   return (info, patch);
                 }(), builder: (context, snapshot) {
-                  bool isProduction = AppConstants.webHostedUrl == AppConstants.productionBaseUrl;
+                  bool isProduction = AppConstants.baseUrl == AppConstants.productionBaseUrl;
                   return Text(
                     "V ${snapshot.data?.$1.version}+${snapshot.data?.$1.buildNumber}#${snapshot.data?.$2?.number ?? '0'}${!isProduction ? "T" : ""}",
                     style: robotoRegular.copyWith(fontStyle: FontStyle.italic),

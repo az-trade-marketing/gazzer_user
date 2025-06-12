@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_favourite_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_image_widget.dart';
@@ -17,6 +15,8 @@ import 'package:gazzer_userapp/util/app_constants.dart';
 import 'package:gazzer_userapp/util/dimensions.dart';
 import 'package:gazzer_userapp/util/images.dart';
 import 'package:gazzer_userapp/util/styles.dart';
+import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
 class InfoViewWidget extends StatelessWidget {
@@ -157,7 +157,7 @@ class InfoViewWidget extends StatelessWidget {
                         isError: false);
                   } else {
                     String shareUrl =
-                        '${AppConstants.webHostedUrl}${restController.filteringUrl(restaurant.slug ?? '')}';
+                        '${AppConstants.baseUrl}${restController.filteringUrl(restaurant.slug ?? '')}';
                     Share.share(shareUrl);
                   }
                 },

@@ -4,17 +4,21 @@ import 'package:get/get.dart';
 
 class AppConstants {
   static const String appName = 'Gazzer';
-  static const double appVersion = 9.0;
 
   static const String fontFamily = 'Roboto';
   static const bool payInWevView = false;
+
+  ///
+  static const double appVersion = 9.1;
   // Production API URL
-  static const String stagingUrl = 'https://gazzertest.cloud'; // Staging API URL
+  static const String _stagingUrl = 'https://gazzertest.cloud'; // Staging API URL
   // static const String stagingUrl = 'https://dashboard.gazzerapp.com'; //Old Production API URL
-  static const String productionBaseUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
+  // static const String productionBaseUrl = 'https://app2.gazzertest.cloud'; // New Production API URL
+  static const String _productionBaseUrl = 'https://app.gazzerapp.com'; // New Production API URL
+  static String get productionBaseUrl => _productionBaseUrl;
   // Staging API URL
   // static const String webHostedUrl = 'https://carrot.refilex.com';
-  static const String baseUrl = stagingUrl;
+  static const String baseUrl = _productionBaseUrl;
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String paymobCheckout = '/api/v1/customer/paymob/intention';

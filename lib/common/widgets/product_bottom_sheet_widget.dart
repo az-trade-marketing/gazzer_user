@@ -2,7 +2,6 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/product_model.dart';
-import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_button_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_favourite_widget.dart';
 import 'package:gazzer_userapp/common/widgets/custom_image_widget.dart';
@@ -39,17 +38,17 @@ class ProductBottomSheetWidget extends StatefulWidget {
   final bool inRestaurantPage;
   final orderModel.OrderDetailsModel? orderDetails;
 
-  const ProductBottomSheetWidget({super.key,
-    required this.product,
-    this.isCampaign = false,
-    this.cart,
-    this.cartIndex,
-    this.orderDetails,
-    this.inRestaurantPage = false});
+  const ProductBottomSheetWidget(
+      {super.key,
+      required this.product,
+      this.isCampaign = false,
+      this.cart,
+      this.cartIndex,
+      this.orderDetails,
+      this.inRestaurantPage = false});
 
   @override
-  State<ProductBottomSheetWidget> createState() =>
-      _ProductBottomSheetWidgetState();
+  State<ProductBottomSheetWidget> createState() => _ProductBottomSheetWidgetState();
 }
 
 class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
@@ -69,14 +68,10 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
   }
 
   Future<void> _initCall() async {
-    await Get.find<ProductController>().getProductDetails(
-        widget.product!.id!, widget.cart,
-        isCampaign: widget.isCampaign);
-    product = Get
-        .find<ProductController>()
-        .product;
-    String? warning = Get.find<ProductController>()
-        .checkOutOfStockVariationSelected(product?.variations);
+    await Get.find<ProductController>()
+        .getProductDetails(widget.product!.id!, widget.cart, isCampaign: widget.isCampaign);
+    product = Get.find<ProductController>().product;
+    String? warning = Get.find<ProductController>().checkOutOfStockVariationSelected(product?.variations);
     if (warning != null) {
       showCustomSnackBar(warning, showToaster: true);
     }
@@ -91,14 +86,10 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
       width: 550,
       margin: EdgeInsets.only(top: GetPlatform.isWeb ? 0 : 30),
       decoration: BoxDecoration(
-        color: Theme
-            .of(context)
-            .cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: ResponsiveHelper.isMobile(context)
-            ? const BorderRadius.vertical(
-            top: Radius.circular(Dimensions.radiusExtraLarge))
-            : const BorderRadius.all(
-            Radius.circular(Dimensions.radiusExtraLarge)),
+            ? const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge))
+            : const BorderRadius.all(Radius.circular(Dimensions.radiusExtraLarge)),
       ),
       child: GetBuilder<ProductController>(builder: (productController) {
         product = productController.product;
@@ -107,1633 +98,830 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
         }
         double price = product!.price!;
         double? discount =
-        (widget.isCampaign || product!.restaurantDiscount == 0)
-            ? product!.discount
-            : product!.restaurantDiscount;
+            (widget.isCampaign || product!.restaurantDiscount == 0) ? product!.discount : product!.restaurantDiscount;
         String? discountType =
-        (widget.isCampaign || product!.restaurantDiscount == 0)
-            ? product!.discountType
-            : 'percent';
+            (widget.isCampaign || product!.restaurantDiscount == 0) ? product!.discountType : 'percent';
         double variationPrice = _getVariationPrice(product!, productController);
-        double variationPriceWithDiscount = _getVariationPriceWithDiscount(
-            product!, productController, discount, discountType);
-        double priceWithDiscountForView =
-        PriceConverter.convertWithDiscount(price, discount, discountType)!;
-        double priceWithDiscount =
-        PriceConverter.convertWithDiscount(price, discount, discountType)!;
+        double variationPriceWithDiscount =
+            _getVariationPriceWithDiscount(product!, productController, discount, discountType);
+        double priceWithDiscountForView = PriceConverter.convertWithDiscount(price, discount, discountType)!;
+        double priceWithDiscount = PriceConverter.convertWithDiscount(price, discount, discountType)!;
 
         double addonsCost = _getAddonCost(product!, productController);
         List<AddOn> addOnIdList = _getAddonIdList(product!, productController);
         List<AddOns> addOnsList = _getAddonList(product!, productController);
-        if (product!.variations!.isNotEmpty &&
-            product!.variations![0].type == "free_input") {
+        if (product!.variations!.isNotEmpty && product!.variations![0].type == "free_input") {
           debugPrint(
-              '===total : $addonsCost + (($variationPriceWithDiscount * $price) , $discount , $discountType ) * ${productController
-                  .quantity}');
+              '===total : $addonsCost + (($variationPriceWithDiscount * $price) , $discount , $discountType ) * ${productController.quantity}');
         } else {
           debugPrint(
-              '===total : $addonsCost + (($variationPriceWithDiscount + $price) , $discount , $discountType ) * ${productController
-                  .quantity}');
+              '===total : $addonsCost + (($variationPriceWithDiscount + $price) , $discount , $discountType ) * ${productController.quantity}');
         }
         double priceWithAddonsVariationWithDiscount = addonsCost +
-            (PriceConverter.convertWithDiscount(
-                variationPrice * price, discount, discountType)! *
+            (PriceConverter.convertWithDiscount(variationPrice * price, discount, discountType)! *
                 productController.quantity!);
-        double priceWithAddonsVariation =
-            ((price * variationPrice) * productController.quantity!) +
-                addonsCost;
+        double priceWithAddonsVariation = ((price * variationPrice) * productController.quantity!) + addonsCost;
 
-        double priceWithAddonsVariationMulti =
-            ((price + variationPrice) * productController.quantity!) +
-                addonsCost;
+        double priceWithAddonsVariationMulti = ((price + variationPrice) * productController.quantity!) + addonsCost;
         double priceWithVariation = price * variationPrice;
         double priceWithVariationMulti = price + variationPrice;
-        bool isAvailable = DateConverter.isAvailable(
-            product!.availableTimeStarts, product!.availableTimeEnds);
+        bool isAvailable = DateConverter.isAvailable(product!.availableTimeStarts, product!.availableTimeEnds);
 
         // print('========check====> selectedVariations: ${productController.selectedVariations} ,\n cartSelected: ${widget.cart?.variations} \n // stock : ${productController.variationsStock}');
 
         return ConstrainedBox(
-          constraints: BoxConstraints(
-              maxHeight: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.9),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
           child: Stack(
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                      height: GetPlatform.isIOS || GetPlatform.isDesktop
-                          ? Dimensions.paddingSizeLarge
-                          : 0),
+                  SizedBox(height: GetPlatform.isIOS || GetPlatform.isDesktop ? Dimensions.paddingSizeLarge : 0),
 
                   Flexible(
                     child: SingleChildScrollView(
                       controller: scrollController,
                       padding: const EdgeInsets.only(
-                          left: Dimensions.paddingSizeDefault,
-                          bottom: Dimensions.paddingSizeDefault),
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                right: Dimensions.paddingSizeDefault,
-                                top: ResponsiveHelper.isDesktop(context)
-                                    ? 0
-                                    : Dimensions.paddingSizeDefault,
-                              ),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-
-                                    ///Product
-                                    Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          (product!.image != null &&
-                                              product!.image!.isNotEmpty)
-                                              ? InkWell(
-                                            onTap: widget.isCampaign
-                                                ? null
-                                                : () {
-                                              if (!widget
-                                                  .isCampaign) {
-                                                Get.toNamed(RouteHelper
-                                                    .getItemImagesRoute(
-                                                    product!));
-                                              }
-                                            },
-                                            child: Stack(children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                    Dimensions
-                                                        .radiusSmall),
-                                                child: CustomImageWidget(
-                                                  image:
-                                                  '${widget.isCampaign ? Get
-                                                      .find<SplashController>()
-                                                      .configModel!
-                                                      .baseUrls!
-                                                      .campaignImageUrl : Get
-                                                      .find<SplashController>()
-                                                      .configModel!
-                                                      .baseUrls!
-                                                      .productImageUrl}/${product!
-                                                      .image}',
-                                                  width: ResponsiveHelper
-                                                      .isMobile(
-                                                      context)
-                                                      ? 100
-                                                      : 140,
-                                                  height: ResponsiveHelper
-                                                      .isMobile(
-                                                      context)
-                                                      ? 100
-                                                      : 140,
-                                                  fit: BoxFit.cover,
-                                                ),
+                          left: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeDefault),
+                      child:
+                          Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: Dimensions.paddingSizeDefault,
+                            top: ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.paddingSizeDefault,
+                          ),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ///Product
+                                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  (product!.image != null && product!.image!.isNotEmpty)
+                                      ? InkWell(
+                                          onTap: widget.isCampaign
+                                              ? null
+                                              : () {
+                                                  if (!widget.isCampaign) {
+                                                    Get.toNamed(RouteHelper.getItemImagesRoute(product!));
+                                                  }
+                                                },
+                                          child: Stack(children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                              child: CustomImageWidget(
+                                                image:
+                                                    '${widget.isCampaign ? Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl : Get.find<SplashController>().configModel!.baseUrls!.productImageUrl}/${product!.image}',
+                                                width: ResponsiveHelper.isMobile(context) ? 100 : 140,
+                                                height: ResponsiveHelper.isMobile(context) ? 100 : 140,
+                                                fit: BoxFit.cover,
                                               ),
-                                              DiscountTagWidget(
-                                                  discount: discount,
-                                                  discountType:
-                                                  discountType,
-                                                  isProductBottomSheet:
-                                                  true),
-                                            ]),
-                                          )
-                                              : const SizedBox.shrink(),
-                                          const SizedBox(
-                                              width:
-                                              Dimensions.paddingSizeSmall),
-                                          Expanded(
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    product!.name ?? '',
-                                                    style: robotoBold.copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeLarge),
-                                                    maxLines: 2,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                  ),
-                                                  InkWell(
-                                                    onTap: () {
-                                                      if (widget
-                                                          .inRestaurantPage) {
-                                                        Get.back();
-                                                      } else {
-                                                        Get.offNamed(RouteHelper
-                                                            .getRestaurantRoute(
-                                                            product!
-                                                                .restaurantId));
-                                                      }
-                                                    },
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .fromLTRB(0, 5, 5, 5),
-                                                      child: Text(
-                                                        product!
-                                                            .restaurantName ??
-                                                            '',
-                                                        style: robotoRegular
-                                                            .copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeSmall,
-                                                            color: Theme
-                                                                .of(
-                                                                context)
-                                                                .primaryColor),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  RatingBarWidget(
-                                                      rating:
-                                                      product!.avgRating,
-                                                      size: 15,
-                                                      ratingCount:
-                                                      product!.ratingCount),
-                                                  const SizedBox(
-                                                      height: Dimensions
-                                                          .paddingSizeExtraSmall),
-                                                  Wrap(children: [
-                                                    price >
-                                                        priceWithDiscountForView
-                                                        ? Text(
-                                                      PriceConverter
-                                                          .convertPrice(
-                                                          price),
-                                                      textDirection:
-                                                      TextDirection
-                                                          .ltr,
-                                                      style: robotoMedium
-                                                          .copyWith(
-                                                          color: Theme
-                                                              .of(
-                                                              context)
-                                                              .disabledColor,
-                                                          decoration:
-                                                          TextDecoration
-                                                              .lineThrough),
-                                                    )
-                                                        : const SizedBox(),
-                                                    const SizedBox(
-                                                        width: Dimensions
-                                                            .paddingSizeExtraSmall),
-                                                    (product!.image != null &&
-                                                        product!.image!
-                                                            .isNotEmpty)
-                                                        ? const SizedBox
-                                                        .shrink()
-                                                        : DiscountTagWithoutImageWidget(
-                                                        discount: discount,
-                                                        discountType:
-                                                        discountType),
-                                                    if (product!.variations!
-                                                        .isNotEmpty &&
-                                                        product!.variations![0]
-                                                            .type ==
-                                                            "free_input")
-                                                      Text(
-                                                        "${priceWithAddonsVariationWithDiscount
-                                                            .toDouble()}E€",
-                                                        textDirection:
-                                                        TextDirection.ltr,
-                                                        style: robotoMedium
-                                                            .copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeLarge),
-                                                      ),
-                                                    if (product!.variations!
-                                                        .isNotEmpty &&
-                                                        product!.variations![0]
-                                                            .type !=
-                                                            "free_input")
-                                                      Text(
-                                                        PriceConverter
-                                                            .convertPrice(
-                                                            price),
-                                                        textDirection:
-                                                        TextDirection.ltr,
-                                                        style: robotoMedium
-                                                            .copyWith(
-                                                            fontSize: Dimensions
-                                                                .fontSizeLarge),
-                                                      ),
-                                                    (!widget.isCampaign &&
-                                                        product!.stockType !=
-                                                            'unlimited' &&
-                                                        product!.itemStock! <=
-                                                            0)
-                                                        ? Text(
-                                                        ' (${'out_of_stock'
-                                                            .tr})',
-                                                        style: robotoRegular
-                                                            .copyWith(
-                                                            color: Theme
-                                                                .of(
-                                                                context)
-                                                                .colorScheme
-                                                                .error))
-                                                        : const SizedBox(),
-                                                    (!widget.isCampaign &&
-                                                        product!.stockType !=
-                                                            'unlimited' &&
-                                                        productController
-                                                            .quantity !=
-                                                            1 &&
-                                                        productController
-                                                            .quantity! >=
-                                                            product!
-                                                                .itemStock!)
-                                                        ? Text(
-                                                        ' (${'only'
-                                                            .tr} ${product!
-                                                            .itemStock!} ${'item_available'
-                                                            .tr})',
-                                                        style: robotoRegular
-                                                            .copyWith(
-                                                            color: Colors
-                                                                .blue,
-                                                            fontSize:
-                                                            Dimensions
-                                                                .fontSizeSmall))
-                                                        : const SizedBox(),
-                                                  ]),
-                                                ]),
+                                            ),
+                                            DiscountTagWidget(
+                                                discount: discount,
+                                                discountType: discountType,
+                                                isProductBottomSheet: true),
+                                          ]),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                                  Expanded(
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      Text(
+                                        product!.name ?? '',
+                                        style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          if (widget.inRestaurantPage) {
+                                            Get.back();
+                                          } else {
+                                            Get.offNamed(RouteHelper.getRestaurantRoute(product!.restaurantId));
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+                                          child: Text(
+                                            product!.restaurantName ?? '',
+                                            style: robotoRegular.copyWith(
+                                                fontSize: Dimensions.fontSizeSmall,
+                                                color: Theme.of(context).primaryColor),
                                           ),
-                                          Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                              children: [
-                                                widget.isCampaign
-                                                    ? const SizedBox(height: 25)
-                                                    : GetBuilder<
-                                                    FavouriteController>(
-                                                    builder:
-                                                        (favouriteController) {
-                                                      return Container(
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          borderRadius:
-                                                          BorderRadius.circular(
-                                                              Dimensions
-                                                                  .radiusDefault),
-                                                          color: Theme
-                                                              .of(
-                                                              context)
-                                                              .primaryColor
-                                                              .withOpacity(
-                                                              0.05),
-                                                        ),
-                                                        padding: const EdgeInsets
-                                                            .all(Dimensions
-                                                            .paddingSizeSmall),
-                                                        margin: EdgeInsets.only(
-                                                            top: GetPlatform
-                                                                .isAndroid
-                                                                ? 0
-                                                                : Dimensions
-                                                                .paddingSizeLarge),
-                                                        child:
-                                                        CustomFavouriteWidget(
-                                                          isWished:
-                                                          favouriteController
-                                                              .wishProductIdList
-                                                              .contains(
-                                                              product!
-                                                                  .id),
-                                                          product: product,
-                                                          isRestaurant: false,
-                                                        ),
-                                                      );
-                                                    }),
-                                              ]),
-                                        ]),
-
-                                    const SizedBox(
-                                        height: Dimensions.paddingSizeDefault),
-
-                                    (product!.description != null &&
-                                        product!.description!.isNotEmpty)
-                                        ? Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                            children: [
-                                              Text('description'.tr,
-                                                  style: robotoBold.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeLarge)),
-                                              (Get
-                                                  .find<SplashController>()
-                                                  .configModel!
-                                                  .toggleVegNonVeg!)
-                                                  ? Container(
-                                                padding: const EdgeInsets
-                                                    .symmetric(
-                                                    vertical: Dimensions
-                                                        .paddingSizeExtraSmall,
-                                                    horizontal:
-                                                    Dimensions
-                                                        .paddingSizeSmall),
-                                                decoration:
-                                                BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      Dimensions
-                                                          .radiusExtraLarge),
-                                                  color: Theme
-                                                      .of(
-                                                      context)
-                                                      .cardColor,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors
-                                                            .grey
-                                                            .withOpacity(
-                                                            0.3),
-                                                        blurRadius:
-                                                        10,
-                                                        spreadRadius:
-                                                        1)
-                                                  ],
-                                                ),
-                                                child:
-                                                Row(children: [
-                                                  Image.asset(
-                                                      product!.veg ==
-                                                          1
-                                                          ? Images
-                                                          .vegLogo
-                                                          : Images
-                                                          .nonVegLogo,
-                                                      height: 20,
-                                                      width: 20),
-                                                  const SizedBox(
-                                                      width: Dimensions
-                                                          .paddingSizeSmall),
-                                                  Text(
-                                                      product!.veg ==
-                                                          1
-                                                          ? 'veg'.tr
-                                                          : 'non_veg'
-                                                          .tr,
-                                                      style: robotoMedium
-                                                          .copyWith(
-                                                          fontSize:
-                                                          Dimensions
-                                                              .fontSizeDefault)),
-                                                ]),
+                                        ),
+                                      ),
+                                      RatingBarWidget(
+                                          rating: product!.avgRating, size: 15, ratingCount: product!.ratingCount),
+                                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                      Wrap(children: [
+                                        price > priceWithDiscountForView
+                                            ? Text(
+                                                PriceConverter.convertPrice(price),
+                                                textDirection: TextDirection.ltr,
+                                                style: robotoMedium.copyWith(
+                                                    color: Theme.of(context).disabledColor,
+                                                    decoration: TextDecoration.lineThrough),
                                               )
-                                                  : const SizedBox(),
-                                            ]),
-                                        const SizedBox(
-                                            height: Dimensions
-                                                .paddingSizeExtraSmall),
-                                        Text(product!.description ?? '',
-                                            style: robotoRegular,
-                                            textAlign: TextAlign.justify),
-                                        const SizedBox(
-                                            height: Dimensions
-                                                .paddingSizeLarge),
-                                      ],
-                                    )
-                                        : const SizedBox(),
+                                            : const SizedBox(),
+                                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                        (product!.image != null && product!.image!.isNotEmpty)
+                                            ? const SizedBox.shrink()
+                                            : DiscountTagWithoutImageWidget(
+                                                discount: discount, discountType: discountType),
+                                        if (product!.variations!.isNotEmpty &&
+                                            product!.variations![0].type == "free_input")
+                                          Text(
+                                            "${priceWithAddonsVariationWithDiscount.toDouble()}E€",
+                                            textDirection: TextDirection.ltr,
+                                            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
+                                          ),
+                                        if (product!.variations!.isNotEmpty &&
+                                            product!.variations![0].type != "free_input")
+                                          Text(
+                                            PriceConverter.convertPrice(price),
+                                            textDirection: TextDirection.ltr,
+                                            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
+                                          ),
+                                        (!widget.isCampaign &&
+                                                product!.stockType != 'unlimited' &&
+                                                product!.itemStock! <= 0)
+                                            ? Text(' (${'out_of_stock'.tr})',
+                                                style:
+                                                    robotoRegular.copyWith(color: Theme.of(context).colorScheme.error))
+                                            : const SizedBox(),
+                                        (!widget.isCampaign &&
+                                                product!.stockType != 'unlimited' &&
+                                                productController.quantity != 1 &&
+                                                productController.quantity! >= product!.itemStock!)
+                                            ? Text(' (${'only'.tr} ${product!.itemStock!} ${'item_available'.tr})',
+                                                style: robotoRegular.copyWith(
+                                                    color: Colors.blue, fontSize: Dimensions.fontSizeSmall))
+                                            : const SizedBox(),
+                                      ]),
+                                    ]),
+                                  ),
+                                  Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        widget.isCampaign
+                                            ? const SizedBox(height: 25)
+                                            : GetBuilder<FavouriteController>(builder: (favouriteController) {
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                    color: Theme.of(context).primaryColor.withOpacity(0.05),
+                                                  ),
+                                                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                                                  margin: EdgeInsets.only(
+                                                      top: GetPlatform.isAndroid ? 0 : Dimensions.paddingSizeLarge),
+                                                  child: CustomFavouriteWidget(
+                                                    isWished:
+                                                        favouriteController.wishProductIdList.contains(product!.id),
+                                                    product: product,
+                                                    isRestaurant: false,
+                                                  ),
+                                                );
+                                              }),
+                                      ]),
+                                ]),
 
-                                    /// Variation
-                                    product!.variations != null &&
-                                        product!.variations!.isNotEmpty
-                                        ? ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount:
-                                      product!.variations!.length,
-                                      physics:
-                                      const NeverScrollableScrollPhysics(),
-                                      padding: EdgeInsets.only(
-                                          bottom: (product!.variations !=
-                                              null &&
-                                              product!.variations!
-                                                  .isNotEmpty)
-                                              ? Dimensions
-                                              .paddingSizeLarge
-                                              : 0),
-                                      itemBuilder: (context, index) {
-                                        int selectedCount = 0;
-                                        if (product!.variations![index]
-                                            .required!) {
-                                          for (var value
-                                          in productController
-                                              .selectedVariations[
-                                          index]) {
-                                            if (value == true) {
-                                              selectedCount++;
+                                const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                                (product!.description != null && product!.description!.isNotEmpty)
+                                    ? Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                            Text('description'.tr,
+                                                style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                                            (Get.find<SplashController>().configModel!.toggleVegNonVeg!)
+                                                ? Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                        vertical: Dimensions.paddingSizeExtraSmall,
+                                                        horizontal: Dimensions.paddingSizeSmall),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+                                                      color: Theme.of(context).cardColor,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            color: Colors.grey.withOpacity(0.3),
+                                                            blurRadius: 10,
+                                                            spreadRadius: 1)
+                                                      ],
+                                                    ),
+                                                    child: Row(children: [
+                                                      Image.asset(
+                                                          product!.veg == 1 ? Images.vegLogo : Images.nonVegLogo,
+                                                          height: 20,
+                                                          width: 20),
+                                                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                                                      Text(product!.veg == 1 ? 'veg'.tr : 'non_veg'.tr,
+                                                          style: robotoMedium.copyWith(
+                                                              fontSize: Dimensions.fontSizeDefault)),
+                                                    ]),
+                                                  )
+                                                : const SizedBox(),
+                                          ]),
+                                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                          Text(product!.description ?? '',
+                                              style: robotoRegular, textAlign: TextAlign.justify),
+                                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                                        ],
+                                      )
+                                    : const SizedBox(),
+
+                                /// Variation
+                                product!.variations != null && product!.variations!.isNotEmpty
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: product!.variations!.length,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        padding: EdgeInsets.only(
+                                            bottom: (product!.variations != null && product!.variations!.isNotEmpty)
+                                                ? Dimensions.paddingSizeLarge
+                                                : 0),
+                                        itemBuilder: (context, index) {
+                                          int selectedCount = 0;
+                                          if (product!.variations![index].required!) {
+                                            for (var value in productController.selectedVariations[index]) {
+                                              if (value == true) {
+                                                selectedCount++;
+                                              }
                                             }
                                           }
-                                        }
-                                        return Container(
-                                          padding: EdgeInsets.all(product!
-                                              .variations![index]
-                                              .required!
-                                              ? (product!
-                                              .variations![
-                                          index]
-                                              .multiSelect!
-                                              ? product!
-                                              .variations![
-                                          index]
-                                              .min!
-                                              : 1) <=
-                                              selectedCount
-                                              ? Dimensions
-                                              .paddingSizeSmall
-                                              : Dimensions
-                                              .paddingSizeSmall
-                                              : 0),
-                                          margin: EdgeInsets.only(
-                                              bottom: index !=
-                                                  product!.variations!
-                                                      .length -
-                                                      1
-                                                  ? Dimensions
-                                                  .paddingSizeDefault
-                                                  : 0),
-                                          decoration: BoxDecoration(
-                                              color: product!
-                                                  .variations![index]
-                                                  .required!
-                                                  ? (product!.variations![index]
-                                                  .multiSelect!
-                                                  ? product!
-                                                  .variations![
-                                              index]
-                                                  .min!
-                                                  : 1) <=
-                                                  selectedCount
-                                                  ? Theme
-                                                  .of(context)
-                                                  .primaryColor
-                                                  .withOpacity(
-                                                  0.05)
-                                                  : Theme
-                                                  .of(context)
-                                                  .disabledColor
-                                                  .withOpacity(
-                                                  0.05)
-                                                  : Colors.transparent,
-                                              border: Border.all(
-                                                  color: product!
-                                                      .variations![
-                                                  index]
-                                                      .required!
-                                                      ? (product!
-                                                      .variations![index]
-                                                      .multiSelect!
-                                                      ? product!
-                                                      .variations![index].min!
-                                                      : 1) <=
-                                                      selectedCount
-                                                      ? Theme
-                                                      .of(context)
-                                                      .primaryColor
-                                                      .withOpacity(
-                                                      0.3)
-                                                      : Theme
-                                                      .of(context)
-                                                      .disabledColor
-                                                      .withOpacity(
-                                                      0.3)
-                                                      : Colors
-                                                      .transparent,
-                                                  width: 1),
-                                              borderRadius: BorderRadius
-                                                  .circular(
-                                                  Dimensions.radiusDefault)),
-                                          child: Column(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                              children: [
-                                                Row(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                    crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .center,
-                                                    children: [
-                                                      Text(
-                                                          product!
-                                                              .variations![
-                                                          index]
-                                                              .name!,
-                                                          style: robotoBold
-                                                              .copyWith(
-                                                              fontSize:
-                                                              Dimensions
-                                                                  .fontSizeLarge)),
-                                                      Container(
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          color: product!
-                                                              .variations![
-                                                          index]
-                                                              .required!
-                                                              ? (product!
-                                                              .variations![index]
-                                                              .multiSelect!
-                                                              ? product!
-                                                              .variations![index]
-                                                              .min!
-                                                              : 1) >
-                                                              selectedCount
-                                                              ? Theme
-                                                              .of(context)
-                                                              .colorScheme
-                                                              .error
-                                                              .withOpacity(
-                                                              0.1)
-                                                              : Theme
-                                                              .of(context)
-                                                              .primaryColor
-                                                              .withOpacity(
-                                                              0.1)
-                                                              : Theme
-                                                              .of(
-                                                              context)
-                                                              .disabledColor
-                                                              .withOpacity(
-                                                              0.2),
-                                                          borderRadius:
-                                                          BorderRadius.circular(
-                                                              Dimensions
-                                                                  .radiusSmall),
-                                                        ),
-                                                        padding:
-                                                        const EdgeInsets
-                                                            .all(
-                                                            Dimensions
-                                                                .paddingSizeExtraSmall),
-                                                        child: Text(
-                                                          product!
-                                                              .variations![
-                                                          index]
-                                                              .required!
-                                                              ? (product!
-                                                              .variations![index]
-                                                              .multiSelect!
-                                                              ? product!
-                                                              .variations![index]
-                                                              .min!
-                                                              : 1) <=
-                                                              selectedCount
-                                                              ? 'completed'
-                                                              .tr
-                                                              : 'required'
-                                                              .tr
-                                                              : 'optional'
-                                                              .tr,
-                                                          style:
-                                                          robotoRegular
-                                                              .copyWith(
-                                                            color: product!
-                                                                .variations![
-                                                            index]
-                                                                .required!
-                                                                ? (product!
-                                                                .variations![index]
-                                                                .multiSelect!
-                                                                ? product!
-                                                                .variations![index]
-                                                                .min!
+                                          return Container(
+                                            padding: EdgeInsets.all(product!.variations![index].required!
+                                                ? (product!.variations![index].multiSelect!
+                                                            ? product!.variations![index].min!
+                                                            : 1) <=
+                                                        selectedCount
+                                                    ? Dimensions.paddingSizeSmall
+                                                    : Dimensions.paddingSizeSmall
+                                                : 0),
+                                            margin: EdgeInsets.only(
+                                                bottom: index != product!.variations!.length - 1
+                                                    ? Dimensions.paddingSizeDefault
+                                                    : 0),
+                                            decoration: BoxDecoration(
+                                                color: product!.variations![index].required!
+                                                    ? (product!.variations![index].multiSelect!
+                                                                ? product!.variations![index].min!
                                                                 : 1) <=
+                                                            selectedCount
+                                                        ? Theme.of(context).primaryColor.withOpacity(0.05)
+                                                        : Theme.of(context).disabledColor.withOpacity(0.05)
+                                                    : Colors.transparent,
+                                                border: Border.all(
+                                                    color: product!.variations![index].required!
+                                                        ? (product!.variations![index].multiSelect!
+                                                                    ? product!.variations![index].min!
+                                                                    : 1) <=
                                                                 selectedCount
-                                                                ? Theme
-                                                                .of(context)
-                                                                .primaryColor
-                                                                : Theme
-                                                                .of(context)
-                                                                .colorScheme
-                                                                .error
-                                                                : Theme
-                                                                .of(
-                                                                context)
-                                                                .hintColor,
-                                                            fontSize:
-                                                            Dimensions
-                                                                .fontSizeSmall,
-                                                          ),
+                                                            ? Theme.of(context).primaryColor.withOpacity(0.3)
+                                                            : Theme.of(context).disabledColor.withOpacity(0.3)
+                                                        : Colors.transparent,
+                                                    width: 1),
+                                                borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                              Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(product!.variations![index].name!,
+                                                        style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: product!.variations![index].required!
+                                                            ? (product!.variations![index].multiSelect!
+                                                                        ? product!.variations![index].min!
+                                                                        : 1) >
+                                                                    selectedCount
+                                                                ? Theme.of(context).colorScheme.error.withOpacity(0.1)
+                                                                : Theme.of(context).primaryColor.withOpacity(0.1)
+                                                            : Theme.of(context).disabledColor.withOpacity(0.2),
+                                                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                                      ),
+                                                      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                                      child: Text(
+                                                        product!.variations![index].required!
+                                                            ? (product!.variations![index].multiSelect!
+                                                                        ? product!.variations![index].min!
+                                                                        : 1) <=
+                                                                    selectedCount
+                                                                ? 'completed'.tr
+                                                                : 'required'.tr
+                                                            : 'optional'.tr,
+                                                        style: robotoRegular.copyWith(
+                                                          color: product!.variations![index].required!
+                                                              ? (product!.variations![index].multiSelect!
+                                                                          ? product!.variations![index].min!
+                                                                          : 1) <=
+                                                                      selectedCount
+                                                                  ? Theme.of(context).primaryColor
+                                                                  : Theme.of(context).colorScheme.error
+                                                              : Theme.of(context).hintColor,
+                                                          fontSize: Dimensions.fontSizeSmall,
                                                         ),
                                                       ),
-                                                    ]),
-                                                const SizedBox(
-                                                    height: Dimensions
-                                                        .paddingSizeExtraSmall),
-                                                Row(children: [
-                                                  product!
-                                                      .variations![
-                                                  index]
-                                                      .multiSelect!
-                                                      ? Text(
-                                                    '${'select_minimum'
-                                                        .tr} ${'${product!
-                                                        .variations![index]
-                                                        .min}'
-                                                        ' ${'and_up_to'
-                                                        .tr} ${product!
-                                                        .variations![index]
-                                                        .max} ${'options'
-                                                        .tr}'}',
-                                                    style: robotoMedium
-                                                        .copyWith(
-                                                        fontSize:
-                                                        Dimensions
-                                                            .fontSizeExtraSmall,
-                                                        color: Theme
-                                                            .of(
-                                                            context)
-                                                            .disabledColor),
-                                                  )
-                                                      : Text(
-                                                    'select_one'.tr,
-                                                    style: robotoMedium
-                                                        .copyWith(
-                                                        fontSize:
-                                                        Dimensions
-                                                            .fontSizeExtraSmall,
-                                                        color: Theme
-                                                            .of(
-                                                            context)
-                                                            .primaryColor),
-                                                  ),
-                                                ]),
-                                                SizedBox(
-                                                    height: product!
-                                                        .variations![
-                                                    index]
-                                                        .multiSelect!
-                                                        ? Dimensions
-                                                        .paddingSizeExtraSmall
-                                                        : 0),
-                                                ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                                  padding:
-                                                  EdgeInsets.zero,
-                                                  itemCount: productController
-                                                      .collapseVariation[
-                                                  index]
-                                                      ? product!
-                                                      .variations![
-                                                  index]
-                                                      .variationValues!
-                                                      .length >
-                                                      4
-                                                      ? 5
-                                                      : product!
-                                                      .variations![
-                                                  index]
-                                                      .variationValues!
-                                                      .length
-                                                      : product!
-                                                      .variations![
-                                                  index]
-                                                      .variationValues!
-                                                      .length,
-                                                  itemBuilder:
-                                                      (context, i) {
-                                                    if (i == 4 &&
-                                                        productController
-                                                            .collapseVariation[
-                                                        index]) {
-                                                      return Padding(
-                                                        padding:
-                                                        const EdgeInsets
-                                                            .all(
-                                                            Dimensions
-                                                                .paddingSizeExtraSmall),
-                                                        child: InkWell(
-                                                          onTap: () =>
-                                                              productController
-                                                                  .showMoreSpecificSection(
-                                                                  index),
-                                                          child: Row(
-                                                              children: [
-                                                                Icon(
-                                                                    Icons
-                                                                        .expand_more,
-                                                                    size:
-                                                                    18,
-                                                                    color:
-                                                                    Theme
-                                                                        .of(
-                                                                        context)
-                                                                        .primaryColor),
-                                                                const SizedBox(
-                                                                    width:
-                                                                    Dimensions
-                                                                        .paddingSizeExtraSmall),
-                                                                Text(
-                                                                  '${'view'
-                                                                      .tr} ${product!
-                                                                      .variations![index]
-                                                                      .variationValues!
-                                                                      .length -
-                                                                      4} ${'more_option'
-                                                                      .tr}',
-                                                                  style: robotoMedium
-                                                                      .copyWith(
-                                                                      color:
-                                                                      Theme
-                                                                          .of(
-                                                                          context)
-                                                                          .primaryColor),
-                                                                ),
-                                                              ]),
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      return Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                            vertical: ResponsiveHelper
-                                                                .isDesktop(
-                                                                context)
-                                                                ? Dimensions
-                                                                .paddingSizeExtraSmall
-                                                                : 0),
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            productController
-                                                                .setCartVariationIndex(
-                                                                index,
-                                                                i,
-                                                                product,
-                                                                product!
-                                                                    .variations![
-                                                                index]
-                                                                    .multiSelect!);
-                                                            productController
-                                                                .setExistInCartForBottomSheet(
-                                                                product!,
-                                                                productController
-                                                                    .selectedVariations);
-                                                          },
-                                                          child: Row(
-                                                              children: [
-                                                                Flexible(
-                                                                  child: Row(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                      children: [
-                                                                        product!
-                                                                            .variations![index]
-                                                                            .multiSelect!
-                                                                            ? Checkbox(
+                                                    ),
+                                                  ]),
+                                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                              Row(children: [
+                                                product!.variations![index].multiSelect!
+                                                    ? Text(
+                                                        '${'select_minimum'.tr} ${'${product!.variations![index].min}'
+                                                            ' ${'and_up_to'.tr} ${product!.variations![index].max} ${'options'.tr}'}',
+                                                        style: robotoMedium.copyWith(
+                                                            fontSize: Dimensions.fontSizeExtraSmall,
+                                                            color: Theme.of(context).disabledColor),
+                                                      )
+                                                    : Text(
+                                                        'select_one'.tr,
+                                                        style: robotoMedium.copyWith(
+                                                            fontSize: Dimensions.fontSizeExtraSmall,
+                                                            color: Theme.of(context).primaryColor),
+                                                      ),
+                                              ]),
+                                              SizedBox(
+                                                  height: product!.variations![index].multiSelect!
+                                                      ? Dimensions.paddingSizeExtraSmall
+                                                      : 0),
+                                              ListView.builder(
+                                                shrinkWrap: true,
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                padding: EdgeInsets.zero,
+                                                itemCount: productController.collapseVariation[index]
+                                                    ? product!.variations![index].variationValues!.length > 4
+                                                        ? 5
+                                                        : product!.variations![index].variationValues!.length
+                                                    : product!.variations![index].variationValues!.length,
+                                                itemBuilder: (context, i) {
+                                                  if (i == 4 && productController.collapseVariation[index]) {
+                                                    return Padding(
+                                                      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                                      child: InkWell(
+                                                        onTap: () => productController.showMoreSpecificSection(index),
+                                                        child: Row(children: [
+                                                          Icon(Icons.expand_more,
+                                                              size: 18, color: Theme.of(context).primaryColor),
+                                                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                          Text(
+                                                            '${'view'.tr} ${product!.variations![index].variationValues!.length - 4} ${'more_option'.tr}',
+                                                            style: robotoMedium.copyWith(
+                                                                color: Theme.of(context).primaryColor),
+                                                          ),
+                                                        ]),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return Padding(
+                                                      padding: EdgeInsets.symmetric(
+                                                          vertical: ResponsiveHelper.isDesktop(context)
+                                                              ? Dimensions.paddingSizeExtraSmall
+                                                              : 0),
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          productController.setCartVariationIndex(index, i, product,
+                                                              product!.variations![index].multiSelect!);
+                                                          productController.setExistInCartForBottomSheet(
+                                                              product!, productController.selectedVariations);
+                                                        },
+                                                        child: Row(children: [
+                                                          Flexible(
+                                                            child: Row(
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                children: [
+                                                                  product!.variations![index].multiSelect!
+                                                                      ? Checkbox(
                                                                           value: productController
                                                                               .selectedVariations[index][i],
-                                                                          activeColor: Theme
-                                                                              .of(
-                                                                              context)
-                                                                              .primaryColor,
+                                                                          activeColor: Theme.of(context).primaryColor,
                                                                           shape: RoundedRectangleBorder(
-                                                                              borderRadius: BorderRadius
-                                                                                  .circular(
-                                                                                  Dimensions
-                                                                                      .radiusSmall)),
-                                                                          onChanged: (
-                                                                              bool? newValue) {
-                                                                            productController
-                                                                                .setCartVariationIndex(
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                  Dimensions.radiusSmall)),
+                                                                          onChanged: (bool? newValue) {
+                                                                            productController.setCartVariationIndex(
                                                                                 index,
                                                                                 i,
                                                                                 product,
                                                                                 product!
-                                                                                    .variations![index]
-                                                                                    .multiSelect!);
+                                                                                    .variations![index].multiSelect!);
                                                                             productController
                                                                                 .setExistInCartForBottomSheet(
-                                                                                product!,
-                                                                                productController
-                                                                                    .selectedVariations);
+                                                                                    product!,
+                                                                                    productController
+                                                                                        .selectedVariations);
                                                                           },
                                                                           visualDensity: const VisualDensity(
-                                                                              horizontal: -3,
-                                                                              vertical: -3),
+                                                                              horizontal: -3, vertical: -3),
                                                                           side: BorderSide(
                                                                               width: 2,
-                                                                              color: Theme
-                                                                                  .of(
-                                                                                  context)
-                                                                                  .hintColor),
+                                                                              color: Theme.of(context).hintColor),
                                                                         )
-                                                                            : Radio(
+                                                                      : Radio(
                                                                           value: i,
                                                                           groupValue: productController
                                                                               .selectedVariations[index]
-                                                                              .indexOf(
-                                                                              true),
-                                                                          onChanged: (
-                                                                              dynamic value) {
-                                                                            productController
-                                                                                .setCartVariationIndex(
+                                                                              .indexOf(true),
+                                                                          onChanged: (dynamic value) {
+                                                                            productController.setCartVariationIndex(
                                                                                 index,
                                                                                 i,
                                                                                 product,
                                                                                 product!
-                                                                                    .variations![index]
-                                                                                    .multiSelect!);
+                                                                                    .variations![index].multiSelect!);
                                                                             productController
                                                                                 .setExistInCartForBottomSheet(
-                                                                                product!,
-                                                                                productController
-                                                                                    .selectedVariations);
+                                                                                    product!,
+                                                                                    productController
+                                                                                        .selectedVariations);
                                                                           },
-                                                                          activeColor: Theme
-                                                                              .of(
-                                                                              context)
-                                                                              .primaryColor,
+                                                                          activeColor: Theme.of(context).primaryColor,
                                                                           toggleable: false,
                                                                           visualDensity: const VisualDensity(
-                                                                              horizontal: -3,
-                                                                              vertical: -3),
-                                                                          fillColor: MaterialStateColor
-                                                                              .resolveWith((
-                                                                              states) =>
-                                                                          productController
-                                                                              .selectedVariations[index][i]!
-                                                                              ? Theme
-                                                                              .of(
-                                                                              context)
-                                                                              .primaryColor
-                                                                              : Theme
-                                                                              .of(
-                                                                              context)
-                                                                              .disabledColor),
+                                                                              horizontal: -3, vertical: -3),
+                                                                          fillColor: MaterialStateColor.resolveWith(
+                                                                              (states) => productController
+                                                                                      .selectedVariations[index][i]!
+                                                                                  ? Theme.of(context).primaryColor
+                                                                                  : Theme.of(context).disabledColor),
                                                                         ),
-                                                                        Text(
-                                                                          product!
-                                                                              .variations![index]
-                                                                              .variationValues![i]
-                                                                              .level!
-                                                                              .trim(),
-                                                                          maxLines: 1,
-                                                                          overflow: TextOverflow
-                                                                              .ellipsis,
-                                                                          style: productController
-                                                                              .selectedVariations[index][i]!
-                                                                              ? robotoMedium
-                                                                              : robotoRegular
-                                                                              .copyWith(
-                                                                              color: Theme
-                                                                                  .of(
-                                                                                  context)
-                                                                                  .hintColor),
-                                                                        ),
-                                                                        Flexible(
-                                                                          child: (productController
-                                                                              .selectedVariations[index][i]! &&
-                                                                              (productController
-                                                                                  .quantity ==
-                                                                                  product!
-                                                                                      .variations![index]
-                                                                                      .variationValues![i]
-                                                                                      .currentStock))
-                                                                              ? Text(
-                                                                            ' (${'only'
-                                                                                .tr} ${product!
-                                                                                .variations![index]
-                                                                                .variationValues![i]
-                                                                                .currentStock} ${'item_available'
-                                                                                .tr})',
-                                                                            style: robotoRegular
-                                                                                .copyWith(
-                                                                                color: Colors
-                                                                                    .blue,
-                                                                                fontSize: Dimensions
-                                                                                    .fontSizeExtraSmall),
+                                                                  Text(
+                                                                    product!
+                                                                        .variations![index].variationValues![i].level!
+                                                                        .trim(),
+                                                                    maxLines: 1,
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                    style: productController.selectedVariations[index]
+                                                                            [i]!
+                                                                        ? robotoMedium
+                                                                        : robotoRegular.copyWith(
+                                                                            color: Theme.of(context).hintColor),
+                                                                  ),
+                                                                  Flexible(
+                                                                    child: (productController.selectedVariations[index]
+                                                                                [i]! &&
+                                                                            (productController.quantity ==
+                                                                                product!.variations![index]
+                                                                                    .variationValues![i].currentStock))
+                                                                        ? Text(
+                                                                            ' (${'only'.tr} ${product!.variations![index].variationValues![i].currentStock} ${'item_available'.tr})',
+                                                                            style: robotoRegular.copyWith(
+                                                                                color: Colors.blue,
+                                                                                fontSize:
+                                                                                    Dimensions.fontSizeExtraSmall),
                                                                           )
-                                                                              : Text(
-                                                                            ' (${'out_of_stock'
-                                                                                .tr})',
+                                                                        : Text(
+                                                                            ' (${'out_of_stock'.tr})',
                                                                             maxLines: 1,
-                                                                            overflow: TextOverflow
-                                                                                .ellipsis,
+                                                                            overflow: TextOverflow.ellipsis,
                                                                             style: (product!
-                                                                                .variations![index]
-                                                                                .variationValues![i]
-                                                                                .stockType !=
-                                                                                'unlimited' &&
-                                                                                product!
-                                                                                    .variations![index]
-                                                                                    .variationValues![i]
-                                                                                    .currentStock !=
-                                                                                    null &&
-                                                                                product!
-                                                                                    .variations![index]
-                                                                                    .variationValues![i]
-                                                                                    .currentStock! <=
-                                                                                    0)
-                                                                                ? robotoMedium
-                                                                                .copyWith(
-                                                                                color: Theme
-                                                                                    .of(
-                                                                                    context)
-                                                                                    .colorScheme
-                                                                                    .error,
-                                                                                fontSize: Dimensions
-                                                                                    .fontSizeExtraSmall)
-                                                                                : robotoRegular
-                                                                                .copyWith(
-                                                                                color: Colors
-                                                                                    .transparent),
+                                                                                            .variations![index]
+                                                                                            .variationValues![i]
+                                                                                            .stockType !=
+                                                                                        'unlimited' &&
+                                                                                    product!
+                                                                                            .variations![index]
+                                                                                            .variationValues![i]
+                                                                                            .currentStock !=
+                                                                                        null &&
+                                                                                    product!
+                                                                                            .variations![index]
+                                                                                            .variationValues![i]
+                                                                                            .currentStock! <=
+                                                                                        0)
+                                                                                ? robotoMedium.copyWith(
+                                                                                    color: Theme.of(context)
+                                                                                        .colorScheme
+                                                                                        .error,
+                                                                                    fontSize:
+                                                                                        Dimensions.fontSizeExtraSmall)
+                                                                                : robotoRegular.copyWith(
+                                                                                    color: Colors.transparent),
                                                                           ),
-                                                                        ),
-                                                                      ]),
-                                                                ),
-                                                                (price >
-                                                                    priceWithDiscount) &&
-                                                                    (discountType ==
-                                                                        'percent')
-                                                                    ? Text(
-                                                                  PriceConverter
-                                                                      .convertPrice(
-                                                                      product!
-                                                                          .variations![index]
-                                                                          .variationValues![i]
-                                                                          .optionPrice),
+                                                                  ),
+                                                                ]),
+                                                          ),
+                                                          (price > priceWithDiscount) && (discountType == 'percent')
+                                                              ? Text(
+                                                                  PriceConverter.convertPrice(product!
+                                                                      .variations![index]
+                                                                      .variationValues![i]
+                                                                      .optionPrice),
                                                                   maxLines: 1,
-                                                                  overflow: TextOverflow
-                                                                      .ellipsis,
-                                                                  textDirection: TextDirection
-                                                                      .ltr,
-                                                                  style: robotoRegular
-                                                                      .copyWith(
-                                                                      fontSize: Dimensions
-                                                                          .fontSizeExtraSmall,
-                                                                      color: Theme
-                                                                          .of(
-                                                                          context)
-                                                                          .disabledColor,
-                                                                      decoration: TextDecoration
-                                                                          .lineThrough),
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  textDirection: TextDirection.ltr,
+                                                                  style: robotoRegular.copyWith(
+                                                                      fontSize: Dimensions.fontSizeExtraSmall,
+                                                                      color: Theme.of(context).disabledColor,
+                                                                      decoration: TextDecoration.lineThrough),
                                                                 )
-                                                                    : const SizedBox(),
-                                                                SizedBox(
-                                                                    width: price >
-                                                                        priceWithDiscount
-                                                                        ? Dimensions
-                                                                        .paddingSizeExtraSmall
-                                                                        : 0),
-                                                                Text(
-                                                                  '+${PriceConverter
-                                                                      .convertPrice(
-                                                                      product!
-                                                                          .variations![index]
-                                                                          .variationValues![i]
-                                                                          .optionPrice,
-                                                                      discount: discount,
-                                                                      discountType: discountType,
-                                                                      isVariation: true)}',
-                                                                  maxLines:
-                                                                  1,
-                                                                  overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                                  textDirection:
-                                                                  TextDirection
-                                                                      .ltr,
-                                                                  style: productController
-                                                                      .selectedVariations[index][i]!
-                                                                      ? robotoMedium
-                                                                      .copyWith(
-                                                                      fontSize: Dimensions
-                                                                          .fontSizeExtraSmall)
-                                                                      : robotoRegular
-                                                                      .copyWith(
-                                                                      fontSize: Dimensions
-                                                                          .fontSizeExtraSmall,
-                                                                      color: Theme
-                                                                          .of(
-                                                                          context)
-                                                                          .disabledColor),
-                                                                )
-                                                              ]),
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                                if (product!
-                                                    .variations![
-                                                index]
-                                                    .type ==
-                                                    "free_input" &&
-                                                    productController
-                                                        .selectedVariations[
-                                                    index]
-                                                        .contains(true))
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: Dimensions
-                                                            .paddingSizeSmall),
-                                                    child: TextFormField(
-                                                      controller:
-                                                      customValueController,
-                                                      keyboardType:
-                                                      TextInputType
-                                                          .number,
-                                                      decoration:
-                                                      InputDecoration(
-                                                        labelText:
-                                                        'enter_custom_value'
-                                                            .tr,
-                                                        labelStyle: TextStyle(
-                                                            color: Theme
-                                                                .of(
-                                                                context)
-                                                                .primaryColor),
-                                                        border:
-                                                        const OutlineInputBorder(),
-                                                        contentPadding: const EdgeInsets
-                                                            .symmetric(
-                                                            horizontal:
-                                                            Dimensions
-                                                                .paddingSizeSmall,
-                                                            vertical:
-                                                            Dimensions
-                                                                .paddingSizeSmall),
-                                                      ),
-                                                      onFieldSubmitted:
-                                                          (value) {
-                                                        if (product!.price !=
-                                                            null &&
-                                                            customValueController
-                                                                .text
-                                                                .isNotEmpty) {
-                                                          setState(() {
-                                                            product!.price =
-                                                                double.tryParse(
-                                                                    customValueController
-                                                                        .text);
-                                                            product!
-                                                                .variations![0]
-                                                                .qty =
-                                                                int.tryParse(
-                                                                    customValueController
-                                                                        .text);
-                                                            orderDetails!
-                                                                .variation![0]
-                                                                .qty =
-                                                                int.tryParse(
-                                                                    customValueController
-                                                                        .text);
-                                                          });
-                                                        }
-                                                      },
-                                                      onChanged: (value) {
-                                                        if (product!.price !=
-                                                            null &&
-                                                            customValueController
-                                                                .text
-                                                                .isNotEmpty) {
-                                                          setState(() {
-                                                            product!.price =
-                                                                double.tryParse(
-                                                                    customValueController
-                                                                        .text);
-                                                          });
-                                                        }
-                                                      },
-                                                    ),
-                                                  ),
-                                              ]),
-                                        );
-                                      },
-                                    )
-                                        : const SizedBox(),
-
-                                    SizedBox(
-                                        height: (product!.variations != null &&
-                                            product!.variations!.isNotEmpty)
-                                            ? 0
-                                            : 0),
-
-                                    product!.addOns!.isNotEmpty
-                                        ? Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: Dimensions
-                                                  .paddingSizeExtraSmall),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              children: [
-                                                Text('addons'.tr,
-                                                    style: robotoBold.copyWith(
-                                                        fontSize: Dimensions
-                                                            .fontSizeLarge)),
-                                                Container(
-                                                  decoration:
-                                                  BoxDecoration(
-                                                    color: Theme
-                                                        .of(
-                                                        context)
-                                                        .disabledColor
-                                                        .withOpacity(0.1),
-                                                    borderRadius: BorderRadius
-                                                        .circular(Dimensions
-                                                        .radiusSmall),
-                                                  ),
-                                                  padding: const EdgeInsets
-                                                      .all(Dimensions
-                                                      .paddingSizeExtraSmall),
-                                                  child: Text(
-                                                    'optional'.tr,
-                                                    style: robotoRegular
-                                                        .copyWith(
-                                                        color: Theme
-                                                            .of(
-                                                            context)
-                                                            .hintColor,
-                                                        fontSize: Dimensions
-                                                            .fontSizeSmall),
-                                                  ),
-                                                ),
-                                              ]),
-                                        ),
-                                        const SizedBox(
-                                            height: Dimensions
-                                                .paddingSizeExtraSmall),
-                                        ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                          const NeverScrollableScrollPhysics(),
-                                          padding: EdgeInsets.zero,
-                                          itemCount:
-                                          product!.addOns!.length,
-                                          itemBuilder: (context, index) {
-                                            return InkWell(
-                                              onTap: () {
-                                                if (!productController
-                                                    .addOnActiveList[
-                                                index]) {
-                                                  productController
-                                                      .addAddOn(
-                                                      true,
-                                                      index,
-                                                      product!
-                                                          .addOns![
-                                                      index]
-                                                          .stockType,
-                                                      product!
-                                                          .addOns![
-                                                      index]
-                                                          .addonStock);
-                                                } else if (productController
-                                                    .addOnQtyList[
-                                                index] ==
-                                                    1) {
-                                                  productController
-                                                      .addAddOn(
-                                                      false,
-                                                      index,
-                                                      product!
-                                                          .addOns![
-                                                      index]
-                                                          .stockType,
-                                                      product!
-                                                          .addOns![
-                                                      index]
-                                                          .addonStock);
-                                                }
-                                              },
-                                              child: Row(children: [
-                                                Flexible(
-                                                  child: Row(
-                                                      crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .center,
-                                                      children: [
-                                                        Checkbox(
-                                                          value: productController
-                                                              .addOnActiveList[
-                                                          index],
-                                                          activeColor: Theme
-                                                              .of(
-                                                              context)
-                                                              .primaryColor,
-                                                          shape: RoundedRectangleBorder(
-                                                              borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                  Dimensions
-                                                                      .radiusSmall)),
-                                                          onChanged: (bool?
-                                                          newValue) {
-                                                            if (!productController
-                                                                .addOnActiveList[
-                                                            index]) {
-                                                              productController
-                                                                  .addAddOn(
-                                                                  true,
-                                                                  index,
-                                                                  product!
-                                                                      .addOns![
-                                                                  index]
-                                                                      .stockType,
-                                                                  product!
-                                                                      .addOns![index]
-                                                                      .addonStock);
-                                                            } else
-                                                            if (productController
-                                                                .addOnQtyList[
-                                                            index] ==
-                                                                1) {
-                                                              productController
-                                                                  .addAddOn(
-                                                                  false,
-                                                                  index,
-                                                                  product!
-                                                                      .addOns![
-                                                                  index]
-                                                                      .stockType,
-                                                                  product!
-                                                                      .addOns![index]
-                                                                      .addonStock);
-                                                            }
-                                                          },
-                                                          visualDensity:
-                                                          const VisualDensity(
-                                                              horizontal:
-                                                              -3,
-                                                              vertical:
-                                                              -3),
-                                                          side: BorderSide(
-                                                              width: 2,
-                                                              color: Theme
-                                                                  .of(
-                                                                  context)
-                                                                  .hintColor),
-                                                        ),
-                                                        Text(
-                                                          product!
-                                                              .addOns![
-                                                          index]
-                                                              .name!,
-                                                          maxLines: 1,
-                                                          overflow:
-                                                          TextOverflow
-                                                              .ellipsis,
-                                                          style: productController
-                                                              .addOnActiveList[
-                                                          index]
-                                                              ? robotoMedium
-                                                              : robotoRegular
-                                                              .copyWith(
-                                                              color:
-                                                              Theme
-                                                                  .of(context)
-                                                                  .hintColor),
-                                                        ),
-                                                        Flexible(
-                                                          child: Text(
-                                                            ' (${'out_of_stock'
-                                                                .tr})',
+                                                              : const SizedBox(),
+                                                          SizedBox(
+                                                              width: price > priceWithDiscount
+                                                                  ? Dimensions.paddingSizeExtraSmall
+                                                                  : 0),
+                                                          Text(
+                                                            '+${PriceConverter.convertPrice(product!.variations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType, isVariation: true)}',
                                                             maxLines: 1,
-                                                            overflow:
-                                                            TextOverflow
-                                                                .ellipsis,
-                                                            style: product!
-                                                                .addOns![index]
-                                                                .stockType !=
-                                                                'unlimited' &&
-                                                                product!
-                                                                    .addOns![index]
-                                                                    .addonStock !=
-                                                                    null &&
-                                                                product!
-                                                                    .addOns![index]
-                                                                    .addonStock! <=
-                                                                    0
-                                                                ? robotoMedium
-                                                                .copyWith(
-                                                                color: Theme
-                                                                    .of(context)
-                                                                    .colorScheme
-                                                                    .error,
-                                                                fontSize: Dimensions
-                                                                    .fontSizeExtraSmall)
-                                                                : robotoRegular
-                                                                .copyWith(
-                                                                color:
-                                                                Colors
-                                                                    .transparent),
-                                                          ),
-                                                        ),
-                                                      ]),
+                                                            overflow: TextOverflow.ellipsis,
+                                                            textDirection: TextDirection.ltr,
+                                                            style: productController.selectedVariations[index][i]!
+                                                                ? robotoMedium.copyWith(
+                                                                    fontSize: Dimensions.fontSizeExtraSmall)
+                                                                : robotoRegular.copyWith(
+                                                                    fontSize: Dimensions.fontSizeExtraSmall,
+                                                                    color: Theme.of(context).disabledColor),
+                                                          )
+                                                        ]),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                              if (product!.variations![index].type == "free_input" &&
+                                                  productController.selectedVariations[index].contains(true))
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+                                                  child: TextFormField(
+                                                    controller: customValueController,
+                                                    keyboardType: TextInputType.number,
+                                                    decoration: InputDecoration(
+                                                      labelText: 'enter_custom_value'.tr,
+                                                      labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+                                                      border: const OutlineInputBorder(),
+                                                      contentPadding: const EdgeInsets.symmetric(
+                                                          horizontal: Dimensions.paddingSizeSmall,
+                                                          vertical: Dimensions.paddingSizeSmall),
+                                                    ),
+                                                    onFieldSubmitted: (value) {
+                                                      if (product!.price != null &&
+                                                          customValueController.text.isNotEmpty) {
+                                                        setState(() {
+                                                          product!.price = double.tryParse(customValueController.text);
+                                                          product!.variations![0].qty =
+                                                              int.tryParse(customValueController.text);
+                                                          orderDetails!.variation![0].qty =
+                                                              int.tryParse(customValueController.text);
+                                                        });
+                                                      }
+                                                    },
+                                                    onChanged: (value) {
+                                                      if (product!.price != null &&
+                                                          customValueController.text.isNotEmpty) {
+                                                        setState(() {
+                                                          product!.price = double.tryParse(customValueController.text);
+                                                        });
+                                                      }
+                                                    },
+                                                  ),
                                                 ),
-                                                Text(
-                                                  product!.addOns![index]
-                                                      .price! >
-                                                      0
-                                                      ? PriceConverter
-                                                      .convertPrice(
-                                                      product!
-                                                          .addOns![
-                                                      index]
-                                                          .price)
-                                                      : 'free'.tr,
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow
-                                                      .ellipsis,
-                                                  textDirection:
-                                                  TextDirection.ltr,
-                                                  style: productController
-                                                      .addOnActiveList[
-                                                  index]
-                                                      ? robotoMedium.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeSmall)
-                                                      : robotoRegular.copyWith(
-                                                      fontSize: Dimensions
-                                                          .fontSizeSmall,
-                                                      color: Theme
-                                                          .of(
-                                                          context)
-                                                          .disabledColor),
+                                            ]),
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox(),
+
+                                SizedBox(
+                                    height: (product!.variations != null && product!.variations!.isNotEmpty) ? 0 : 0),
+
+                                product!.addOns!.isNotEmpty
+                                    ? Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: Dimensions.paddingSizeExtraSmall),
+                                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                              Text('addons'.tr,
+                                                  style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).disabledColor.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                                                 ),
-                                                productController
-                                                    .addOnActiveList[
-                                                index]
-                                                    ? Container(
-                                                  height: 25,
-                                                  width: 90,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                      BorderRadius.circular(
-                                                          Dimensions
-                                                              .radiusSmall),
-                                                      color: Theme
-                                                          .of(
-                                                          context)
-                                                          .cardColor),
-                                                  child: Row(
-                                                      mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .center,
-                                                      children: [
-                                                        Expanded(
-                                                          child:
-                                                          InkWell(
-                                                            onTap:
-                                                                () {
-                                                              if (productController
-                                                                  .addOnQtyList[index]! >
-                                                                  1) {
-                                                                productController
-                                                                    .setAddOnQuantity(
-                                                                    false,
-                                                                    index,
-                                                                    product!
-                                                                        .addOns![index]
-                                                                        .stockType,
-                                                                    product!
-                                                                        .addOns![index]
-                                                                        .addonStock);
-                                                              } else {
-                                                                productController
-                                                                    .addAddOn(
-                                                                    false,
-                                                                    index,
-                                                                    product!
-                                                                        .addOns![index]
-                                                                        .stockType,
-                                                                    product!
-                                                                        .addOns![index]
-                                                                        .addonStock);
-                                                              }
-                                                            },
-                                                            child: Center(
-                                                                child: Icon(
-                                                                  (productController
-                                                                      .addOnQtyList[index]! >
-                                                                      1)
-                                                                      ? Icons
-                                                                      .remove
-                                                                      : CupertinoIcons
-                                                                      .delete,
-                                                                  size:
-                                                                  18,
-                                                                  color: (productController
-                                                                      .addOnQtyList[index]! >
-                                                                      1)
-                                                                      ? Theme
-                                                                      .of(
-                                                                      context)
-                                                                      .primaryColor
-                                                                      : Theme
-                                                                      .of(
-                                                                      context)
-                                                                      .colorScheme
-                                                                      .error,
-                                                                )),
-                                                          ),
+                                                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                                child: Text(
+                                                  'optional'.tr,
+                                                  style: robotoRegular.copyWith(
+                                                      color: Theme.of(context).hintColor,
+                                                      fontSize: Dimensions.fontSizeSmall),
+                                                ),
+                                              ),
+                                            ]),
+                                          ),
+                                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                          ListView.builder(
+                                            shrinkWrap: true,
+                                            physics: const NeverScrollableScrollPhysics(),
+                                            padding: EdgeInsets.zero,
+                                            itemCount: product!.addOns!.length,
+                                            itemBuilder: (context, index) {
+                                              return InkWell(
+                                                onTap: () {
+                                                  if (!productController.addOnActiveList[index]) {
+                                                    productController.addAddOn(
+                                                        true,
+                                                        index,
+                                                        product!.addOns![index].stockType,
+                                                        product!.addOns![index].addonStock);
+                                                  } else if (productController.addOnQtyList[index] == 1) {
+                                                    productController.addAddOn(
+                                                        false,
+                                                        index,
+                                                        product!.addOns![index].stockType,
+                                                        product!.addOns![index].addonStock);
+                                                  }
+                                                },
+                                                child: Row(children: [
+                                                  Flexible(
+                                                    child:
+                                                        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                                      Checkbox(
+                                                        value: productController.addOnActiveList[index],
+                                                        activeColor: Theme.of(context).primaryColor,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(Dimensions.radiusSmall)),
+                                                        onChanged: (bool? newValue) {
+                                                          if (!productController.addOnActiveList[index]) {
+                                                            productController.addAddOn(
+                                                                true,
+                                                                index,
+                                                                product!.addOns![index].stockType,
+                                                                product!.addOns![index].addonStock);
+                                                          } else if (productController.addOnQtyList[index] == 1) {
+                                                            productController.addAddOn(
+                                                                false,
+                                                                index,
+                                                                product!.addOns![index].stockType,
+                                                                product!.addOns![index].addonStock);
+                                                          }
+                                                        },
+                                                        visualDensity:
+                                                            const VisualDensity(horizontal: -3, vertical: -3),
+                                                        side: BorderSide(width: 2, color: Theme.of(context).hintColor),
+                                                      ),
+                                                      Text(
+                                                        product!.addOns![index].name!,
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: productController.addOnActiveList[index]
+                                                            ? robotoMedium
+                                                            : robotoRegular.copyWith(
+                                                                color: Theme.of(context).hintColor),
+                                                      ),
+                                                      Flexible(
+                                                        child: Text(
+                                                          ' (${'out_of_stock'.tr})',
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: product!.addOns![index].stockType != 'unlimited' &&
+                                                                  product!.addOns![index].addonStock != null &&
+                                                                  product!.addOns![index].addonStock! <= 0
+                                                              ? robotoMedium.copyWith(
+                                                                  color: Theme.of(context).colorScheme.error,
+                                                                  fontSize: Dimensions.fontSizeExtraSmall)
+                                                              : robotoRegular.copyWith(color: Colors.transparent),
                                                         ),
-                                                        Text(
-                                                          productController
-                                                              .addOnQtyList[
-                                                          index]
-                                                              .toString(),
-                                                          style: robotoMedium
-                                                              .copyWith(
-                                                              fontSize:
-                                                              Dimensions
-                                                                  .fontSizeDefault),
-                                                        ),
-                                                        Expanded(
-                                                          child:
-                                                          InkWell(
-                                                            onTap: () =>
-                                                                productController
-                                                                    .setAddOnQuantity(
-                                                                    true,
-                                                                    index,
-                                                                    product!
-                                                                        .addOns![index]
-                                                                        .stockType,
-                                                                    product!
-                                                                        .addOns![index]
-                                                                        .addonStock),
-                                                            child: Center(
-                                                                child: Icon(
-                                                                    Icons.add,
-                                                                    size: 18,
-                                                                    color: Theme
-                                                                        .of(
-                                                                        context)
-                                                                        .primaryColor)),
-                                                          ),
-                                                        ),
-                                                      ]),
-                                                )
-                                                    : const SizedBox(),
-                                              ]),
-                                            );
-                                          },
-                                        ),
-                                        const SizedBox(
-                                            height: Dimensions
-                                                .paddingSizeExtraSmall),
-                                      ],
-                                    )
-                                        : const SizedBox(),
-                                  ]),
-                            ),
-                          ]),
+                                                      ),
+                                                    ]),
+                                                  ),
+                                                  Text(
+                                                    product!.addOns![index].price! > 0
+                                                        ? PriceConverter.convertPrice(product!.addOns![index].price)
+                                                        : 'free'.tr,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    textDirection: TextDirection.ltr,
+                                                    style: productController.addOnActiveList[index]
+                                                        ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall)
+                                                        : robotoRegular.copyWith(
+                                                            fontSize: Dimensions.fontSizeSmall,
+                                                            color: Theme.of(context).disabledColor),
+                                                  ),
+                                                  productController.addOnActiveList[index]
+                                                      ? Container(
+                                                          height: 25,
+                                                          width: 90,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(Dimensions.radiusSmall),
+                                                              color: Theme.of(context).cardColor),
+                                                          child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: [
+                                                                Expanded(
+                                                                  child: InkWell(
+                                                                    onTap: () {
+                                                                      if (productController.addOnQtyList[index]! > 1) {
+                                                                        productController.setAddOnQuantity(
+                                                                            false,
+                                                                            index,
+                                                                            product!.addOns![index].stockType,
+                                                                            product!.addOns![index].addonStock);
+                                                                      } else {
+                                                                        productController.addAddOn(
+                                                                            false,
+                                                                            index,
+                                                                            product!.addOns![index].stockType,
+                                                                            product!.addOns![index].addonStock);
+                                                                      }
+                                                                    },
+                                                                    child: Center(
+                                                                        child: Icon(
+                                                                      (productController.addOnQtyList[index]! > 1)
+                                                                          ? Icons.remove
+                                                                          : CupertinoIcons.delete,
+                                                                      size: 18,
+                                                                      color:
+                                                                          (productController.addOnQtyList[index]! > 1)
+                                                                              ? Theme.of(context).primaryColor
+                                                                              : Theme.of(context).colorScheme.error,
+                                                                    )),
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  productController.addOnQtyList[index].toString(),
+                                                                  style: robotoMedium.copyWith(
+                                                                      fontSize: Dimensions.fontSizeDefault),
+                                                                ),
+                                                                Expanded(
+                                                                  child: InkWell(
+                                                                    onTap: () => productController.setAddOnQuantity(
+                                                                        true,
+                                                                        index,
+                                                                        product!.addOns![index].stockType,
+                                                                        product!.addOns![index].addonStock),
+                                                                    child: Center(
+                                                                        child: Icon(Icons.add,
+                                                                            size: 18,
+                                                                            color: Theme.of(context).primaryColor)),
+                                                                  ),
+                                                                ),
+                                                              ]),
+                                                        )
+                                                      : const SizedBox(),
+                                                ]),
+                                              );
+                                            },
+                                          ),
+                                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                        ],
+                                      )
+                                    : const SizedBox(),
+                              ]),
+                        ),
+                      ]),
                     ),
                   ),
 
                   ///Bottom side..
                   Container(
                     decoration: BoxDecoration(
-                        color: Theme
-                            .of(context)
-                            .cardColor,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.vertical(
-                            bottom: Radius.circular(
-                                ResponsiveHelper.isDesktop(context)
-                                    ? Dimensions.radiusExtraLarge
-                                    : 0)),
+                            bottom:
+                                Radius.circular(ResponsiveHelper.isDesktop(context) ? Dimensions.radiusExtraLarge : 0)),
                         boxShadow: ResponsiveHelper.isDesktop(context)
                             ? null
-                            : [
-                          BoxShadow(
-                              color: Colors.grey[300]!, blurRadius: 10)
-                        ]),
+                            : [BoxShadow(color: Colors.grey[300]!, blurRadius: 10)]),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: Dimensions.paddingSizeDefault,
-                        vertical: Dimensions.paddingSizeDefault),
+                        horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
                     child: SafeArea(
                       child: Column(
                         children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('${'total_amount'.tr}:',
-                                    style: robotoMedium.copyWith(
-                                        fontSize: Dimensions.fontSizeDefault,
-                                        color: Theme
-                                            .of(context)
-                                            .primaryColor)),
-                                const SizedBox(
-                                    width: Dimensions.paddingSizeExtraSmall),
-                                Row(children: [
-                                  (priceWithAddonsVariation >
-                                      priceWithAddonsVariationWithDiscount)
-                                      ? PriceConverter.convertAnimationPrice(
-                                    priceWithAddonsVariation,
-                                    textStyle: robotoMedium.copyWith(
-                                        color: Theme
-                                            .of(context)
-                                            .disabledColor,
-                                        fontSize:
-                                        Dimensions.fontSizeSmall,
-                                        decoration:
-                                        TextDecoration.lineThrough),
-                                  )
-                                      : const SizedBox(),
-                                  const SizedBox(
-                                      width: Dimensions.paddingSizeExtraSmall),
-                                  if (product!.variations!.isNotEmpty &&
-                                      product!.variations![0].type ==
-                                          "free_input")
-                                    Text(
-                                      "${priceWithAddonsVariationWithDiscount
-                                          .toDouble()}E€",
-                                      style: robotoBold.copyWith(
-                                          color:
-                                          Theme
-                                              .of(context)
-                                              .primaryColor),
-                                    ),
-                                  PriceConverter.convertAnimationPrice(
-                                    product!.variations!.isEmpty ? price *
-                                        productController.quantity! : (price +
-                                        variationPrice + addonsCost) *
-                                        productController.quantity!,
-                                    textStyle: robotoBold.copyWith(
-                                        color:
-                                        Theme
-                                            .of(context)
-                                            .primaryColor),
-                                  ),
-                                ]),
-                              ]),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                            Text('${'total_amount'.tr}:',
+                                style: robotoMedium.copyWith(
+                                    fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor)),
+                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                            Row(children: [
+                              (priceWithAddonsVariation > priceWithAddonsVariationWithDiscount)
+                                  ? PriceConverter.convertAnimationPrice(
+                                      priceWithAddonsVariation,
+                                      textStyle: robotoMedium.copyWith(
+                                          color: Theme.of(context).disabledColor,
+                                          fontSize: Dimensions.fontSizeSmall,
+                                          decoration: TextDecoration.lineThrough),
+                                    )
+                                  : const SizedBox(),
+                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                              if (product!.variations!.isNotEmpty && product!.variations![0].type == "free_input")
+                                Text(
+                                  "${priceWithAddonsVariationWithDiscount.toDouble()}E€",
+                                  style: robotoBold.copyWith(color: Theme.of(context).primaryColor),
+                                ),
+                              PriceConverter.convertAnimationPrice(
+                                product!.variations!.isEmpty
+                                    ? price * productController.quantity!
+                                    : (price + variationPrice + addonsCost) * productController.quantity!,
+                                textStyle: robotoBold.copyWith(color: Theme.of(context).primaryColor),
+                              ),
+                            ]),
+                          ]),
                           const SizedBox(height: Dimensions.paddingSizeSmall),
                           Row(
                             children: [
@@ -1741,12 +929,8 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
                                 QuantityButton(
                                   onTap: () {
                                     if (productController.quantity! > 1) {
-                                      productController.setQuantity(
-                                          false,
-                                          product!.cartQuantityLimit,
-                                          product!.stockType,
-                                          product!.itemStock,
-                                          widget.isCampaign);
+                                      productController.setQuantity(false, product!.cartQuantityLimit,
+                                          product!.stockType, product!.itemStock, widget.isCampaign);
                                     }
                                   },
                                   isIncrement: false,
@@ -1754,79 +938,55 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
                                 AnimatedFlipCounter(
                                   duration: const Duration(milliseconds: 500),
                                   value: productController.quantity!.toDouble(),
-                                  textStyle: robotoMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeLarge),
+                                  textStyle: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
                                 ),
                                 QuantityButton(
-                                  onTap: () =>
-                                      productController.setQuantity(
-                                          true,
-                                          product!.cartQuantityLimit,
-                                          product!.stockType,
-                                          product!.itemStock,
-                                          widget.isCampaign),
+                                  onTap: () => productController.setQuantity(true, product!.cartQuantityLimit,
+                                      product!.stockType, product!.itemStock, widget.isCampaign),
                                   isIncrement: true,
                                 ),
                               ]),
-                              const SizedBox(
-                                  width: Dimensions.paddingSizeSmall),
+                              const SizedBox(width: Dimensions.paddingSizeSmall),
                               Expanded(
-                                child: GetBuilder<CartController>(
-                                    builder: (cartController) {
-                                      return CustomButtonWidget(
-                                        radius: Dimensions.paddingSizeDefault,
-                                        width: ResponsiveHelper.isDesktop(
-                                            context)
-                                            ? MediaQuery
-                                            .of(context)
-                                            .size
-                                            .width /
-                                            2.0
-                                            : null,
-                                        isLoading: cartController.isLoading,
-                                        buttonText: (!product!.scheduleOrder! &&
-                                            !isAvailable)
-                                            ? 'not_available_now'.tr
-                                            : widget.isCampaign
+                                child: GetBuilder<CartController>(builder: (cartController) {
+                                  return CustomButtonWidget(
+                                    radius: Dimensions.paddingSizeDefault,
+                                    width: ResponsiveHelper.isDesktop(context)
+                                        ? MediaQuery.of(context).size.width / 2.0
+                                        : null,
+                                    isLoading: cartController.isLoading,
+                                    buttonText: (!product!.scheduleOrder! && !isAvailable)
+                                        ? 'not_available_now'.tr
+                                        : widget.isCampaign
                                             ? 'order_now'.tr
-                                            : (widget.cart != null ||
-                                            productController
-                                                .cartIndex !=
-                                                -1)
-                                            ? 'update_in_cart'.tr
-                                            : 'add_to_cart'.tr,
-                                        onPressed: (!product!.scheduleOrder! &&
-                                            !isAvailable) ||
+                                            : (widget.cart != null || productController.cartIndex != -1)
+                                                ? 'update_in_cart'.tr
+                                                : 'add_to_cart'.tr,
+                                    onPressed: (!product!.scheduleOrder! && !isAvailable) ||
                                             (widget.cart != null &&
                                                 productController
-                                                    .checkOutOfStockVariationSelected(
-                                                    product
-                                                        ?.variations) !=
+                                                        .checkOutOfStockVariationSelected(product?.variations) !=
                                                     null)
-                                            ? null
-                                            : () async {
-                                          if (product!.variations!.isEmpty) {
-                                            _onButtonPressed(
-                                              productController,
-                                              cartController,
-                                              price,
-                                              priceWithDiscount,
-                                              price,
-                                              discount,
-                                              discountType,
-                                              addOnIdList,
-                                              addOnsList,
-                                              price
-                                            );
-                                          } else {
+                                        ? null
+                                        : () async {
+                                            if (product!.variations!.isEmpty) {
+                                              _onButtonPressed(
+                                                  productController,
+                                                  cartController,
+                                                  price,
+                                                  priceWithDiscount,
+                                                  price,
+                                                  discount,
+                                                  discountType,
+                                                  addOnIdList,
+                                                  addOnsList,
+                                                  price);
+                                            } else {
                                               _onButtonPressed(
                                                 productController,
                                                 cartController,
-                                                product!.variations!
-                                                            .isNotEmpty &&
-                                                        product!.variations![0]
-                                                                .type ==
-                                                            "free_input"
+                                                product!.variations!.isNotEmpty &&
+                                                        product!.variations![0].type == "free_input"
                                                     ? priceWithVariation
                                                     : price,
                                                 priceWithDiscount,
@@ -1835,18 +995,15 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
                                                 discountType,
                                                 addOnIdList,
                                                 addOnsList,
-                                                product!.variations!
-                                                            .isNotEmpty &&
-                                                        product!.variations![0]
-                                                                .type ==
-                                                            "free_input"
+                                                product!.variations!.isNotEmpty &&
+                                                        product!.variations![0].type == "free_input"
                                                     ? priceWithAddonsVariation
                                                     : price,
                                               );
                                             }
                                           },
-                                      );
-                                    }),
+                                  );
+                                }),
                               ),
                             ],
                           ),
@@ -1859,31 +1016,23 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
               GetPlatform.isAndroid
                   ? const SizedBox()
                   : Positioned(
-                top: 5,
-                right: 10,
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Container(
-                    padding: const EdgeInsets.all(
-                        Dimensions.paddingSizeExtraSmall),
-                    decoration: BoxDecoration(
-                      color: Theme
-                          .of(context)
-                          .cardColor,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Theme
-                                .of(context)
-                                .primaryColor
-                                .withOpacity(0.3),
-                            blurRadius: 5)
-                      ],
+                      top: 5,
+                      right: 10,
+                      child: InkWell(
+                        onTap: () => Get.back(),
+                        child: Container(
+                          padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.3), blurRadius: 5)
+                            ],
+                          ),
+                          child: const Icon(Icons.close, size: 14),
+                        ),
+                      ),
                     ),
-                    child: const Icon(Icons.close, size: 14),
-                  ),
-                ),
-              ),
             ],
           ),
         );
@@ -1891,7 +1040,8 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
     );
   }
 
-  void _onButtonPressed(ProductController productController,
+  void _onButtonPressed(
+      ProductController productController,
       CartController cartController,
       double priceWithVariation,
       double priceWithDiscount,
@@ -1911,8 +1061,7 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
         null,
         finalPrice,
         priceWithDiscount,
-        (price -
-            PriceConverter.convertWithDiscount(price, discount, discountType)!),
+        (price - PriceConverter.convertWithDiscount(price, discount, discountType)!),
         productController.quantity,
         addOnIdList,
         addOnsList,
@@ -1925,12 +1074,7 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
 
       // Process online cart
       OnlineCart onlineCart = await _processOnlineCart(
-          productController,
-          cartController,
-          addOnIdList,
-          addOnsList,
-          priceWithAddonsVariation
-      );
+          productController, cartController, addOnIdList, addOnsList, priceWithAddonsVariation);
 
       debugPrint('-------checkout online cart body : ${onlineCart.toJson()}');
       debugPrint('-------checkout cart : ${cartModel.toJson()}');
@@ -1944,16 +1088,10 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
               cartList: [cartModel],
             ));
       } else {
-        await _executeActions(
-            cartController,
-            productController,
-            cartModel,
-            onlineCart
-        );
+        await _executeActions(cartController, productController, cartModel, onlineCart);
       }
     }
   }
-
 
   void _processVariationWarning(ProductController productController) {
     if (product!.variations != null && product!.variations!.isNotEmpty) {
@@ -1961,24 +1099,16 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
         if (!product!.variations![index].multiSelect! &&
             product!.variations![index].required! &&
             !productController.selectedVariations[index].contains(true)) {
-          showCustomSnackBar(
-              '${'choose_a_variation_from'.tr} ${product!.variations![index]
-                  .name}',
-              showToaster: true);
+          showCustomSnackBar('${'choose_a_variation_from'.tr} ${product!.variations![index].name}', showToaster: true);
           productController.changeCanAddToCartProduct(false);
           return;
         } else if (product!.variations![index].multiSelect! &&
-            (product!.variations![index].required! ||
-                productController.selectedVariations[index].contains(true)) &&
+            (product!.variations![index].required! || productController.selectedVariations[index].contains(true)) &&
             product!.variations![index].min! >
-                productController.selectedVariationLength(
-                    productController.selectedVariations, index)) {
+                productController.selectedVariationLength(productController.selectedVariations, index)) {
           showCustomSnackBar(
-              '${'you_need_to_select_minimum'.tr} ${product!.variations![index]
-                  .min} '
-                  '${'to_maximum'.tr} ${product!.variations![index]
-                  .max} ${'options_from'.tr} ${product!.variations![index]
-                  .name} ${'variation'.tr}',
+              '${'you_need_to_select_minimum'.tr} ${product!.variations![index].min} '
+              '${'to_maximum'.tr} ${product!.variations![index].max} ${'options_from'.tr} ${product!.variations![index].name} ${'variation'.tr}',
               showToaster: true);
           productController.changeCanAddToCartProduct(false);
           return;
@@ -1996,35 +1126,29 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
     }
   }
 
-  Future<OnlineCart> _processOnlineCart(ProductController productController,
-      CartController cartController,
-      List<AddOn> addOnIdList,
-      List<AddOns> addOnsList,
-      double priceWithAddonsVariation,) async {
-    List<OrderVariation> variations = CartHelper
-        .getSelectedVariations(
+  Future<OnlineCart> _processOnlineCart(
+    ProductController productController,
+    CartController cartController,
+    List<AddOn> addOnIdList,
+    List<AddOns> addOnsList,
+    double priceWithAddonsVariation,
+  ) async {
+    List<OrderVariation> variations = CartHelper.getSelectedVariations(
       productVariations: product!.variations,
       selectedVariations: productController.selectedVariations,
-    )
-        .$1;
-    List<int?> optionsIdList = CartHelper
-        .getSelectedVariations(
+    ).$1;
+    List<int?> optionsIdList = CartHelper.getSelectedVariations(
       productVariations: product!.variations,
       selectedVariations: productController.selectedVariations,
-    )
-        .$2;
-    List<int?> listOfAddOnId =
-    CartHelper.getSelectedAddonIds(addOnIdList: addOnIdList);
-    List<int?> listOfAddOnQty =
-    CartHelper.getSelectedAddonQtnList(addOnIdList: addOnIdList);
-    if (product!.variations!.isNotEmpty && product!.variations![0].type ==
-        "free_input") {
+    ).$2;
+    List<int?> listOfAddOnId = CartHelper.getSelectedAddonIds(addOnIdList: addOnIdList);
+    List<int?> listOfAddOnQty = CartHelper.getSelectedAddonQtnList(addOnIdList: addOnIdList);
+    if (product!.variations!.isNotEmpty && product!.variations![0].type == "free_input") {
       variations[0].qty = int.parse(customValueController.text);
     }
     OnlineCart onlineCart = OnlineCart(
         (widget.cart != null || productController.cartIndex != -1)
-            ? widget.cart?.id ??
-            cartController.cartList[productController.cartIndex].id
+            ? widget.cart?.id ?? cartController.cartList[productController.cartIndex].id
             : null,
         widget.isCampaign ? null : product!.id,
         widget.isCampaign ? product!.id : null,
@@ -2037,20 +1161,15 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
         'Food',
         variationOptionIds: optionsIdList);
 
-
     return onlineCart;
   }
 
-  Future<void> _executeActions(CartController cartController,
-      ProductController productController,
-      CartModel cartModel,
+  Future<void> _executeActions(CartController cartController, ProductController productController, CartModel cartModel,
       OnlineCart onlineCart) async {
     if (widget.cart != null || productController.cartIndex != -1) {
-      await cartController.updateCartOnline(onlineCart,
-          existCartData: widget.cart);
+      await cartController.updateCartOnline(onlineCart, existCartData: widget.cart);
     } else {
-      await cartController.addToCartOnline(onlineCart,
-          existCartData: widget.cart);
+      await cartController.addToCartOnline(onlineCart, existCartData: widget.cart);
     }
     // if (cartController
     //     .existAnotherRestaurantProduct(cartModel.product!.restaurantId)) {
@@ -2081,22 +1200,16 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
     // }
   }
 
-  double _getVariationPriceWithDiscount(Product product,
-      ProductController productController,
-      double? discount,
-      String? discountType) {
+  double _getVariationPriceWithDiscount(
+      Product product, ProductController productController, double? discount, String? discountType) {
     double variationPrice = 0;
     if (product.variations != null) {
       for (int index = 0; index < product.variations!.length; index++) {
-        for (int i = 0;
-        i < product.variations![index].variationValues!.length;
-        i++) {
+        for (int i = 0; i < product.variations![index].variationValues!.length; i++) {
           if (productController.selectedVariations[index].isNotEmpty &&
               productController.selectedVariations[index][i]!) {
             variationPrice += PriceConverter.convertWithDiscount(
-                product.variations![index].variationValues![i].optionPrice!,
-                discount,
-                discountType)!;
+                product.variations![index].variationValues![i].optionPrice!, discount, discountType)!;
           }
         }
       }
@@ -2104,20 +1217,15 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
     return variationPrice;
   }
 
-  double _getVariationPrice(Product product,
-      ProductController productController) {
+  double _getVariationPrice(Product product, ProductController productController) {
     double variationPrice = 0;
     if (product.variations != null) {
       for (int index = 0; index < product.variations!.length; index++) {
-        for (int i = 0;
-        i < product.variations![index].variationValues!.length;
-        i++) {
+        for (int i = 0; i < product.variations![index].variationValues!.length; i++) {
           if (productController.selectedVariations[index].isNotEmpty &&
               productController.selectedVariations[index][i]!) {
             variationPrice += PriceConverter.convertWithDiscount(
-                product.variations![index].variationValues![i].optionPrice!,
-                0,
-                'none')!;
+                product.variations![index].variationValues![i].optionPrice!, 0, 'none')!;
           }
         }
       }
@@ -2130,31 +1238,25 @@ class _ProductBottomSheetWidgetState extends State<ProductBottomSheetWidget> {
 
     for (int index = 0; index < product.addOns!.length; index++) {
       if (productController.addOnActiveList[index]) {
-        addonsCost = addonsCost +
-            (product.addOns![index].price! *
-                productController.addOnQtyList[index]!);
+        addonsCost = addonsCost + (product.addOns![index].price! * productController.addOnQtyList[index]!);
       }
     }
 
     return addonsCost;
   }
 
-  List<AddOn> _getAddonIdList(Product product,
-      ProductController productController) {
+  List<AddOn> _getAddonIdList(Product product, ProductController productController) {
     List<AddOn> addOnIdList = [];
     for (int index = 0; index < product.addOns!.length; index++) {
       if (productController.addOnActiveList[index]) {
-        addOnIdList.add(AddOn(
-            id: product.addOns![index].id,
-            quantity: productController.addOnQtyList[index]));
+        addOnIdList.add(AddOn(id: product.addOns![index].id, quantity: productController.addOnQtyList[index]));
       }
     }
 
     return addOnIdList;
   }
 
-  List<AddOns> _getAddonList(Product product,
-      ProductController productController) {
+  List<AddOns> _getAddonList(Product product, ProductController productController) {
     List<AddOns> addOnsList = [];
     for (int index = 0; index < product.addOns!.length; index++) {
       if (productController.addOnActiveList[index]) {

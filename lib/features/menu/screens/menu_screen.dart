@@ -346,7 +346,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 }(), builder: (context, snapshot) {
                   bool isProduction = AppConstants.baseUrl == AppConstants.productionBaseUrl;
                   return Text(
-                    "V ${snapshot.data?.$1.version}+${snapshot.data?.$1.buildNumber}#${snapshot.data?.$2?.number ?? '0'}${!isProduction ? "T" : ""}",
+                    "V ${snapshot.data?.$1.version}+${snapshot.data?.$1.buildNumber}${(isProduction ? "" : "#${snapshot.data?.$2?.number ?? '0'}T")}",
                     style: robotoRegular.copyWith(fontStyle: FontStyle.italic),
                   );
                 }),

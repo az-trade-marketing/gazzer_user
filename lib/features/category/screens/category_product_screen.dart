@@ -114,30 +114,32 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
               appBar: ResponsiveHelper.isDesktop(context)
                   ? const WebMenuBar()
                   : AppBar(
-                      title: catController.isSearching
-                          ? TextField(
-                              autofocus: true,
-                              textInputAction: TextInputAction.search,
-                              decoration: const InputDecoration(
-                                hintText: 'Search...',
-                                border: InputBorder.none,
-                              ),
-                              style: robotoRegular.copyWith(
-                                  fontSize: Dimensions.fontSizeLarge),
-                              onSubmitted: (String query) =>
-                                  catController.searchData(
-                                query,
-                                catController.subCategoryIndex == 0
-                                    ? widget.categoryID
-                                    : catController.subCategoryList
-                                        ?.elementAt(
-                                            catController.subCategoryIndex)
-                                        .id
-                                        .toString(),
-                                catController.type,
-                              ),
-                            )
-                          : Text(
+                      title:
+                      //  catController.isSearching
+                      //     ? TextField(
+                      //         autofocus: true,
+                      //         textInputAction: TextInputAction.search,
+                      //         decoration: const InputDecoration(
+                      //           hintText: 'Search...',
+                      //           border: InputBorder.none,
+                      //         ),
+                      //         style: robotoRegular.copyWith(
+                      //             fontSize: Dimensions.fontSizeLarge),
+                      //         onSubmitted: (String query) =>
+                      //             catController.searchData(
+                      //           query,
+                      //           catController.subCategoryIndex == 0
+                      //               ? widget.categoryID
+                      //               : catController.subCategoryList
+                      //                   ?.elementAt(
+                      //                       catController.subCategoryIndex)
+                      //                   .id
+                      //                   .toString(),
+                      //           catController.type,
+                      //         ),
+                      //       )
+                      //     : 
+                          Text(
                               widget.categoryName,
                               style: robotoRegular.copyWith(
                                 fontSize: Dimensions.fontSizeLarge,
@@ -162,15 +164,15 @@ class CategoryProductScreenState extends State<CategoryProductScreen>
                       backgroundColor: Theme.of(context).cardColor,
                       elevation: 0,
                       actions: [
-                        IconButton(
-                          onPressed: () => catController.toggleSearch(),
-                          icon: Icon(
-                            catController.isSearching
-                                ? Icons.close_sharp
-                                : Icons.search,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                          ),
-                        ),
+                        // IconButton(
+                        //   onPressed: () => catController.toggleSearch(),
+                        //   icon: Icon(
+                        //     catController.isSearching
+                        //         ? Icons.close_sharp
+                        //         : Icons.search,
+                        //     color: Theme.of(context).textTheme.bodyLarge!.color,
+                        //   ),
+                        // ),
                         IconButton(
                           onPressed: () =>
                               Get.toNamed(RouteHelper.getCartRoute()),

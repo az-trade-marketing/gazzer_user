@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/features/wallet/domain/models/fund_bonus_model.dart';
 
 class RestaurantModel {
@@ -13,10 +14,9 @@ class RestaurantModel {
   RestaurantModel.fromJson(Map<String, dynamic> json) {
     totalSize = json['total_size'];
     limit = json['limit'].toString();
-    offset =
-        (json['offset'] != null && json['offset'].toString().trim().isNotEmpty)
-            ? int.parse(json['offset'].toString())
-            : null;
+    offset = (json['offset'] != null && json['offset'].toString().trim().isNotEmpty)
+        ? int.parse(json['offset'].toString())
+        : null;
     if (json['restaurants'] != null) {
       restaurants = [];
       json['restaurants'].forEach((v) {
@@ -168,8 +168,7 @@ class Restaurant {
     longitude = json['longitude'];
     address = json['address'];
     zoneId = json['zone_id'];
-    minimumOrder =
-        json['minimum_order'] != null ? json['minimum_order'].toDouble() : 0;
+    minimumOrder = json['minimum_order'] != null ? json['minimum_order'].toDouble() : 0;
     currency = json['currency'];
     freeDelivery = json['free_delivery'];
     coverPhoto = json['cover_photo'] ?? '';
@@ -186,29 +185,22 @@ class Restaurant {
     deliveryTime = json['delivery_time'];
     veg = json['veg'];
     nonVeg = json['non_veg'];
-    categoryIds =
-        json['category_ids'] != null ? json['category_ids'].cast<int>() : [];
-    discount =
-        json['discount'] != null ? Discount.fromJson(json['discount']) : null;
+    categoryIds = json['category_ids'] != null ? json['category_ids'].cast<int>() : [];
+    discount = json['discount'] != null ? Discount.fromJson(json['discount']) : null;
     if (json['schedules'] != null) {
       schedules = <Schedules>[];
       json['schedules'].forEach((v) {
         schedules!.add(Schedules.fromJson(v));
       });
     }
-    minimumShippingCharge = json['minimum_shipping_charge'] != null
-        ? json['minimum_shipping_charge'].toDouble()
-        : 0.0;
-    perKmShippingCharge = json['per_km_shipping_charge'] != null
-        ? json['per_km_shipping_charge'].toDouble()
-        : 0.0;
+    minimumShippingCharge = json['minimum_shipping_charge'] != null ? json['minimum_shipping_charge'].toDouble() : 0.0;
+    perKmShippingCharge = json['per_km_shipping_charge'] != null ? json['per_km_shipping_charge'].toDouble() : 0.0;
     maximumShippingCharge = json['maximum_shipping_charge']?.toDouble();
     vendorId = json['vendor_id'];
     restaurantModel = json['restaurant_model'];
     restaurantStatus = json['restaurant_status'];
-    restaurantSubscription = json['restaurant_sub'] != null
-        ? RestaurantSubscription.fromJson(json['restaurant_sub'])
-        : null;
+    restaurantSubscription =
+        json['restaurant_sub'] != null ? RestaurantSubscription.fromJson(json['restaurant_sub']) : null;
     if (json['cuisine'] != null) {
       cuisineNames = [];
       json['cuisine'].forEach((v) {
@@ -237,10 +229,10 @@ class Restaurant {
     customerDateOrderStatus = json['customer_date_order_sratus'];
     customerOrderDate = json['customer_order_date'];
     freeDeliveryDistanceStatus = json['free_delivery_distance_status'];
-    freeDeliveryDistanceValue = (json['free_delivery_distance_value'] != null &&
-            json['free_delivery_distance_value'] != '')
-        ? double.parse(json['free_delivery_distance_value'].toString())
-        : null;
+    freeDeliveryDistanceValue =
+        (json['free_delivery_distance_value'] != null && json['free_delivery_distance_value'] != '')
+            ? double.parse(json['free_delivery_distance_value'].toString())
+            : null;
     restaurantOpeningTime = json['current_opening_time'];
     extraPackagingStatusIsMandatory = json['extra_packaging_status'] ?? false;
     extraPackagingAmount = json['extra_packaging_amount']?.toDouble() ?? 0;
@@ -402,12 +394,17 @@ class Schedules {
   String? openingTime;
   String? closingTime;
 
-  Schedules(
-      {this.id,
-      this.restaurantId,
-      this.day,
-      this.openingTime,
-      this.closingTime});
+  Schedules({this.id, this.restaurantId, this.day, this.openingTime, this.closingTime});
+
+  TimeOfDay get openingTimeAsTimeOfDay {
+    final timeParts = openingTime!.split(':');
+    return TimeOfDay(hour: int.tryParse(timeParts[0]) ?? 0, minute: int.tryParse(timeParts[1]) ?? 0);
+  }
+
+  TimeOfDay get closingTimeAsTimeOfDay {
+    final timeParts = closingTime!.split(':');
+    return TimeOfDay(hour: int.tryParse(timeParts[0]) ?? 0, minute: int.tryParse(timeParts[1]) ?? 0);
+  }
 
   Schedules.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -425,6 +422,11 @@ class Schedules {
     data['opening_time'] = openingTime;
     data['closing_time'] = closingTime;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Schedules{id: $id, restaurantId: $restaurantId, day: $day, openingTime: $openingTime, closingTime: $closingTime}';
   }
 }
 
@@ -778,14 +780,7 @@ class Cuisines {
   String? createdAt;
   String? updatedAt;
 
-  Cuisines(
-      {this.id,
-      this.name,
-      this.image,
-      this.status,
-      this.slug,
-      this.createdAt,
-      this.updatedAt});
+  Cuisines({this.id, this.name, this.image, this.status, this.slug, this.createdAt, this.updatedAt});
 
   Cuisines.fromJson(Map<String, dynamic> json) {
     id = json['id'];

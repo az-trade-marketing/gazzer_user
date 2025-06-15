@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gazzer_userapp/common/models/restaurant_model.dart';
 import 'package:gazzer_userapp/common/widgets/custom_button_widget.dart';
 import 'package:gazzer_userapp/features/cart/controllers/cart_controller.dart';
+import 'package:gazzer_userapp/features/cart/controllers/cart_controller_extension.dart';
 import 'package:gazzer_userapp/features/restaurant/controllers/restaurant_controller.dart';
 import 'package:gazzer_userapp/helper/price_converter.dart';
 import 'package:gazzer_userapp/helper/route_helper.dart';
@@ -20,33 +21,26 @@ class BottomCartWidget extends StatelessWidget {
       return Container(
         height: GetPlatform.isIOS ? 100 : 70,
         width: Get.width,
-        padding: const EdgeInsets.symmetric(
-            horizontal: Dimensions.paddingSizeExtraLarge),
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           boxShadow: [
-            BoxShadow(
-                color: const Color(0xFF2A2A2A).withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, -5))
+            BoxShadow(color: const Color(0xFF2A2A2A).withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))
           ],
         ),
         child: SafeArea(
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('${'items'.tr}: ${cartController.cartList.length}',
-                      style: robotoMedium.copyWith(
-                          fontSize: Dimensions.fontSizeDefault)),
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault)),
                   const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                   Text(
-                    '${'total'.tr}: ${PriceConverter.convertPrice(cartController.cartList.fold(0, (total, item) => total! + ((item.price!))))}',
+                    '${'total'.tr}: ${PriceConverter.convertPrice(cartController.calculateTotalPrice())}',
                     style: robotoMedium.copyWith(
-                        fontSize: Dimensions.fontSizeLarge,
-                        color: Theme.of(context).primaryColor),
+                        fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
                   ),
                 ]),
             CustomButtonWidget(
@@ -57,8 +51,7 @@ class BottomCartWidget extends StatelessWidget {
                   await Get.toNamed(RouteHelper.getCartRoute());
                   Get.find<RestaurantController>().makeEmptyRestaurant();
                   if (restaurantId != null) {
-                    Get.find<RestaurantController>()
-                        .getRestaurantDetails(Restaurant(id: restaurantId));
+                    Get.find<RestaurantController>().getRestaurantDetails(Restaurant(id: restaurantId));
                   }
                 })
           ]),
